@@ -1,2 +1,3 @@
-# GraduationWork
-卒業制作
+# ButiEngine
+
+DirectX12を使用した自作エンジン
