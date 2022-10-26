@@ -2,6 +2,7 @@
 #include "Soldier.h"
 #include "SeparateDrawObject.h"
 #include "ScoreManager.h"
+#include "SoldierManager.h"
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
 
 constexpr float MAX_MOVE_SPEED = 3.5f;
@@ -11,16 +12,20 @@ void ButiEngine::Soldier::OnUpdate()
 	switch (m_state)
 	{
 	case ButiEngine::SoldierState::Sleep:
-		Sleep();
+		OnSleep();
+		Move();
 		break;
 	case ButiEngine::SoldierState::Active:
+		Move();
 		break;
 	case ButiEngine::SoldierState::Home:
+		Move();
+		break;
+	case ButiEngine::SoldierState::Abduction:
 		break;
 	default:
 		break;
 	}
-	Move();
 }
 
 void ButiEngine::Soldier::OnSet()
@@ -32,10 +37,16 @@ void ButiEngine::Soldier::OnSet()
 			{
 				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("Home"))
 				{
-					if (m_state == SoldierState::Active)
+					if (m_state == SoldierState::Active || m_state == SoldierState::Sleep)
 					{
 						m_state = SoldierState::Home;
 						m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::LightBlue();
+
+						auto soldierManager = GetManager().lock()->GetGameObject("SoldierManager").lock()->GetGameComponent<SoldierManager>();
+						if (soldierManager)
+						{
+							soldierManager->AddHomeSoldier(gameObject);
+						}
 
 						auto scoreManager = GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>();
 						if (scoreManager)
@@ -107,6 +118,40 @@ void ButiEngine::Soldier::Dead()
 
 void ButiEngine::Soldier::Sleep()
 {
+	if (m_state != SoldierState::Abduction)
+	{
+		return;
+	}
+
+	m_state = SoldierState::Sleep;
+
+	gameObject.lock()->transform->SetBaseTransform(nullptr);
+
+	m_vwp_rigidBodyComponent.lock()->Regist();
+}
+
+void ButiEngine::Soldier::Abduction(Value_weak_ptr<GameObject> arg_parent)
+{
+	if (m_state != SoldierState::Home)
+	{
+		return;
+	}
+
+	m_state = SoldierState::Abduction;
+	auto soldierManager = GetManager().lock()->GetGameObject("SoldierManager").lock()->GetGameComponent<SoldierManager>();
+	if (soldierManager)
+	{
+		soldierManager->RemoveHomeSoldier(gameObject);
+	}
+
+	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
+	m_vwp_rigidBodyComponent.lock()->UnRegist();
+
+	gameObject.lock()->transform->SetBaseTransform(arg_parent.lock()->transform);
+}
+
+void ButiEngine::Soldier::OnSleep()
+{
 	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
 	Vector3 narukoPos = m_vwp_naruko.lock()->transform->GetLocalPosition();
 
@@ -153,6 +198,8 @@ void ButiEngine::Soldier::SetMoveSpeed()
 		break;
 	case ButiEngine::SoldierState::Home:
 		easingSpeed = 0.05f;
+		break;
+	case ButiEngine::SoldierState::Abduction:
 		break;
 	default:
 		break;

@@ -2,6 +2,8 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	class SoldierManager;
+
 	class EnemySpawner :public GameComponent
 	{
 	public:
@@ -26,6 +28,8 @@ namespace ButiEngine {
 		void Dead();
 	private:
 		void SpawnEnemy();
+
+		Value_weak_ptr<SoldierManager> m_vwp_soldierManager;
 
 		std::int32_t m_maxEnemyCount = 10;
 		std::int32_t m_spawnIntervalFrame = 180;

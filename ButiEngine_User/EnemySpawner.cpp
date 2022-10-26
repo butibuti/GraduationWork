@@ -1,11 +1,15 @@
 #include "stdafx_u.h"
 #include "EnemySpawner.h"
+#include "SoldierManager.h"
 
 void ButiEngine::EnemySpawner::OnUpdate()
 {
 	if (m_vlp_spawnIntervalTimer->Update())
 	{
-		SpawnEnemy();
+		if (m_vwp_soldierManager.lock()->GetHomeSoldierCount() != 0)
+		{
+			SpawnEnemy();
+		}
 	}
 }
 
@@ -35,6 +39,8 @@ void ButiEngine::EnemySpawner::OnShowUI()
 
 void ButiEngine::EnemySpawner::Start()
 {
+	m_vwp_soldierManager = GetManager().lock()->GetGameObject("SoldierManager").lock()->GetGameComponent<SoldierManager>();
+
 	m_vlp_spawnIntervalTimer = ObjectFactory::Create<RelativeTimer>(m_spawnIntervalFrame);
 	m_vlp_spawnIntervalTimer->Start();
 }

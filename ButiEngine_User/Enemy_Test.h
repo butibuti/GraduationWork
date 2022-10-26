@@ -2,7 +2,15 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	enum class EnemyState
+	{
+		Chase,
+		Return,
+	};
+
 	class RigidBodyComponent;
+	class SoldierManager;
+	class Soldier;
 
 	class Enemy_Test :public GameComponent
 	{
@@ -20,12 +28,23 @@ namespace ButiEngine {
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
+			ARCHIVE_BUTI(isActive);
 		}
 
 		void Dead();
 	private:
-		Value_weak_ptr<GameObject> m_vwp_home;
+		void Move();
+		void SetTargetSoldier();
+		void OnReturn();
+
+		Value_weak_ptr<SoldierManager> m_vwp_soldierManager;
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
+
+		EnemyState m_state;
+
+		Value_weak_ptr<GameObject> m_vwp_targetSoldier;
+		Value_weak_ptr<GameObject> m_vwp_abductionSoldier;
+		Vector3 m_spawnPos;
 	};
 
 }

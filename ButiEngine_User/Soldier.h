@@ -7,6 +7,7 @@ namespace ButiEngine {
 		Sleep,
 		Active,
 		Home,
+		Abduction,
 	};
 
 	class RigidBodyComponent;
@@ -34,8 +35,10 @@ namespace ButiEngine {
 		SoldierState GetState() { return m_state; }
 
 		void Dead();
-	private:
 		void Sleep();
+		void Abduction(Value_weak_ptr<GameObject> arg_parent);
+	private:
+		void OnSleep();
 		void Move();
 		void SetMoveDirection(Vector2& arg_ref_moveDirection);
 		void SetMoveSpeed();

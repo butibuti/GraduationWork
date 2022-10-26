@@ -363,6 +363,7 @@
     <ClCompile Include="ScoreManager.cpp" />
     <ClCompile Include="SeparateDrawObject.cpp" />
     <ClCompile Include="Soldier.cpp" />
+    <ClCompile Include="SoldierManager.cpp" />
     <ClCompile Include="SoldierSpawner.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -381,6 +382,7 @@
     <ClInclude Include="ScoreManager.h" />
     <ClInclude Include="SeparateDrawObject.h" />
     <ClInclude Include="Soldier.h" />
+    <ClInclude Include="SoldierManager.h" />
     <ClInclude Include="SoldierSpawner.h" />
     <ClInclude Include="stdafx_u.h" />
     <ClInclude Include="TestBehavior.h" />
