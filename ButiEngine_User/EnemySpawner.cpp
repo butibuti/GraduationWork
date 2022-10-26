@@ -19,10 +19,10 @@ void ButiEngine::EnemySpawner::OnRemove()
 
 void ButiEngine::EnemySpawner::OnShowUI()
 {
-	GUI::BulletText("MaxEnemyCount");
+	GUI::BulletText(U8("ê∂ê¨Ç∑ÇÈè„å¿"));
 	GUI::DragInt("##MaxEnemyCount", m_maxEnemyCount, 1.0f, 0, 100);
 
-	GUI::BulletText("SpawnIntervalFrame");
+	GUI::BulletText(U8("ê∂ê¨Ç∑ÇÈä‘äu"));
 	if (GUI::DragInt("##SpawnIntervalFrame", m_spawnIntervalFrame, 1.0f, 0, 600))
 	{
 		if (m_vlp_spawnIntervalTimer)

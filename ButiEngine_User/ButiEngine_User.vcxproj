@@ -360,6 +360,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="Naruko.cpp" />
+    <ClCompile Include="ScoreManager.cpp" />
     <ClCompile Include="SeparateDrawObject.cpp" />
     <ClCompile Include="Soldier.cpp" />
     <ClCompile Include="SoldierSpawner.cpp" />
@@ -377,6 +378,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LogoSceneManager.h" />
     <ClInclude Include="Naruko.h" />
+    <ClInclude Include="ScoreManager.h" />
     <ClInclude Include="SeparateDrawObject.h" />
     <ClInclude Include="Soldier.h" />
     <ClInclude Include="SoldierSpawner.h" />

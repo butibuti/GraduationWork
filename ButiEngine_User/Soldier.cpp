@@ -1,6 +1,7 @@
 #include "stdafx_u.h"
 #include "Soldier.h"
 #include "SeparateDrawObject.h"
+#include "ScoreManager.h"
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
 
 constexpr float MAX_MOVE_SPEED = 3.5f;
@@ -29,11 +30,42 @@ void ButiEngine::Soldier::OnSet()
 		{
 			if (arg_other.vwp_gameObject.lock())
 			{
-				//ƒ^ƒO”»’è
 				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("Home"))
 				{
-					m_state = SoldierState::Home;
-					m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::White();
+					if (m_state == SoldierState::Active)
+					{
+						m_state = SoldierState::Home;
+						m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::LightBlue();
+
+						auto scoreManager = GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>();
+						if (scoreManager)
+						{
+							scoreManager->AddScore(100);
+						}
+					}
+				}
+			}
+		}
+	);
+
+	gameObject.lock()->AddCollisionLeaveReaction(
+		[this](ButiBullet::ContactData& arg_other)
+		{
+			if (arg_other.vwp_gameObject.lock())
+			{
+				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("Home"))
+				{
+					if (m_state == SoldierState::Home)
+					{
+						m_state = SoldierState::Sleep;
+						m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::White();
+
+						auto scoreManager = GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>();
+						if (scoreManager)
+						{
+							scoreManager->RemoveScore(100);
+						}
+					}
 				}
 			}
 		}
