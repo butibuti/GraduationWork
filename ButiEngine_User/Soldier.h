@@ -6,6 +6,7 @@ namespace ButiEngine {
 	{
 		Sleep,
 		Active,
+		Home,
 	};
 
 	class RigidBodyComponent;
@@ -30,8 +31,11 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_detectionRange);
 		}
 
+		SoldierState GetState() { return m_state; }
+
 		void Dead();
 	private:
+		void Sleep();
 		void Move();
 		void SetMoveDirection(Vector2& arg_ref_moveDirection);
 		void SetMoveSpeed();
