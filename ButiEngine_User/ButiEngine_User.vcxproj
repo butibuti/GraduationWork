@@ -373,6 +373,7 @@
     </ClCompile>
     <ClCompile Include="TestBehavior.cpp" />
     <ClCompile Include="Enemy_Test.cpp" />
+    <ClCompile Include="UI_Score.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EnemySpawner.h" />
@@ -387,6 +388,7 @@
     <ClInclude Include="stdafx_u.h" />
     <ClInclude Include="TestBehavior.h" />
     <ClInclude Include="Enemy_Test.h" />
+    <ClInclude Include="UI_Score.h" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
