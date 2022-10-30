@@ -265,7 +265,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Libs\lib\Debug\;$(SolutionDir)Libs\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SolutionDir)\Libs\dll\Debug\ZDll.lib;$(SolutionDir)\Libs\dll\Debug\ButiFont.lib;$(SolutionDir)\Libs\dll\Debug\ButiInput.lib;$(SolutionDir)\Libs\dll\Debug\ButiRendering.lib;$(SolutionDir)\Libs\dll\Debug\ButiSound.lib;$(SolutionDir)\Libs\dll\Debug\ButiMemorySystem.lib;$(SolutionDir)\Libs\dll\Debug\ButiVive.lib;$(SolutionDir)\Libs\dll\Debug\ButiBulletWrap.lib;$(SolutionDir)\Libs\lib\Debug\ButiUtil.lib;$(SolutionDir)\Libs\lib\Debug\ButiEngine.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\Libs\dll\Debug\ZDll.lib;$(SolutionDir)\Libs\dll\Debug\ButiFont.lib;$(SolutionDir)\Libs\dll\Debug\ButiInput.lib;$(SolutionDir)\Libs\dll\Debug\ButiRendering.lib;$(SolutionDir)\Libs\dll\Debug\ButiScript_Compiler.lib;$(SolutionDir)\Libs\dll\Debug\ButiScript_VirtualMachine.lib;$(SolutionDir)\Libs\dll\Debug\ButiSound.lib;$(SolutionDir)\Libs\dll\Debug\ButiMemorySystem.lib;$(SolutionDir)\Libs\dll\Debug\ButiEventSystem.lib;$(SolutionDir)\Libs\dll\Debug\ButiTaskSystem.lib;$(SolutionDir)\Libs\dll\Debug\ButiVive.lib;$(SolutionDir)\Libs\dll\Debug\ButiBulletWrap.lib;$(SolutionDir)\Libs\lib\Debug\ButiUtil.lib;$(SolutionDir)\Libs\lib\Debug\ButiEngine.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_imguiEditor|x64'">
@@ -288,7 +288,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Libs\lib\Debug\;$(SolutionDir)Libs\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SolutionDir)\Libs\dll\Debug\ZDll.lib;$(SolutionDir)\Libs\dll\Debug\ButiFont.lib;$(SolutionDir)\Libs\dll\Debug\ButiInput.lib;$(SolutionDir)\Libs\dll\Debug\ButiSound.lib;$(SolutionDir)\Libs\dll\Debug\ButiMemorySystem.lib;$(SolutionDir)\Libs\dll\Debug\ButiVive.lib;$(SolutionDir)\Libs\dll\Debug\ButiRendering.lib;$(SolutionDir)\Libs\lib\Debug\ButiUtil.lib;$(SolutionDir)\Libs\dll\Debug\ButiBulletWrap.lib;$(SolutionDir)\Libs\lib\Debug_imguiEditor\ButiEngine.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\Libs\dll\Debug\ZDll.lib;$(SolutionDir)\Libs\dll\Debug\ButiFont.lib;$(SolutionDir)\Libs\dll\Debug\ButiInput.lib;$(SolutionDir)\Libs\dll\Debug\ButiSound.lib;$(SolutionDir)\Libs\dll\Debug\ButiMemorySystem.lib;$(SolutionDir)\Libs\dll\Debug\ButiScript_Compiler.lib;$(SolutionDir)\Libs\dll\Debug\ButiScript_VirtualMachine.lib;$(SolutionDir)\Libs\dll\Debug\ButiVive.lib;$(SolutionDir)\Libs\dll\Debug\ButiRendering.lib;$(SolutionDir)\Libs\dll\Debug\ButiTaskSystem.lib;$(SolutionDir)\Libs\dll\Debug\ButiEventSystem.lib;$(SolutionDir)\Libs\lib\Debug\ButiUtil.lib;$(SolutionDir)\Libs\dll\Debug\ButiBulletWrap.lib;$(SolutionDir)\Libs\lib\Debug_imguiEditor\ButiEngine.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -318,7 +318,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Libs\lib\Release\;$(SolutionDir)Libs\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SolutionDir)\Libs\dll\Release\ZDll.lib;$(SolutionDir)\Libs\dll\Release\ButiFont.lib;$(SolutionDir)\Libs\dll\Release\ButiInput.lib;$(SolutionDir)\Libs\dll\Release\ButiMemorySystem.lib;$(SolutionDir)\Libs\dll\Release\ButiVive.lib;$(SolutionDir)\Libs\dll\Release\ButiSound.lib;$(SolutionDir)\Libs\dll\Release\ButiRendering.lib;$(SolutionDir)\Libs\lib\Release\ButiUtil.lib;$(SolutionDir)\Libs\lib\Release\ButiEngine.lib;$(SolutionDir)\Libs\dll\Release\ButiBulletWrap.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\Libs\dll\Release\ZDll.lib;$(SolutionDir)\Libs\dll\Release\ButiFont.lib;$(SolutionDir)\Libs\dll\Release\ButiInput.lib;$(SolutionDir)\Libs\dll\Release\ButiMemorySystem.lib;$(SolutionDir)\Libs\dll\Release\ButiScript_Compiler.lib;$(SolutionDir)\Libs\dll\Release\ButiScript_VirtualMachine.lib;$(SolutionDir)\Libs\dll\Release\ButiVive.lib;$(SolutionDir)\Libs\dll\Release\ButiSound.lib;$(SolutionDir)\Libs\dll\Release\ButiRendering.lib;$(SolutionDir)\Libs\dll\Release\ButiEventSystem.lib;$(SolutionDir)\Libs\dll\Release\ButiTaskSystem.lib;$(SolutionDir)\Libs\lib\Release\ButiUtil.lib;$(SolutionDir)\Libs\lib\Release\ButiEngine.lib;$(SolutionDir)\Libs\dll\Release\ButiBulletWrap.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">
@@ -344,7 +344,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Libs\lib\Release\;$(SolutionDir)Libs\lib\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SolutionDir)\Libs\dll\Release\ZDll.lib;$(SolutionDir)\Libs\dll\Release\ButiFont.lib;$(SolutionDir)\Libs\dll\Release\ButiInput.lib;$(SolutionDir)\Libs\dll\Release\ButiMemorySystem.lib;$(SolutionDir)\Libs\dll\Release\ButiSound.lib;$(SolutionDir)\Libs\dll\Release\ButiRendering.lib;$(SolutionDir)\Libs\dll\Release\ButiBulletWrap.lib;$(SolutionDir)\Libs\dll\Release\ButiVive.lib;$(SolutionDir)\Libs\lib\Release\ButiUtil.lib;$(SolutionDir)\Libs\lib\Release_imguiEditor\ButiEngine.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)\Libs\dll\Release\ZDll.lib;$(SolutionDir)\Libs\dll\Release\ButiFont.lib;$(SolutionDir)\Libs\dll\Release\ButiInput.lib;$(SolutionDir)\Libs\dll\Release\ButiMemorySystem.lib;$(SolutionDir)\Libs\dll\Release\ButiScript_Compiler.lib;$(SolutionDir)\Libs\dll\Release\ButiScript_VirtualMachine.lib;$(SolutionDir)\Libs\dll\Release\ButiSound.lib;$(SolutionDir)\Libs\dll\Release\ButiRendering.lib;$(SolutionDir)\Libs\dll\Release\ButiBulletWrap.lib;$(SolutionDir)\Libs\dll\Release\ButiEventSystem.lib;$(SolutionDir)\Libs\dll\Release\ButiTaskSystem.lib;$(SolutionDir)\Libs\dll\Release\ButiVive.lib;$(SolutionDir)\Libs\lib\Release\ButiUtil.lib;$(SolutionDir)\Libs\lib\Release_imguiEditor\ButiEngine.lib</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>

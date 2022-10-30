@@ -1,17 +1,28 @@
 #include "TestBehavior.h"
 #include"Header/Common/CollisionPrimitive.h"
 #include"ButiEngineHeader/Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
+#include"ButiBulletWrap/ButiBulletWrap/PhysicsManager.h"
+#include"ButiBulletWrap/ButiBulletWrap/PhysicsWorld.h"
+#include"ButiBulletWrap/ButiBulletWrap/Joint.h"
 float g_vibe_l = 0.0f, g_vibe_r = 0.0f;
 void ButiEngine::TestBehavior::OnUpdate()
-{
+{/*
 	if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize()>m_index) {
 		Matrix4x4 deviceMatrix;
 		GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_index], deviceMatrix);
 		gameObject.lock()->transform->SetLocalPosition(deviceMatrix.GetPosition());
 		gameObject.lock()->transform->SetLocalRotation(deviceMatrix.RemovePosition());
-	}
+	}*/
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::Enter)) {
-		GameDevice::GetVRTrackerInput().SetOffSetMatrix(gameObject.lock()->transform->GetLocalRotation()* Matrix4x4::Translate(gameObject.lock()->transform->GetLocalPosition()));
+		auto objA = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("PhysicsObjectA").lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody();
+		auto objB = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("PhysicsObjectB").lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody();
+		auto joint = ButiBullet::CreateSpringJoint(objA, Matrix4x4(), objB, Matrix4x4(), 0);
+		joint->SetLinearUpperLimit(Vector3(2, 2, 2));
+		joint->SetLinearLowerLimit(Vector3(-2, -2, -2));
+		joint->SetAngularUpperLimit(Vector3(0, MathHelper::ToRadian(360), 0));
+		joint->SetLinearStiffness(Vector3(2, 2, 2));
+		gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
+			AddJoint(joint);
 	}
 }
 
