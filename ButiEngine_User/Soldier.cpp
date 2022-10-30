@@ -46,7 +46,7 @@ void ButiEngine::Soldier::OnSet()
 							m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::LightBlue();
 						}
 
-						GetManager().lock()->GetGameObject("SoldierManager").lock()->GetGameComponent<SoldierManager>()->AddHomeSoldier(gameObject);;
+						GetManager().lock()->GetGameObject("SoldierManager").lock()->GetGameComponent<SoldierManager>()->AddHomeSoldier(gameObject);
 
 						GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->AddScore(100);
 
@@ -71,6 +71,8 @@ void ButiEngine::Soldier::OnSet()
 							m_state = SoldierState::Sleep;
 							m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::White();
 						}
+
+						GetManager().lock()->GetGameObject("SoldierManager").lock()->GetGameComponent<SoldierManager>()->RemoveHomeSoldier(gameObject);
 
 						GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->RemoveScore(100);
 
@@ -129,10 +131,10 @@ void ButiEngine::Soldier::Sleep()
 
 	m_state = SoldierState::Sleep;
 
-	gameObject.lock()->transform->SetBaseTransform(nullptr);
+	//gameObject.lock()->transform->SetBaseTransform(nullptr);
 
-	m_vwp_triggerComponent.lock()->UnRegist();
-	m_vwp_rigidBodyComponent.lock()->Regist();
+	//m_vwp_triggerComponent.lock()->UnRegist();
+	//m_vwp_rigidBodyComponent.lock()->Regist();
 }
 
 void ButiEngine::Soldier::Abduction(Value_weak_ptr<GameObject> arg_parent)
@@ -149,12 +151,12 @@ void ButiEngine::Soldier::Abduction(Value_weak_ptr<GameObject> arg_parent)
 		soldierManager->RemoveHomeSoldier(gameObject);
 	}
 
-	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
-	m_vwp_rigidBodyComponent.lock()->UnRegist();
+	//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
+	//m_vwp_rigidBodyComponent.lock()->UnRegist();
 
-	m_vwp_triggerComponent.lock()->Regist();
+	//m_vwp_triggerComponent.lock()->Regist();
 
-	gameObject.lock()->transform->SetBaseTransform(arg_parent.lock()->transform);
+	//gameObject.lock()->transform->SetBaseTransform(arg_parent.lock()->transform);
 }
 
 void ButiEngine::Soldier::OnSleep()

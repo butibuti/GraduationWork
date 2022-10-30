@@ -4,6 +4,9 @@
 #include "SeparateDrawObject.h"
 #include "SoldierManager.h"
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
+#include"ButiBulletWrap/ButiBulletWrap/PhysicsManager.h"
+#include"ButiBulletWrap/ButiBulletWrap/PhysicsWorld.h"
+#include"ButiBulletWrap/ButiBulletWrap/Joint.h"
 
 void ButiEngine::Enemy_Test::OnUpdate()
 {
@@ -36,9 +39,14 @@ void ButiEngine::Enemy_Test::OnSet()
 						Dead();
 						break;
 					case ButiEngine::SoldierState::Home:
-						m_state = EnemyState::Return;
-						m_vwp_abductionSoldier = arg_other.vwp_gameObject;
-						soldierComponent->Abduction(gameObject);
+						if (!m_vwp_abductionSoldier.lock())
+						{
+							m_state = EnemyState::Return;
+							m_vwp_abductionSoldier = arg_other.vwp_gameObject;
+							soldierComponent->Abduction(gameObject);
+
+							CreateJoint();
+						}
 						break;
 					default:
 						break;
@@ -74,6 +82,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Enemy_Test::Clone()
 
 void ButiEngine::Enemy_Test::Dead()
 {
+	DestroyJoint();
 	gameObject.lock()->SetIsRemove(true);
 	gameObject.lock()->GetGameComponent<SeparateDrawObject>()->Dead();
 }
@@ -97,7 +106,7 @@ void ButiEngine::Enemy_Test::Move()
 	dir.y = 0.0f;
 	dir.Normalize();
 
-	constexpr float moveSpeed = 1.0f;
+	constexpr float moveSpeed = 2.0f;
 	Vector3 velocity = dir * moveSpeed;
 	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * GameDevice::GetWorldSpeed());
 }
@@ -109,12 +118,13 @@ void ButiEngine::Enemy_Test::SetTargetSoldier()
 		return;
 	}
 
-	if (m_vwp_targetSoldier.lock() && m_vwp_abductionSoldier.lock() == m_vwp_targetSoldier.lock())
+	if (m_vwp_soldierManager.lock()->IsInHome(m_vwp_targetSoldier))
 	{
 		return;
 	}
 
 	m_vwp_targetSoldier = m_vwp_soldierManager.lock()->GetHomeSoldierRandom();
+	//ƒz[ƒ€‚É•ºŽm‚ª‚¢‚È‚©‚Á‚½‚ç‹A‚é
 	if (!m_vwp_targetSoldier.lock())
 	{
 		m_state = EnemyState::Return;
@@ -138,4 +148,30 @@ void ButiEngine::Enemy_Test::OnReturn()
 			m_vwp_abductionSoldier.lock()->GetGameComponent<Soldier>()->Dead();
 		}
 	}
+}
+
+void ButiEngine::Enemy_Test::CreateJoint()
+{
+	auto objA = m_vwp_rigidBodyComponent.lock()->GetRigidBody();
+	auto objB = m_vwp_abductionSoldier.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody();
+
+	auto joint = ButiBullet::CreateSpringJoint(objA, Matrix4x4(), objB, Matrix4x4(), 0);
+	m_vwp_joint = joint;
+	m_vwp_joint.lock()->SetLinearUpperLimit(Vector3(1, 1, 1));
+	m_vwp_joint.lock()->SetLinearLowerLimit(Vector3(-1, -1, -1));
+	m_vwp_joint.lock()->SetAngularUpperLimit(Vector3(0, MathHelper::ToRadian(360), 0));
+	m_vwp_joint.lock()->SetLinearStiffness(Vector3(1, 1, 1));
+	gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
+		AddJoint(m_vwp_joint.lock());
+}
+
+void ButiEngine::Enemy_Test::DestroyJoint()
+{
+	if (!m_vwp_joint.lock())
+	{
+		return;
+	}
+
+	gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
+		RemoveJoint(m_vwp_joint.lock());
 }

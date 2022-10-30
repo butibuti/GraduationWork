@@ -40,6 +40,17 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::SoldierManager::G
 	return m_vec_vwp_homeSoldiers[index];
 }
 
+bool ButiEngine::SoldierManager::IsInHome(Value_weak_ptr<GameObject> arg_soldier)
+{
+	auto find = std::find(m_vec_vwp_homeSoldiers.begin(), m_vec_vwp_homeSoldiers.end(), arg_soldier);
+	if (find != m_vec_vwp_homeSoldiers.end())
+	{
+		return true;
+	}
+
+	return false;
+}
+
 void ButiEngine::SoldierManager::AddHomeSoldier(Value_weak_ptr<GameObject> arg_soldier)
 {
 	auto find = std::find(m_vec_vwp_homeSoldiers.begin(), m_vec_vwp_homeSoldiers.end(), arg_soldier);

@@ -1,5 +1,10 @@
 #pragma once
 #include"Header/GameComponentHeader.h"
+
+namespace ButiBullet{
+	class Joint_spring;
+}
+
 namespace ButiEngine {
 
 	enum class EnemyState
@@ -36,6 +41,8 @@ namespace ButiEngine {
 		void Move();
 		void SetTargetSoldier();
 		void OnReturn();
+		void CreateJoint();
+		void DestroyJoint();
 
 		Value_weak_ptr<SoldierManager> m_vwp_soldierManager;
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
@@ -44,6 +51,7 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> m_vwp_targetSoldier;
 		Value_weak_ptr<GameObject> m_vwp_abductionSoldier;
+		Value_weak_ptr<ButiBullet::Joint_spring> m_vwp_joint;
 		Vector3 m_spawnPos;
 	};
 

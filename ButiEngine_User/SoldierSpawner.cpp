@@ -54,7 +54,7 @@ void ButiEngine::SoldierSpawner::Dead()
 void ButiEngine::SoldierSpawner::SpawnSoldier()
 {
 	auto soldiers = GetManager().lock()->GetGameObjects(GameObjectTag("Soldier"));
-	if (soldiers.GetSize() > m_maxSoldierCount)
+	if (soldiers.GetSize() >= m_maxSoldierCount)
 	{
 		return;
 	}

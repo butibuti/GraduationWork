@@ -24,6 +24,7 @@ namespace ButiEngine {
 		std::vector<Value_weak_ptr<GameObject>> GetHomeSoldiers() { return m_vec_vwp_homeSoldiers; }
 		Value_weak_ptr<GameObject> GetHomeSoldierRandom();
 		std::int32_t GetHomeSoldierCount() { return m_vec_vwp_homeSoldiers.size(); }
+		bool IsInHome(Value_weak_ptr<GameObject> arg_soldier);
 
 		void AddHomeSoldier(Value_weak_ptr<GameObject> arg_soldier);
 		void RemoveHomeSoldier(Value_weak_ptr<GameObject> arg_soldier);

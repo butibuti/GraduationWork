@@ -60,7 +60,7 @@ void ButiEngine::EnemySpawner::Dead()
 void ButiEngine::EnemySpawner::SpawnEnemy()
 {
 	auto soldiers = GetManager().lock()->GetGameObjects(GameObjectTag("Enemy"));
-	if (soldiers.GetSize() > m_maxEnemyCount)
+	if (soldiers.GetSize() >= m_maxEnemyCount)
 	{
 		return;
 	}
