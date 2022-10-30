@@ -4,6 +4,7 @@
 #include "ScoreManager.h"
 #include "SoldierManager.h"
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
+#include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
 
 constexpr float MAX_MOVE_SPEED = 3.5f;
 
@@ -37,22 +38,19 @@ void ButiEngine::Soldier::OnSet()
 			{
 				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("Home"))
 				{
-					if (m_state == SoldierState::Active || m_state == SoldierState::Sleep)
+					if (!m_isInHome)
 					{
-						m_state = SoldierState::Home;
-						m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::LightBlue();
-
-						auto soldierManager = GetManager().lock()->GetGameObject("SoldierManager").lock()->GetGameComponent<SoldierManager>();
-						if (soldierManager)
+						if (m_state == SoldierState::Active || m_state == SoldierState::Sleep)
 						{
-							soldierManager->AddHomeSoldier(gameObject);
+							m_state = SoldierState::Home;
+							m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::LightBlue();
 						}
 
-						auto scoreManager = GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>();
-						if (scoreManager)
-						{
-							scoreManager->AddScore(100);
-						}
+						GetManager().lock()->GetGameObject("SoldierManager").lock()->GetGameComponent<SoldierManager>()->AddHomeSoldier(gameObject);;
+
+						GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->AddScore(100);
+
+						m_isInHome = true;
 					}
 				}
 			}
@@ -66,16 +64,17 @@ void ButiEngine::Soldier::OnSet()
 			{
 				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("Home"))
 				{
-					if (m_state == SoldierState::Home)
+					if (m_isInHome)
 					{
-						m_state = SoldierState::Sleep;
-						m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::White();
-
-						auto scoreManager = GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>();
-						if (scoreManager)
+						if (m_state == SoldierState::Home)
 						{
-							scoreManager->RemoveScore(100);
+							m_state = SoldierState::Sleep;
+							m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>()->GetCBuffer<ButiRendering::ObjectInformation>()->Get().color = ButiColor::White();
 						}
+
+						GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->RemoveScore(100);
+
+						m_isInHome = false;
 					}
 				}
 			}
@@ -98,9 +97,14 @@ void ButiEngine::Soldier::Start()
 	m_vwp_drawObject = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject();
 	m_vwp_naruko = GetManager().lock()->GetGameObject("Naruko");
 	m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+	m_vwp_triggerComponent = gameObject.lock()->GetGameComponent<TriggerComponent>();
+	m_vwp_triggerComponent.lock()->UnRegist();
+	
 
 	m_state = SoldierState::Sleep;
 	m_moveSpeed = 0.0f;
+
+	m_isInHome = false;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Soldier::Clone()
@@ -127,6 +131,7 @@ void ButiEngine::Soldier::Sleep()
 
 	gameObject.lock()->transform->SetBaseTransform(nullptr);
 
+	m_vwp_triggerComponent.lock()->UnRegist();
 	m_vwp_rigidBodyComponent.lock()->Regist();
 }
 
@@ -146,6 +151,8 @@ void ButiEngine::Soldier::Abduction(Value_weak_ptr<GameObject> arg_parent)
 
 	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
 	m_vwp_rigidBodyComponent.lock()->UnRegist();
+
+	m_vwp_triggerComponent.lock()->Regist();
 
 	gameObject.lock()->transform->SetBaseTransform(arg_parent.lock()->transform);
 }

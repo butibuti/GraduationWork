@@ -11,6 +11,7 @@ namespace ButiEngine {
 	};
 
 	class RigidBodyComponent;
+	class TriggerComponent;
 
 	class Soldier :public GameComponent
 	{
@@ -45,12 +46,15 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> m_vwp_drawObject;
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
+		Value_weak_ptr<TriggerComponent> m_vwp_triggerComponent;
 
 		Value_weak_ptr<GameObject> m_vwp_naruko;
 
 		SoldierState m_state;
 		float m_detectionRange;
 		float m_moveSpeed;
+
+		bool m_isInHome;
 	};
 
 }
