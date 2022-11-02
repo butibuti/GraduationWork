@@ -354,6 +354,7 @@
   <ItemGroup>
     <ClCompile Include="DefaultGameComponent.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
+    <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LogoSceneManager.cpp" />
     <ClCompile Include="main.cpp">
@@ -373,10 +374,12 @@
     </ClCompile>
     <ClCompile Include="TestBehavior.cpp" />
     <ClCompile Include="Enemy_Test.cpp" />
+    <ClCompile Include="UI_RemainTime.cpp" />
     <ClCompile Include="UI_Score.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EnemySpawner.h" />
+    <ClInclude Include="GameTimer.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LogoSceneManager.h" />
     <ClInclude Include="Naruko.h" />
@@ -388,6 +391,7 @@
     <ClInclude Include="stdafx_u.h" />
     <ClInclude Include="TestBehavior.h" />
     <ClInclude Include="Enemy_Test.h" />
+    <ClInclude Include="UI_RemainTime.h" />
     <ClInclude Include="UI_Score.h" />
   </ItemGroup>
   <ItemGroup>

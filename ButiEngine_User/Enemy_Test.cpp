@@ -106,7 +106,7 @@ void ButiEngine::Enemy_Test::Move()
 	dir.y = 0.0f;
 	dir.Normalize();
 
-	constexpr float moveSpeed = 2.0f;
+	constexpr float moveSpeed = 3.0f;
 	Vector3 velocity = dir * moveSpeed;
 	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * GameDevice::GetWorldSpeed());
 }

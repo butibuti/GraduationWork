@@ -28,7 +28,7 @@ namespace ButiEngine {
 		void Dead();
 	private:
 		void Move();
-		void MoveByController();
+		void MoveByGamePad();
 		void MoveByVRTracker();
 
 		Value_weak_ptr<InputManager> m_vwp_inputManager;

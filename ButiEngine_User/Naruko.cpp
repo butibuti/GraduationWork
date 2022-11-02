@@ -40,15 +40,15 @@ void ButiEngine::Naruko::Dead()
 
 void ButiEngine::Naruko::Move()
 {
-	if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_index)
-	{
-		MoveByVRTracker();
-	}
+	//if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_index)
+	//{
+	//	MoveByVRTracker();
+	//}
 
-	MoveByController();
+	MoveByGamePad();
 }
 
-void ButiEngine::Naruko::MoveByController()
+void ButiEngine::Naruko::MoveByGamePad()
 {
 	Vector2 direction = m_vwp_inputManager.lock()->GetLeftStick();
 	direction.Normalize();
@@ -62,14 +62,19 @@ void ButiEngine::Naruko::MoveByController()
 
 void ButiEngine::Naruko::MoveByVRTracker()
 {
-	//Matrix4x4 deviceMatrix;
-	//GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_index], deviceMatrix);
-	//gameObject.lock()->transform->SetLocalPosition(deviceMatrix.GetPosition());
-	//gameObject.lock()->transform->SetLocalRotation(deviceMatrix.RemovePosition());
+	Matrix4x4 deviceMatrix;
+	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_index], deviceMatrix);
+	Vector3 pos = deviceMatrix.GetPosition();
+	pos *= 10.0f;
+	pos.y = gameObject.lock()->transform->GetLocalScale().y * 0.5f;
+	gameObject.lock()->transform->SetLocalPosition(pos);
+	gameObject.lock()->transform->SetLocalRotation(deviceMatrix.GetRemovePosition());
+
+	m_vwp_rigidBodyComponent.lock()->TransformApply();
 
 
-	//if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::Enter))
-	//{
-	//	GameDevice::GetVRTrackerInput().SetOffSetMatrix(gameObject.lock()->transform->GetLocalRotation() * Matrix4x4::Translate(gameObject.lock()->transform->GetLocalPosition()));
-	//}
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::Enter))
+	{
+		GameDevice::GetVRTrackerInput().SetOrigin(m_index);
+	}
 }

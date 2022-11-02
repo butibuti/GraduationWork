@@ -6,7 +6,7 @@
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
 
-constexpr float MAX_MOVE_SPEED = 3.5f;
+float g_maxMoveSpeed = 10.5f;
 
 void ButiEngine::Soldier::OnUpdate()
 {
@@ -92,6 +92,7 @@ void ButiEngine::Soldier::OnShowUI()
 {
 	GUI::BulletText("DetectionRange");
 	GUI::DragFloat("##detectionRange", m_detectionRange, 1.0, 0.0f, 100.0f);
+	GUI::DragFloat("##maxMoveSpeed", g_maxMoveSpeed, 1.0, 0.0f, 100.0f);
 }
 
 void ButiEngine::Soldier::Start()
@@ -99,11 +100,11 @@ void ButiEngine::Soldier::Start()
 	m_vwp_drawObject = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject();
 	m_vwp_naruko = GetManager().lock()->GetGameObject("Naruko");
 	m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
-	m_vwp_triggerComponent = gameObject.lock()->GetGameComponent<TriggerComponent>();
-	m_vwp_triggerComponent.lock()->UnRegist();
 	
 
 	m_state = SoldierState::Sleep;
+
+	m_moveDirection = Vector3Const::Zero;
 	m_moveSpeed = 0.0f;
 
 	m_isInHome = false;
@@ -130,11 +131,6 @@ void ButiEngine::Soldier::Sleep()
 	}
 
 	m_state = SoldierState::Sleep;
-
-	//gameObject.lock()->transform->SetBaseTransform(nullptr);
-
-	//m_vwp_triggerComponent.lock()->UnRegist();
-	//m_vwp_rigidBodyComponent.lock()->Regist();
 }
 
 void ButiEngine::Soldier::Abduction(Value_weak_ptr<GameObject> arg_parent)
@@ -150,13 +146,6 @@ void ButiEngine::Soldier::Abduction(Value_weak_ptr<GameObject> arg_parent)
 	{
 		soldierManager->RemoveHomeSoldier(gameObject);
 	}
-
-	//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
-	//m_vwp_rigidBodyComponent.lock()->UnRegist();
-
-	//m_vwp_triggerComponent.lock()->Regist();
-
-	//gameObject.lock()->transform->SetBaseTransform(arg_parent.lock()->transform);
 }
 
 void ButiEngine::Soldier::OnSleep()
@@ -176,22 +165,28 @@ void ButiEngine::Soldier::OnSleep()
 
 void ButiEngine::Soldier::Move()
 {
-	Vector2 moveDirection;
-	SetMoveDirection(moveDirection);
+	SetMoveDirection();
 	SetMoveSpeed();
 
-	Vector3 velocity = Vector3(moveDirection.x, 0.0f, moveDirection.y) * m_moveSpeed;
-	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * GameDevice::GetWorldSpeed());
+	Vector3 velocity = m_moveDirection * m_moveSpeed;
+	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity);
+	//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->ApplyForce(velocity);
 }
 
-void ButiEngine::Soldier::SetMoveDirection(Vector2& arg_ref_moveDirection)
+void ButiEngine::Soldier::SetMoveDirection()
 {
+	if (m_state != SoldierState::Active)
+	{
+		return;
+	}
+
 	Vector3 narukoPos = m_vwp_naruko.lock()->transform->GetLocalPosition();
 	Vector3 dir = narukoPos - gameObject.lock()->transform->GetLocalPosition();
 	dir.Normalize();
 
-	arg_ref_moveDirection.x = dir.x;
-	arg_ref_moveDirection.y = dir.z;
+	m_moveDirection.x = dir.x;
+	m_moveDirection.y = 0.0f;
+	m_moveDirection.z = dir.z;
 }
 
 void ButiEngine::Soldier::SetMoveSpeed()
@@ -203,7 +198,7 @@ void ButiEngine::Soldier::SetMoveSpeed()
 	case ButiEngine::SoldierState::Sleep:
 		break;
 	case ButiEngine::SoldierState::Active:
-		targetSpeed = MAX_MOVE_SPEED;
+		targetSpeed = g_maxMoveSpeed;
 		break;
 	case ButiEngine::SoldierState::Home:
 		easingSpeed = 0.05f;
