@@ -4,7 +4,7 @@
 
 void ButiEngine::FriendHead::OnUpdate()
 {
-	Move();
+	Control();
 }
 
 void ButiEngine::FriendHead::OnSet()
@@ -37,16 +37,16 @@ void ButiEngine::FriendHead::Dead()
 	gameObject.lock()->SetIsRemove(true);
 }
 
-void ButiEngine::FriendHead::Move()
+void ButiEngine::FriendHead::Control()
 {
 	if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_trackerIndex)
 	{
-		MoveByVRTracker();
+		ControlByVRTracker();
 	}
 
-	MoveByGamePad();
+	ControlByGamePad();
 
-	Vector3 moveLimit = Vector3(6.0f, 3.5f, 1.5f);
+	Vector3 moveLimit = Vector3(5.0f, 2.5f, 1.5f);
 
 	Vector3 position = gameObject.lock()->transform->GetLocalPosition();
 
@@ -60,7 +60,7 @@ void ButiEngine::FriendHead::Move()
 	gameObject.lock()->transform->SetLocalPosition(position);
 }
 
-void ButiEngine::FriendHead::MoveByGamePad()
+void ButiEngine::FriendHead::ControlByGamePad()
 {
 	Vector3 direction = Vector3Const::Zero;
 
@@ -82,8 +82,17 @@ void ButiEngine::FriendHead::MoveByGamePad()
 
 	Vector3 velocity = direction * moveSpeed * GameDevice::GetWorldSpeed();
 	gameObject.lock()->transform->Translate(velocity);
+
+	if (GameDevice::GetInput().GetPadButton(ButiInput::PadButtons::XBOX_BUTTON_RIGHT))
+	{
+		gameObject.lock()->transform->RollLocalRotationZ_Degrees(-2.0f);
+	}
+	else if (GameDevice::GetInput().GetPadButton(ButiInput::PadButtons::XBOX_BUTTON_LEFT))
+	{
+		gameObject.lock()->transform->RollLocalRotationZ_Degrees(2.0f);
+	}
 }
 
-void ButiEngine::FriendHead::MoveByVRTracker()
+void ButiEngine::FriendHead::ControlByVRTracker()
 {
 }
