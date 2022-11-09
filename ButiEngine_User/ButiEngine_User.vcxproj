@@ -352,8 +352,13 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Debug_Camera.cpp" />
     <ClCompile Include="DefaultGameComponent.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
+    <ClCompile Include="FriendFacePart.cpp" />
+    <ClCompile Include="FriendFacePartSpawner.cpp" />
+    <ClCompile Include="FriendHead.cpp" />
+    <ClCompile Include="GameSettings.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LogoSceneManager.cpp" />
@@ -361,11 +366,13 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="Naruko.cpp" />
+    <ClCompile Include="RemoveMeshDraw.cpp" />
     <ClCompile Include="ScoreManager.cpp" />
     <ClCompile Include="SeparateDrawObject.cpp" />
     <ClCompile Include="Soldier.cpp" />
     <ClCompile Include="SoldierManager.cpp" />
     <ClCompile Include="SoldierSpawner.cpp" />
+    <ClCompile Include="EditorObject.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_imguiEditor|x64'">Create</PrecompiledHeader>
@@ -378,16 +385,23 @@
     <ClCompile Include="UI_Score.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Debug_Camera.h" />
     <ClInclude Include="EnemySpawner.h" />
+    <ClInclude Include="FriendFacePart.h" />
+    <ClInclude Include="FriendFacePartSpawner.h" />
+    <ClInclude Include="FriendHead.h" />
+    <ClInclude Include="GameSettings.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LogoSceneManager.h" />
     <ClInclude Include="Naruko.h" />
+    <ClInclude Include="RemoveMeshDraw.h" />
     <ClInclude Include="ScoreManager.h" />
     <ClInclude Include="SeparateDrawObject.h" />
     <ClInclude Include="Soldier.h" />
     <ClInclude Include="SoldierManager.h" />
     <ClInclude Include="SoldierSpawner.h" />
+    <ClInclude Include="EditorObject.h" />
     <ClInclude Include="stdafx_u.h" />
     <ClInclude Include="TestBehavior.h" />
     <ClInclude Include="Enemy_Test.h" />
