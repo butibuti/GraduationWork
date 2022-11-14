@@ -2,6 +2,7 @@
 #include "FriendFacePart.h"
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
+#include "FriendHead.h"
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
@@ -25,13 +26,16 @@ void ButiEngine::FriendFacePart::OnSet()
 				}
 				else if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("FriendHead"))
 				{
-					m_canMove = false;
-					gameObject.lock()->transform->SetBaseTransform(arg_other.vwp_gameObject.lock()->transform);
-
-					auto triggetComponent = gameObject.lock()->GetGameComponent<TriggerComponent>();
-					if (triggetComponent)
+					if (arg_other.vwp_gameObject.lock()->GetGameComponent<FriendHead>()->GetVelocity().z >= 0.1f)
 					{
-						triggetComponent->SetIsRemove(true);
+						m_canMove = false;
+						gameObject.lock()->transform->SetBaseTransform(arg_other.vwp_gameObject.lock()->transform);
+
+						auto triggetComponent = gameObject.lock()->GetGameComponent<TriggerComponent>();
+						if (triggetComponent)
+						{
+							triggetComponent->SetIsRemove(true);
+						}
 					}
 				}
 			}

@@ -76,7 +76,7 @@ void ButiEngine::FriendFacePartSpawner::SpawnFacePart()
 	Vector3 spawnPos;
 	spawnPos.x = ButiRandom::GetRandom(minPos.x, maxPos.x, 10);
 	spawnPos.y = ButiRandom::GetRandom(minPos.y, maxPos.y, 10);
-	spawnPos.z = -2.0f;
+	spawnPos.z = 2.0f;
 
 	std::string facePartName;
 	std::int32_t random = ButiRandom::GetInt(0, 2);

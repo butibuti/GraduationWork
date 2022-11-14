@@ -2,6 +2,25 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	struct GameSettingsData
+	{
+		std::int32_t trackerIndex = 0;
+
+		Vector3 headMoveLimit = Vector3Const::Zero;
+		Vector3 moveAreaFrontRightTop = Vector3Const::Zero;
+		Vector3 moveAreaBackLeftBottom = Vector3Const::Zero;
+		Vector3 tablePos = Vector3Const::Zero;
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+				ARCHIVE_BUTI(trackerIndex);
+				ARCHIVE_BUTI(headMoveLimit);
+				ARCHIVE_BUTI(moveAreaFrontRightTop);
+				ARCHIVE_BUTI(moveAreaBackLeftBottom);
+				ARCHIVE_BUTI(tablePos);
+		}
+	};
+
 	class GameSettings :public GameComponent
 	{
 	public:
@@ -19,15 +38,19 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_monitorRightTopPos);
-			ARCHIVE_BUTI(m_monitorLeftBottomPos);
-			ARCHIVE_BUTI(m_tablePos);
 		}
 
+		Vector3 GetHeadMoveLimit() { return m_data.headMoveLimit; }
+		Vector3 GetCorrection();
+		Vector3 GetTablePos() { return m_data.tablePos; }
+
 	private:
-		Vector3 m_monitorRightTopPos;
-		Vector3 m_monitorLeftBottomPos;
-		Vector3 m_tablePos;
+		void SetOrigin();
+		void SetMoveAreaFrontRightTop();
+		void SetMoveAreaBackLeftBottom();
+		void SetTablePos();
+
+		GameSettingsData m_data;
 	};
 
 }

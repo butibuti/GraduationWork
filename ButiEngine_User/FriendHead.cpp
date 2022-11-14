@@ -1,10 +1,12 @@
 #include "stdafx_u.h"
 #include "FriendHead.h"
 #include "InputManager.h"
+#include "GameSettings.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
 	Control();
+	CalcVelocity();
 }
 
 void ButiEngine::FriendHead::OnSet()
@@ -18,11 +20,21 @@ void ButiEngine::FriendHead::OnRemove()
 void ButiEngine::FriendHead::OnShowUI()
 {
 	GUI::DragInt("TrackerIndex", m_trackerIndex, 1.0, 0, 16);
+
+	GUI::BulletText("Velocity");
+	GUI::Text("x:" + std::to_string(m_velocity.x) + " y:" + std::to_string(m_velocity.y) + " z:" + std::to_string(m_velocity .z));
+
+	GUI::Text("Speed:" + std::to_string(m_velocity.GetLength()));
 }
 
 void ButiEngine::FriendHead::Start()
 {
 	m_vwp_inputManager = GetManager().lock()->GetGameObject("InputManager").lock()->GetGameComponent<InputManager>();
+	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
+
+	m_prevPos = Vector3Const::Zero;
+	m_crntPos = Vector3Const::Zero;
+	m_velocity = Vector3Const::Zero;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
@@ -46,18 +58,18 @@ void ButiEngine::FriendHead::Control()
 
 	ControlByGamePad();
 
-	Vector3 moveLimit = Vector3(5.0f, 2.5f, 1.5f);
+	//Vector3 moveLimit = m_vwp_gameSettings.lock()->GetHeadMoveLimit();
 
-	Vector3 position = gameObject.lock()->transform->GetLocalPosition();
+	//Vector3 position = gameObject.lock()->transform->GetLocalPosition();
 
-	position.x = min(position.x, moveLimit.x);
-	position.x = max(position.x, -moveLimit.x);
-	position.y = min(position.y, moveLimit.y);
-	position.y = max(position.y, -moveLimit.y);
-	position.z = min(position.z, moveLimit.z);
-	position.z = max(position.z, -moveLimit.z);
+	//position.x = min(position.x, moveLimit.x);
+	//position.x = max(position.x, -moveLimit.x);
+	//position.y = min(position.y, moveLimit.y);
+	//position.y = max(position.y, -moveLimit.y);
+	//position.z = min(position.z, moveLimit.z);
+	//position.z = max(position.z, -moveLimit.z);
 
-	gameObject.lock()->transform->SetLocalPosition(position);
+	//gameObject.lock()->transform->SetLocalPosition(position);
 }
 
 void ButiEngine::FriendHead::ControlByGamePad()
@@ -95,4 +107,24 @@ void ButiEngine::FriendHead::ControlByGamePad()
 
 void ButiEngine::FriendHead::ControlByVRTracker()
 {
+	Matrix4x4 deviceMatrix;
+	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
+	Vector3 pos = deviceMatrix.GetPosition();
+	pos *= m_vwp_gameSettings.lock()->GetCorrection();
+	pos.x *= -1; 
+	auto rotation = deviceMatrix.GetRemovePosition();
+	rotation._13 *= -1;
+	rotation._31 *= -1;
+	rotation._12 *= -1;
+	rotation._21 *= -1;
+	gameObject.lock()->transform->SetLocalPosition(pos);
+	gameObject.lock()->transform->SetLocalRotation(rotation);
+}
+
+void ButiEngine::FriendHead::CalcVelocity()
+{
+	m_prevPos = m_crntPos;
+	m_crntPos = gameObject.lock()->transform->GetLocalPosition();
+
+	m_velocity = m_crntPos - m_prevPos;
 }
