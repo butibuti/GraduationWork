@@ -2,6 +2,7 @@
 #include "FriendHead.h"
 #include "InputManager.h"
 #include "GameSettings.h"
+#include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
@@ -33,6 +34,8 @@ void ButiEngine::FriendHead::Start()
 	m_vwp_inputManager = GetManager().lock()->GetGameObject("InputManager").lock()->GetGameComponent<InputManager>();
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 
+	m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+
 	m_prevPos = Vector3Const::Zero;
 	m_crntPos = Vector3Const::Zero;
 	m_velocity = Vector3Const::Zero;
@@ -60,6 +63,8 @@ void ButiEngine::FriendHead::Control()
 	}
 
 	ControlByGamePad();
+
+	//m_vwp_rigidBodyComponent.lock()->TransformApply();
 
 	//Vector3 moveLimit = m_vwp_gameSettings.lock()->GetHeadMoveLimit();
 

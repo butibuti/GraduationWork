@@ -4,6 +4,7 @@ namespace ButiEngine {
 
 	class InputManager;
 	class GameSettings;
+	class RigidBodyComponent;
 
 	class FriendHead :public GameComponent
 	{
@@ -39,6 +40,8 @@ namespace ButiEngine {
 
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
+
+		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
 
 		std::int32_t m_trackerIndex;
 
