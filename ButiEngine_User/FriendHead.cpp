@@ -141,12 +141,15 @@ void ButiEngine::FriendHead::CalcVelocity()
 	m_velocity = m_crntPos - m_prevPos;
 }
 
-constexpr float PUT_TELERANCE = 0.5f;
+constexpr float PUT_TELERANCE = 0.1f;
 constexpr float PUT_MOVE_SPEED_BORDER = 0.01f;
 
 void ButiEngine::FriendHead::CheckPut()
 {
-	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
+	//‘ä‚É‹ß‚­‚ÄˆÚ“®‘¬“x‚ª’x‚©‚Á‚½‚ç’u‚¢‚½‚Æ”»’è‚·‚é
+	Matrix4x4 deviceMatrix;
+	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
+	Vector3 pos = deviceMatrix.GetPosition();
 	Vector3 tablePos = m_vwp_gameSettings.lock()->GetTablePos();
 
 	float distanceSqr = (pos - tablePos).GetLengthSqr();

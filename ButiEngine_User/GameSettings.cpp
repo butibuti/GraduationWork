@@ -39,6 +39,13 @@ void ButiEngine::GameSettings::OnShowUI()
 		SetMoveAreaBackLeftBottom();
 	}
 
+	GUI::BulletText(U8("‘ä‚ÌˆÊ’u"));
+	GUI::Text("x:" + std::to_string(m_data.tablePos.x) + " y:" + std::to_string(m_data.tablePos.y) + " z:" + std::to_string(m_data.tablePos.z));
+	if (GUI::Button("SetTablePos"))
+	{
+		SetTablePos();
+	}
+
 	if (GUI::Button("Save"))
 	{
 		OutputCereal(m_data, "GameSettings.savedata");

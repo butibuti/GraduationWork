@@ -8,11 +8,11 @@ void ButiEngine::Debug_Camera::OnUpdate()
 		m_isDebug = !m_isDebug;
 		if (m_isDebug)
 		{
-			gameObject.lock()->transform->SetLocalPositionZ(-15.0f);
+			gameObject.lock()->transform->SetLocalPositionZ(15.0f);
 		}
 		else
 		{
-			gameObject.lock()->transform->SetLocalPositionZ(-5.0f);
+			gameObject.lock()->transform->SetLocalPositionZ(5.0f);
 		}
 	}
 }
