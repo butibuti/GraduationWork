@@ -32,18 +32,23 @@ namespace ButiEngine {
 		void Control();
 		void ControlByGamePad();
 		void ControlByVRTracker();
+		void OnPut();
 
 		void CalcVelocity();
+		void CheckPut();
 
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 
 		std::int32_t m_trackerIndex;
 
+		//移動速度関連
 		Vector3 m_prevPos;
 		Vector3 m_crntPos;
 		Vector3 m_velocity;
 
+		//台に置いたか確認する用
+		Value_ptr<RelativeTimer> m_vlp_putTimer;
 	};
 
 }

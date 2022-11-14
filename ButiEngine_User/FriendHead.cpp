@@ -7,6 +7,7 @@ void ButiEngine::FriendHead::OnUpdate()
 {
 	Control();
 	CalcVelocity();
+	CheckPut();
 }
 
 void ButiEngine::FriendHead::OnSet()
@@ -35,6 +36,8 @@ void ButiEngine::FriendHead::Start()
 	m_prevPos = Vector3Const::Zero;
 	m_crntPos = Vector3Const::Zero;
 	m_velocity = Vector3Const::Zero;
+
+	m_vlp_putTimer = ObjectFactory::Create<RelativeTimer>(60);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
@@ -121,10 +124,51 @@ void ButiEngine::FriendHead::ControlByVRTracker()
 	gameObject.lock()->transform->SetLocalRotation(rotation);
 }
 
+void ButiEngine::FriendHead::OnPut()
+{
+	auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
+	std::string sceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
+	sceneManager->RemoveScene(sceneName);
+	sceneManager->LoadScene(sceneName);
+	sceneManager->ChangeScene(sceneName);
+}
+
 void ButiEngine::FriendHead::CalcVelocity()
 {
 	m_prevPos = m_crntPos;
 	m_crntPos = gameObject.lock()->transform->GetLocalPosition();
 
 	m_velocity = m_crntPos - m_prevPos;
+}
+
+constexpr float PUT_TELERANCE = 0.5f;
+constexpr float PUT_MOVE_SPEED_BORDER = 0.01f;
+
+void ButiEngine::FriendHead::CheckPut()
+{
+	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
+	Vector3 tablePos = m_vwp_gameSettings.lock()->GetTablePos();
+
+	float distanceSqr = (pos - tablePos).GetLengthSqr();
+	float putTleranceSqr = PUT_TELERANCE * PUT_TELERANCE;
+
+	float moveSpeedSqr = abs(m_velocity.GetLengthSqr());
+	float putMoveSpeedBorder = PUT_MOVE_SPEED_BORDER * PUT_MOVE_SPEED_BORDER;
+
+	if (distanceSqr <= putTleranceSqr && moveSpeedSqr <= putMoveSpeedBorder)
+	{
+		if (!m_vlp_putTimer->IsOn())
+		{
+			m_vlp_putTimer->Start();
+		}
+
+		if (m_vlp_putTimer->Update())
+		{
+			OnPut();
+		}
+	}
+	else
+	{
+		m_vlp_putTimer->Reset();
+	}
 }

@@ -33,6 +33,8 @@ namespace ButiEngine {
 		void MoveStraight();
 		void SetMoveDirection();
 
+		void OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_gameObject);
+
 		MovePattern m_movePattern;
 
 		bool m_canMove;

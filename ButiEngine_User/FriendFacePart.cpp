@@ -26,17 +26,7 @@ void ButiEngine::FriendFacePart::OnSet()
 				}
 				else if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("FriendHead"))
 				{
-					if (arg_other.vwp_gameObject.lock()->GetGameComponent<FriendHead>()->GetVelocity().z >= 0.1f)
-					{
-						m_canMove = false;
-						gameObject.lock()->transform->SetBaseTransform(arg_other.vwp_gameObject.lock()->transform);
-
-						auto triggetComponent = gameObject.lock()->GetGameComponent<TriggerComponent>();
-						if (triggetComponent)
-						{
-							triggetComponent->SetIsRemove(true);
-						}
-					}
+					OnCollisionFriendHead(arg_other.vwp_gameObject);
 				}
 			}
 		}
@@ -107,4 +97,19 @@ void ButiEngine::FriendFacePart::SetMoveDirection()
 	m_moveDirection = diff * Matrix4x4::RollZ(MathHelper::ToRadian(ButiRandom::GetRandom(-20.0f, 20.0f, 10)));
 
 	m_moveDirection.Normalize();
+}
+
+void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_gameObject)
+{
+	if (arg_vwp_gameObject.lock()->GetGameComponent<FriendHead>()->GetVelocity().z >= 0.1f)
+	{
+		m_canMove = false;
+		gameObject.lock()->transform->SetBaseTransform(arg_vwp_gameObject.lock()->transform);
+
+		auto triggetComponent = gameObject.lock()->GetGameComponent<TriggerComponent>();
+		if (triggetComponent)
+		{
+			triggetComponent->SetIsRemove(true);
+		}
+	}
 }
