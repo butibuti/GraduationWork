@@ -1,7 +1,6 @@
 #include "stdafx_u.h"
 #include "FriendFacePart.h"
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
-#include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
 #include "FriendHead.h"
 
 void ButiEngine::FriendFacePart::OnUpdate()
@@ -85,6 +84,7 @@ void ButiEngine::FriendFacePart::MoveStraight()
 {
 	Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
 	gameObject.lock()->transform->Translate(velocity);
+	gameObject.lock()->GetGameComponent<RigidBodyComponent>()->TransformApply();
 }
 
 void ButiEngine::FriendFacePart::SetMoveDirection()
@@ -106,10 +106,10 @@ void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject
 		m_canMove = false;
 		gameObject.lock()->transform->SetBaseTransform(arg_vwp_gameObject.lock()->transform);
 
-		auto triggetComponent = gameObject.lock()->GetGameComponent<TriggerComponent>();
-		if (triggetComponent)
+		auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+		if (rigidBodyComponent)
 		{
-			triggetComponent->SetIsRemove(true);
+			rigidBodyComponent->SetIsRemove(true);
 		}
 	}
 }
