@@ -58,6 +58,10 @@ void ButiEngine::FriendFacePart::Start()
 	m_canMove = true;
 	SetMoveDirection();
 	m_moveSpeed = ButiRandom::GetRandom(m_minMoveSpeed, m_maxMoveSpeed, 100);
+
+	Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
+
+	gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(velocity * 100);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clone()
@@ -83,8 +87,10 @@ void ButiEngine::FriendFacePart::Move()
 void ButiEngine::FriendFacePart::MoveStraight()
 {
 	Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
-	gameObject.lock()->transform->Translate(velocity);
-	gameObject.lock()->GetGameComponent<RigidBodyComponent>()->TransformApply();
+	/*gameObject.lock()->transform->Translate(velocity);
+	gameObject.lock()->GetGameComponent<RigidBodyComponent>()->TransformApply();*/
+
+	gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(velocity * 100);
 }
 
 void ButiEngine::FriendFacePart::SetMoveDirection()

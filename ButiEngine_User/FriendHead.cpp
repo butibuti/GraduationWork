@@ -8,7 +8,10 @@ void ButiEngine::FriendHead::OnUpdate()
 {
 	Control();
 	CalcVelocity();
-	CheckPut();
+	if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_trackerIndex)
+	{
+		CheckPut();
+	}
 }
 
 void ButiEngine::FriendHead::OnSet()
@@ -64,7 +67,7 @@ void ButiEngine::FriendHead::Control()
 
 	ControlByGamePad();
 
-	//m_vwp_rigidBodyComponent.lock()->TransformApply();
+	m_vwp_rigidBodyComponent.lock()->TransformApply();
 
 	//Vector3 moveLimit = m_vwp_gameSettings.lock()->GetHeadMoveLimit();
 
@@ -96,6 +99,8 @@ void ButiEngine::FriendHead::ControlByGamePad()
 		direction.z = rightStick.y * 0.5f;
 	}
 
+	direction.x *= -1.0f;
+	direction.z *= -1.0f;
 	direction.Normalize();
 
 	constexpr float moveSpeed = 0.1f;
@@ -144,6 +149,15 @@ void ButiEngine::FriendHead::CalcVelocity()
 	m_crntPos = gameObject.lock()->transform->GetLocalPosition();
 
 	m_velocity = m_crntPos - m_prevPos;
+
+	if (m_velocity.z >= 0.1f)
+	{
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(2);
+	}
+	else
+	{
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(1);
+	}
 }
 
 constexpr float PUT_TELERANCE = 0.1f;
