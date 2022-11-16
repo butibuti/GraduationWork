@@ -2,12 +2,26 @@
 #include "FriendFacePart.h"
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
 #include "FriendHead.h"
+#include "ButiBulletWrap/ButiBulletWrap/PhysicsManager.h"
+#include "ButiBulletWrap/ButiBulletWrap/PhysicsWorld.h"
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
-	if (m_canMove)
+	switch (m_state)
 	{
-		Move();
+	case ButiEngine::FacePartState::Move:
+		if (m_canMove)
+		{
+			Move();
+		}
+		break;
+	case ButiEngine::FacePartState::Chase:
+		OnChase();
+		break;
+	case ButiEngine::FacePartState::Stop:
+		break;
+	default:
+		break;
 	}
 }
 
@@ -62,6 +76,13 @@ void ButiEngine::FriendFacePart::Start()
 	Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
 
 	gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(velocity * 100);
+
+	m_state = FacePartState::Move;
+	m_vwp_head = GetManager().lock()->GetGameObject("FriendHead");
+	m_vlp_lockOnTimer = ObjectFactory::Create<RelativeTimer>(30);
+	m_vlp_chaseTimer = ObjectFactory::Create<RelativeTimer>(30);
+
+	m_isRayCast = true;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clone()
@@ -81,6 +102,43 @@ void ButiEngine::FriendFacePart::Move()
 		break;
 	default:
 		break;
+	}
+
+	ButiBullet::PhysicsRaycastResult rayRes;
+	if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
+		Raycast(gameObject.lock()->transform->GetWorldPosition(), -gameObject.lock()->transform->GetFront(), 100, 65531, &rayRes)) 
+	{
+		if (rayRes.physicsObject->GetOwnerData() == m_vwp_head) 
+		{
+			if (!m_vlp_lockOnTimer->IsOn())
+			{
+				m_vlp_lockOnTimer->Start();
+			}
+
+			if (m_vlp_lockOnTimer->Update())
+			{
+				m_vlp_lockOnTimer->Stop();
+
+				if (!m_vwp_chaseTarget.lock())
+				{
+					m_state = FacePartState::Chase;
+					m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(rayRes.point), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
+					m_vwp_chaseTarget.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
+					gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
+					auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+					if (rigidBodyComponent)
+					{
+						rigidBodyComponent->SetIsRemove(true);
+					}
+					m_vlp_chaseTimer->Start();
+				}
+			}
+		}
+	}
+	else
+	{
+		m_vlp_lockOnTimer->Reset();
+		m_vlp_lockOnTimer->Stop();
 	}
 }
 
@@ -105,17 +163,42 @@ void ButiEngine::FriendFacePart::SetMoveDirection()
 	m_moveDirection.Normalize();
 }
 
+void ButiEngine::FriendFacePart::OnChase()
+{
+	if (m_vlp_chaseTimer->IsOn())
+	{
+		Vector3 pos = MathHelper::LerpPosition(gameObject.lock()->transform->GetLocalPosition(), m_vwp_chaseTarget.lock()->transform->GetWorldPosition(), m_vlp_chaseTimer->GetPercent());
+		gameObject.lock()->transform->SetLocalPosition(pos);
+	}
+
+	if (m_vlp_chaseTimer->Update())
+	{
+		m_vlp_chaseTimer->Stop();
+
+		gameObject.lock()->transform->SetLocalPosition(m_vwp_chaseTarget.lock()->transform->GetWorldPosition());
+		gameObject.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
+
+		m_vwp_chaseTarget.lock()->SetIsRemove(true);
+		m_vwp_chaseTarget = Value_weak_ptr<GameObject>();
+
+
+		m_state = FacePartState::Stop;
+	}
+}
+
 void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_gameObject)
 {
-	if (arg_vwp_gameObject.lock()->GetGameComponent<FriendHead>()->GetVelocity().z >= 0.1f)
+	if (m_isRayCast)
 	{
-		m_canMove = false;
-		gameObject.lock()->transform->SetBaseTransform(arg_vwp_gameObject.lock()->transform);
+		return;
+	}
 
-		auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
-		if (rigidBodyComponent)
-		{
-			rigidBodyComponent->SetIsRemove(true);
-		}
+	m_canMove = false;
+	gameObject.lock()->transform->SetBaseTransform(arg_vwp_gameObject.lock()->transform);
+
+	auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+	if (rigidBodyComponent)
+	{
+		rigidBodyComponent->SetIsRemove(true);
 	}
 }

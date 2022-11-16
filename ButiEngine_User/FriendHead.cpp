@@ -12,6 +12,12 @@ void ButiEngine::FriendHead::OnUpdate()
 	{
 		CheckPut();
 	}
+
+	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::B))
+	{
+		auto box = GetManager().lock()->AddObjectFromCereal("Box");
+
+	}
 }
 
 void ButiEngine::FriendHead::OnSet()
@@ -150,7 +156,9 @@ void ButiEngine::FriendHead::CalcVelocity()
 
 	m_velocity = m_crntPos - m_prevPos;
 
-	if (m_velocity.z >= 0.1f)
+	constexpr float fastBorder = 0.1f;
+
+	if (m_velocity.z >= fastBorder)
 	{
 		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(2);
 	}
@@ -160,9 +168,6 @@ void ButiEngine::FriendHead::CalcVelocity()
 	}
 }
 
-constexpr float PUT_TELERANCE = 0.1f;
-constexpr float PUT_MOVE_SPEED_BORDER = 0.01f;
-
 void ButiEngine::FriendHead::CheckPut()
 {
 	//‘ä‚É‹ß‚­‚ÄˆÚ“®‘¬“x‚ª’x‚©‚Á‚½‚ç’u‚¢‚½‚Æ”»’è‚·‚é
@@ -171,13 +176,16 @@ void ButiEngine::FriendHead::CheckPut()
 	Vector3 pos = deviceMatrix.GetPosition();
 	Vector3 tablePos = m_vwp_gameSettings.lock()->GetTablePos();
 
+	constexpr float putTelerance = 0.1f;
+	constexpr float putMoveSpeedBorder = 0.01f;
+
 	float distanceSqr = (pos - tablePos).GetLengthSqr();
-	float putTleranceSqr = PUT_TELERANCE * PUT_TELERANCE;
+	float putTleranceSqr = putTelerance * putTelerance;
 
 	float moveSpeedSqr = abs(m_velocity.GetLengthSqr());
-	float putMoveSpeedBorder = PUT_MOVE_SPEED_BORDER * PUT_MOVE_SPEED_BORDER;
+	float putMoveSpeedBorderSqr = putMoveSpeedBorder * putMoveSpeedBorder;
 
-	if (distanceSqr <= putTleranceSqr && moveSpeedSqr <= putMoveSpeedBorder)
+	if (distanceSqr <= putTleranceSqr && moveSpeedSqr <= putMoveSpeedBorderSqr)
 	{
 		if (!m_vlp_putTimer->IsOn())
 		{

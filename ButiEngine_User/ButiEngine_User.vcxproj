@@ -354,6 +354,7 @@
   <ItemGroup>
     <ClCompile Include="Debug_Camera.cpp" />
     <ClCompile Include="DefaultGameComponent.cpp" />
+    <ClCompile Include="Effect_Box.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="FriendFacePart.cpp" />
     <ClCompile Include="FriendFacePartSpawner.cpp" />
@@ -386,6 +387,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debug_Camera.h" />
+    <ClInclude Include="Effect_Box.h" />
     <ClInclude Include="EnemySpawner.h" />
     <ClInclude Include="FriendFacePart.h" />
     <ClInclude Include="FriendFacePartSpawner.h" />

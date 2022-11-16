@@ -2,6 +2,13 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	enum class FacePartState
+	{
+		Move,
+		Chase,
+		Stop,
+	};
+
 	enum class MovePattern
 	{
 		Straight,
@@ -33,8 +40,10 @@ namespace ButiEngine {
 		void MoveStraight();
 		void SetMoveDirection();
 
-		void OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_gameObject);
+		void OnChase();
 
+		void OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_gameObject);
+		
 		MovePattern m_movePattern;
 
 		bool m_canMove;
@@ -42,6 +51,15 @@ namespace ButiEngine {
 		float m_moveSpeed;
 		float m_minMoveSpeed;
 		float m_maxMoveSpeed;
+
+
+		FacePartState m_state;
+		Value_weak_ptr<GameObject> m_vwp_head;
+		Value_weak_ptr<GameObject> m_vwp_chaseTarget;
+		Value_ptr<RelativeTimer> m_vlp_lockOnTimer;
+		Value_ptr<RelativeTimer> m_vlp_chaseTimer;
+
+		bool m_isRayCast;
 	};
 
 }
