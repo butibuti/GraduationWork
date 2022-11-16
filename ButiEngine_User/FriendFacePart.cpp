@@ -110,19 +110,39 @@ void ButiEngine::FriendFacePart::Move()
 	{
 		if (rayRes.physicsObject->GetOwnerData() == m_vwp_head) 
 		{
-			if (!m_vlp_lockOnTimer->IsOn())
-			{
-				m_vlp_lockOnTimer->Start();
-			}
+			//if (!m_vlp_lockOnTimer->IsOn())
+			//{
+			//	m_vlp_lockOnTimer->Start();
+			//}
 
-			if (m_vlp_lockOnTimer->Update())
-			{
-				m_vlp_lockOnTimer->Stop();
+			//if (m_vlp_lockOnTimer->Update())
+			//{
+			//	m_vlp_lockOnTimer->Stop();
 
-				if (!m_vwp_chaseTarget.lock())
+			//	if (!m_vwp_chaseTarget.lock())
+			//	{
+			//		m_state = FacePartState::Chase;
+			//		m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(rayRes.point), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
+			//		m_vwp_chaseTarget.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
+			//		gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
+			//		auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+			//		if (rigidBodyComponent)
+			//		{
+			//			rigidBodyComponent->SetIsRemove(true);
+			//		}
+			//		m_vlp_chaseTimer->Start();
+			//	}
+			//}
+
+			auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
+			if (headComponent)
+			{
+				Vector3 headVelocity = headComponent->GetVelocity();
+				constexpr float fastBorder = 0.1f;
+				if (headVelocity.z >= fastBorder)
 				{
 					m_state = FacePartState::Chase;
-					m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(rayRes.point), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
+					m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(rayRes.point + headVelocity), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
 					m_vwp_chaseTarget.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
 					gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
 					auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
