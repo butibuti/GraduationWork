@@ -137,11 +137,10 @@ void ButiEngine::FriendFacePart::Move()
 			auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
 			if (headComponent)
 			{
-				Vector3 headVelocity = headComponent->GetVelocity();
-				constexpr float fastBorder = 0.1f;
-				if (headVelocity.z >= fastBorder)
+				if (headComponent->IsHighSpeed())
 				{
 					m_state = FacePartState::Chase;
+					Vector3 headVelocity = headComponent->GetVelocity();
 					m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(rayRes.point + headVelocity), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
 					m_vwp_chaseTarget.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
 					gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(Vector3Const::Zero);

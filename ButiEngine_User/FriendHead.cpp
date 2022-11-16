@@ -15,8 +15,7 @@ void ButiEngine::FriendHead::OnUpdate()
 
 	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::B))
 	{
-		auto box = GetManager().lock()->AddObjectFromCereal("Box");
-
+		GetManager().lock()->AddObjectFromCereal("Box");
 	}
 }
 
@@ -156,9 +155,7 @@ void ButiEngine::FriendHead::CalcVelocity()
 
 	m_velocity = m_crntPos - m_prevPos;
 
-	constexpr float fastBorder = 0.1f;
-
-	if (m_velocity.z >= fastBorder)
+	if (IsHighSpeed())
 	{
 		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(2);
 	}

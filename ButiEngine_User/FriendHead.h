@@ -28,6 +28,8 @@ namespace ButiEngine {
 
 		Vector3 GetVelocity() { return m_velocity; }
 
+		bool IsHighSpeed() { return m_velocity.z >= 0.1f; }
+
 		void Dead();
 	private:
 		void Control();
