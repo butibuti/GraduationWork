@@ -11,11 +11,14 @@ namespace ButiEngine {
 
 	enum class MovePattern
 	{
+		Stay,
 		Straight,
+		Throw,
 	};
 
 	class StageManager;
 	class PauseManager;
+	class RigidBodyComponent;
 
 	class FriendFacePart :public GameComponent
 	{
@@ -38,21 +41,31 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_maxMoveSpeed);
 		}
 
+		void SetMovePattern(const MovePattern arg_movePattern) { m_movePattern = arg_movePattern; }
+
 	private:
 		void Move();
+		void MoveStay();
 		void MoveStraight();
+		void MoveThrow();
 		void SetMoveDirection();
 
-		void OnChase();
+		void Chase();
 
 		void OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_gameObject);
 
+		bool CanUpdate();
+
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
-		
-		MovePattern m_movePattern;
 
-		bool m_canMove;
+		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
+
+		Value_ptr<RelativeTimer> m_vlp_changeGroupMaskTimer;
+		
+		MovePattern m_movePattern = MovePattern::Stay;
+
+		bool m_isCollisionHead;
 		Vector3 m_moveDirection;
 		float m_moveSpeed;
 		float m_minMoveSpeed;

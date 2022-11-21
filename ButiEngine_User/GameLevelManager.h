@@ -22,15 +22,18 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
+			ARCHIVE_BUTI(m_maxLevel);
 			ARCHIVE_BUTI(m_vec_necessaryFriendCounts);
 		}
 
 		std::int32_t GetGameLevel() { return m_gameLevel; }
+		std::int32_t GetMaxLevel() { return m_maxLevel; }
 
 		void CheckLevelUp(const std::int32_t arg_currentLevelFriendCount);
 		void LevelUp();
 	private:
 		std::int32_t m_gameLevel;
+		std::int32_t m_maxLevel;
 		std::vector<std::int32_t> m_vec_necessaryFriendCounts;
 
 

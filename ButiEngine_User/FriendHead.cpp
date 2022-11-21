@@ -4,6 +4,7 @@
 #include "GameSettings.h"
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
 #include "PauseManager.h"
+#include "FriendManager.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
@@ -50,6 +51,7 @@ void ButiEngine::FriendHead::Start()
 	m_vwp_inputManager = GetManager().lock()->GetGameObject("InputManager").lock()->GetGameComponent<InputManager>();
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+	m_vwp_friendManager = GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>();
 
 	m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
 
@@ -150,6 +152,28 @@ void ButiEngine::FriendHead::ControlByVRTracker()
 
 void ButiEngine::FriendHead::OnPut()
 {
+	m_vwp_friendManager.lock()->AddFriendCount();
+	
+	SetIsRemove(true);
+	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
+	gameObject.lock()->transform->TranslateX(ButiRandom::GetInt(-5, 5));
+	gameObject.lock()->transform->TranslateY(ButiRandom::GetInt(-2, 2));
+	gameObject.lock()->transform->TranslateZ(ButiRandom::GetInt(-10, -5));
+
+	auto newHead = GetManager().lock()->AddObjectFromCereal("FriendHead");
+
+	Matrix4x4 deviceMatrix;
+	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
+	Vector3 pos = deviceMatrix.GetPosition();
+	pos *= m_vwp_gameSettings.lock()->GetCorrection();
+	pos.x *= -1;
+	auto rotation = deviceMatrix.GetRemovePosition();
+	rotation._13 *= -1;
+	rotation._31 *= -1;
+	rotation._12 *= -1;
+	rotation._21 *= -1;
+	newHead.lock()->transform->SetLocalPosition(pos);
+	newHead.lock()->transform->SetLocalRotation(rotation);
 }
 
 void ButiEngine::FriendHead::CalcVelocity()

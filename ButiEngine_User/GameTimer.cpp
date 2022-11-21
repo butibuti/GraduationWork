@@ -1,10 +1,11 @@
 #include "stdafx_u.h"
 #include "GameTimer.h"
 #include "PauseManager.h"
+#include "StageManager.h"
 
 void ButiEngine::GameTimer::OnUpdate()
 {
-	if (m_vwp_pauseManager.lock()->IsPause())
+	if (!CanUpdate())
 	{
 		return;
 	}
@@ -49,9 +50,11 @@ void ButiEngine::GameTimer::OnShowUI()
 
 void ButiEngine::GameTimer::Start()
 {
+	m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 
 	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(m_countSecond * 60);
+	m_vlp_timer->Start();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameTimer::Clone()
@@ -76,6 +79,11 @@ std::int32_t ButiEngine::GameTimer::GetRemainSecond()
 	if (!m_vlp_timer || !m_vlp_timer->IsOn())
 	{
 		return 0;
+	}
+
+	if (!m_vwp_stageManager.lock()->IsGameStart())
+	{
+		return m_countSecond;
 	}
 
 	return (m_vlp_timer->GetRemainFrame() / 60.0f) + 1;
@@ -109,4 +117,19 @@ void ButiEngine::GameTimer::ResetTimer()
 	}
 
 	m_vlp_timer->Reset();
+}
+
+bool ButiEngine::GameTimer::CanUpdate()
+{
+	if (!m_vwp_stageManager.lock()->IsGameStart())
+	{
+		return false;
+	}
+
+	if (m_vwp_pauseManager.lock()->IsPause())
+	{
+		return false;
+	}
+
+	return true;
 }

@@ -6,6 +6,7 @@ namespace ButiEngine {
 	class GameSettings;
 	class RigidBodyComponent;
 	class PauseManager;
+	class FriendManager;
 
 	class FriendHead :public GameComponent
 	{
@@ -44,6 +45,7 @@ namespace ButiEngine {
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
+		Value_weak_ptr<FriendManager> m_vwp_friendManager;
 
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
 

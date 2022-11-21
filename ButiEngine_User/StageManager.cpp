@@ -56,7 +56,6 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::StageManager::Clone
 void ButiEngine::StageManager::StartGame()
 {
 	m_isGameStart = true;
-	m_vwp_gameTimer.lock()->StartTimer();
 }
 
 void ButiEngine::StageManager::ResetGame()

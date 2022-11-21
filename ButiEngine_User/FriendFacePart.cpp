@@ -9,8 +9,22 @@
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
+	if (m_vlp_changeGroupMaskTimer->Update())
+	{
+		m_vlp_changeGroupMaskTimer->Stop();
+		//m_vwp_rigidBodyComponent.lock()->SetGroupMask(65530);
+		//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroupMask(65530);
+	}
+
 	if (!CanUpdate())
 	{
+		if (m_vwp_pauseManager.lock()->IsPause())
+		{
+			if (m_vwp_rigidBodyComponent.lock())
+			{
+				m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
+			}
+		}
 		return;
 	}
 
@@ -23,7 +37,7 @@ void ButiEngine::FriendFacePart::OnUpdate()
 		}
 		break;
 	case ButiEngine::FacePartState::Chase:
-		OnChase();
+		Chase();
 		break;
 	case ButiEngine::FacePartState::Stop:
 		break;
@@ -88,15 +102,22 @@ void ButiEngine::FriendFacePart::Start()
 	m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 
-	m_movePattern = MovePattern::Straight;
+	m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+
+	m_vlp_changeGroupMaskTimer = ObjectFactory::Create<RelativeTimer>(30);
+	m_vlp_changeGroupMaskTimer->Start();
 
 	m_isCollisionHead = false;
 	SetMoveDirection();
 	m_moveSpeed = ButiRandom::GetRandom(m_minMoveSpeed, m_maxMoveSpeed, 100);
 
-	Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
-
-	gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(velocity * 100);
+	if (m_movePattern == MovePattern::Throw)
+	{
+		m_vwp_rigidBodyComponent.lock()->SetIsAffectedGravity(true);
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetGravity(Vector3(0.0f, -2.0f, 0.0f));
+		Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * 500);
+	}
 
 	m_state = FacePartState::Move;
 	m_vwp_head = GetManager().lock()->GetGameObject("FriendHead");
@@ -119,11 +140,13 @@ void ButiEngine::FriendFacePart::Move()
 	switch (m_movePattern)
 	{
 	case ButiEngine::MovePattern::Stay:
+		MoveStay();
 		break;
 	case ButiEngine::MovePattern::Straight:
 		MoveStraight();
 		break;
 	case ButiEngine::MovePattern::Throw:
+		MoveThrow();
 		break;
 	default:
 		break;
@@ -151,12 +174,8 @@ void ButiEngine::FriendFacePart::Move()
 				//		m_state = FacePartState::Chase;
 				//		m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(rayRes.point), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
 				//		m_vwp_chaseTarget.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
-				//		gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
-				//		auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
-				//		if (rigidBodyComponent)
-				//		{
-				//			rigidBodyComponent->SetIsRemove(true);
-				//		}
+				//		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
+				//		m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 				//		m_vlp_chaseTimer->Start();
 				//	}
 				//}
@@ -170,12 +189,8 @@ void ButiEngine::FriendFacePart::Move()
 						Vector3 headVelocity = headComponent->GetVelocity();
 						m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(rayRes.point + headVelocity), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
 						m_vwp_chaseTarget.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
-						gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
-						auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
-						if (rigidBodyComponent)
-						{
-							rigidBodyComponent->SetIsRemove(true);
-						}
+						m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
+						m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 						m_vlp_chaseTimer->Start();
 					}
 				}
@@ -189,13 +204,19 @@ void ButiEngine::FriendFacePart::Move()
 	}
 }
 
+void ButiEngine::FriendFacePart::MoveStay()
+{
+	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
+}
+
 void ButiEngine::FriendFacePart::MoveStraight()
 {
 	Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
-	/*gameObject.lock()->transform->Translate(velocity);
-	gameObject.lock()->GetGameComponent<RigidBodyComponent>()->TransformApply();*/
+	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * 100);
+}
 
-	gameObject.lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody()->SetVelocity(velocity * 100);
+void ButiEngine::FriendFacePart::MoveThrow()
+{
 }
 
 void ButiEngine::FriendFacePart::SetMoveDirection()
@@ -210,7 +231,7 @@ void ButiEngine::FriendFacePart::SetMoveDirection()
 	m_moveDirection.Normalize();
 }
 
-void ButiEngine::FriendFacePart::OnChase()
+void ButiEngine::FriendFacePart::Chase()
 {
 	if (m_vlp_chaseTimer->IsOn())
 	{
@@ -243,16 +264,17 @@ void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject
 	m_isCollisionHead = true;
 	gameObject.lock()->transform->SetBaseTransform(arg_vwp_gameObject.lock()->transform);
 
-	auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
-	if (rigidBodyComponent)
-	{
-		rigidBodyComponent->SetIsRemove(true);
-	}
+	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
+
+	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 }
 
 bool ButiEngine::FriendFacePart::CanUpdate()
 {
-	if(!m_vwp_stageManager.lock()->IsGameStart() && m_)
+	if (!m_vwp_stageManager.lock()->IsGameStart() && m_movePattern != MovePattern::Stay)
+	{
+		return false;
+	}
 
 	if (m_vwp_pauseManager.lock()->IsPause())
 	{

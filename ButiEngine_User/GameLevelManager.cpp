@@ -39,30 +39,40 @@ void ButiEngine::GameLevelManager::OnShowUI()
 {
 	if (GUI::Button("AddLevel"))
 	{
-		m_vec_necessaryFriendCounts.push_back(10);
+		m_maxLevel++;
 	}
 
-	if (m_vec_necessaryFriendCounts.size() >= 2)
+	if ((m_maxLevel + 1) >= 2)
 	{
 		GUI::SameLine();
 
 		if (GUI::Button("RemoveLevel"))
 		{
-			m_vec_necessaryFriendCounts.erase(m_vec_necessaryFriendCounts.end() - 1);
+			m_maxLevel--;
 		}
 	}
 
-	GUI::BulletText("TargetFriendCount");
-	std::int32_t index = 0;
-	auto end = m_vec_necessaryFriendCounts.end();
-	for (auto itr = m_vec_necessaryFriendCounts.begin(); itr != end; ++itr)
+	if (m_vec_necessaryFriendCounts.size() != (m_maxLevel + 1))
 	{
-		GUI::Text("Level:" + std::to_string(index));
-		GUI::DragInt("##TargetFridndCount:" + std::to_string(index), *itr, 1.0f, 1, 100);
-
-		index++;
+		m_vec_necessaryFriendCounts.resize(m_maxLevel + 1);
 	}
-	m_vec_necessaryFriendCounts[0] = 1;
+
+	for (std::int32_t i = 1; i < m_maxLevel + 1; i++)
+	{
+		if (i == m_maxLevel)
+		{
+			GUI::Text("Level:Max");
+		}
+		else
+		{
+			GUI::Text("Level:" + std::to_string(i));
+		}
+
+		GUI::BulletText(U8("レベルアップに必要なフレンドの数"));
+		GUI::DragInt("##NecessaryFridndCount:" + std::to_string(i), m_vec_necessaryFriendCounts[i], 1.0f, 1, 100000);
+	}
+
+	m_vec_necessaryFriendCounts[m_maxLevel] = 100000;
 }
 
 void ButiEngine::GameLevelManager::Start()
@@ -79,6 +89,7 @@ void ButiEngine::GameLevelManager::Start()
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameLevelManager::Clone()
 {
 	auto clone = ObjectFactory::Create<GameLevelManager>();
+	clone->m_maxLevel = m_maxLevel;
 	clone->m_vec_necessaryFriendCounts = m_vec_necessaryFriendCounts;
 	return clone;
 }
@@ -93,6 +104,11 @@ void ButiEngine::GameLevelManager::CheckLevelUp(const std::int32_t arg_currentLe
 
 void ButiEngine::GameLevelManager::LevelUp()
 {
+	if (m_gameLevel >= m_maxLevel)
+	{
+		return;
+	}
+
 	if (m_gameLevel == 0)
 	{
 		m_gameLevel++;

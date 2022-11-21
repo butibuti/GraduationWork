@@ -2,6 +2,7 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	class StageManager;
 	class PauseManager;
 
 	class GameTimer :public GameComponent
@@ -31,6 +32,9 @@ namespace ButiEngine {
 		void StopTimer();
 		void ResetTimer();
 	private:
+		bool CanUpdate();
+
+		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 
 		Value_ptr<RelativeTimer> m_vlp_timer;

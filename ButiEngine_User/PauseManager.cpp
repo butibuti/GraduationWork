@@ -15,6 +15,7 @@ void ButiEngine::PauseManager::OnRemove()
 
 void ButiEngine::PauseManager::OnShowUI()
 {
+	GUI::Checkbox("isPause", m_isPause);
 }
 
 void ButiEngine::PauseManager::Start()

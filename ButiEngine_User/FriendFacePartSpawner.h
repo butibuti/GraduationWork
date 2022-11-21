@@ -2,7 +2,9 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	class StageManager;
 	class PauseManager;
+	class GameLevelManager;
 
 	class FriendFacePartSpawner :public GameComponent
 	{
@@ -21,20 +23,28 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_maxFacePartCount);
-			ARCHIVE_BUTI(m_minSpawnIntervalFrame);
-			ARCHIVE_BUTI(m_maxSpawnIntervalFrame);
+			ARCHIVE_BUTI(m_vec_maxFacePartCounts);
+			ARCHIVE_BUTI(m_vec_minSpawnIntervalFrames);
+			ARCHIVE_BUTI(m_vec_maxSpawnIntervalFrames);
 		}
 
 	private:
+		void FirstSpawnFacePart();
 		void SpawnFacePart();
 		void SetSpawnInterval();
 
-		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
+		Vector3 GetRandomSpawnPartPos();
+		std::string GetRandomSpawnPartName();
 
-		std::int32_t m_maxFacePartCount;
-		std::int32_t m_minSpawnIntervalFrame;
-		std::int32_t m_maxSpawnIntervalFrame;
+		bool CanUpdate();
+
+		Value_weak_ptr<StageManager> m_vwp_stageManager;
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
+		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
+
+		std::vector<std::int32_t> m_vec_maxFacePartCounts;
+		std::vector<std::int32_t> m_vec_minSpawnIntervalFrames;
+		std::vector<std::int32_t> m_vec_maxSpawnIntervalFrames;
 
 		Value_ptr<RelativeTimer> m_vlp_spawnTimer;
 	};
