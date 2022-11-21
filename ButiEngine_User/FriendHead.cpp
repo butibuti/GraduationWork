@@ -3,9 +3,15 @@
 #include "InputManager.h"
 #include "GameSettings.h"
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
+#include "PauseManager.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
+	if (m_vwp_pauseManager.lock()->IsPause())
+	{
+		return;
+	}
+
 	Control();
 	CalcVelocity();
 	if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_trackerIndex)
@@ -13,10 +19,12 @@ void ButiEngine::FriendHead::OnUpdate()
 		CheckPut();
 	}
 
+#ifdef DEBUG
 	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::B))
 	{
 		GetManager().lock()->AddObjectFromCereal("Box");
 	}
+#endif // DEBUG
 }
 
 void ButiEngine::FriendHead::OnSet()
@@ -41,6 +49,7 @@ void ButiEngine::FriendHead::Start()
 {
 	m_vwp_inputManager = GetManager().lock()->GetGameObject("InputManager").lock()->GetGameComponent<InputManager>();
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
+	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 
 	m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
 
@@ -141,11 +150,6 @@ void ButiEngine::FriendHead::ControlByVRTracker()
 
 void ButiEngine::FriendHead::OnPut()
 {
-	auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
-	std::string sceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
-	sceneManager->RemoveScene(sceneName);
-	sceneManager->LoadScene(sceneName);
-	sceneManager->ChangeScene(sceneName);
 }
 
 void ButiEngine::FriendHead::CalcVelocity()
@@ -161,7 +165,7 @@ void ButiEngine::FriendHead::CalcVelocity()
 	}
 	else
 	{
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(1);
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(2);
 	}
 }
 

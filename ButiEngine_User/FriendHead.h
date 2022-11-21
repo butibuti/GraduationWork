@@ -5,6 +5,7 @@ namespace ButiEngine {
 	class InputManager;
 	class GameSettings;
 	class RigidBodyComponent;
+	class PauseManager;
 
 	class FriendHead :public GameComponent
 	{
@@ -28,7 +29,7 @@ namespace ButiEngine {
 
 		Vector3 GetVelocity() { return m_velocity; }
 
-		bool IsHighSpeed() { return m_velocity.z >= 0.1f; }
+		bool IsHighSpeed() { return m_velocity.z >= 0.075f; }
 
 		void Dead();
 	private:
@@ -42,6 +43,7 @@ namespace ButiEngine {
 
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
 

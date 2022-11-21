@@ -6,6 +6,7 @@ namespace ButiEngine {
 	{
 		std::int32_t trackerIndex = 0;
 
+		Matrix4x4 trackerOrigin;
 		Vector3 headMoveLimit = Vector3Const::Zero;
 		Vector3 moveAreaFrontRightTop = Vector3Const::Zero;
 		Vector3 moveAreaBackLeftBottom = Vector3Const::Zero;
@@ -13,11 +14,12 @@ namespace ButiEngine {
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
-				ARCHIVE_BUTI(trackerIndex);
-				ARCHIVE_BUTI(headMoveLimit);
-				ARCHIVE_BUTI(moveAreaFrontRightTop);
-				ARCHIVE_BUTI(moveAreaBackLeftBottom);
-				ARCHIVE_BUTI(tablePos);
+			ARCHIVE_BUTI(trackerOrigin);
+			ARCHIVE_BUTI(trackerIndex);
+			ARCHIVE_BUTI(headMoveLimit);
+			ARCHIVE_BUTI(moveAreaFrontRightTop);
+			ARCHIVE_BUTI(moveAreaBackLeftBottom);
+			ARCHIVE_BUTI(tablePos);
 		}
 	};
 

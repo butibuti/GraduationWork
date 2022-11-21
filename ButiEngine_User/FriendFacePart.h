@@ -14,6 +14,9 @@ namespace ButiEngine {
 		Straight,
 	};
 
+	class StageManager;
+	class PauseManager;
+
 	class FriendFacePart :public GameComponent
 	{
 	public:
@@ -43,6 +46,9 @@ namespace ButiEngine {
 		void OnChase();
 
 		void OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_gameObject);
+
+		Value_weak_ptr<StageManager> m_vwp_stageManager;
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		
 		MovePattern m_movePattern;
 

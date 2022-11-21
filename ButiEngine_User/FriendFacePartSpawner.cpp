@@ -1,8 +1,14 @@
 #include "stdafx_u.h"
 #include "FriendFacePartSpawner.h"
+#include "PauseManager.h"
 
 void ButiEngine::FriendFacePartSpawner::OnUpdate()
 {
+	if (m_vwp_pauseManager.lock()->IsPause())
+	{
+		return;
+	}
+
 	if (m_vlp_spawnTimer->Update())
 	{
 		SpawnFacePart();
@@ -38,6 +44,8 @@ void ButiEngine::FriendFacePartSpawner::OnShowUI()
 
 void ButiEngine::FriendFacePartSpawner::Start()
 {
+	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+
 	m_vlp_spawnTimer = ObjectFactory::Create<RelativeTimer>(60);
 	SetSpawnInterval();
 	m_vlp_spawnTimer->Start();

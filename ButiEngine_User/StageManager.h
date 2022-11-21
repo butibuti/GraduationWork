@@ -3,13 +3,15 @@
 namespace ButiEngine {
 
 	class PauseManager;
+	class GameTimer;
+	class GameLevelManager;
 
-	class GameTimer :public GameComponent
+	class StageManager :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "GameTimer";
+			return "StageManager";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -21,22 +23,22 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_countSecond);
 		}
 
-		void SetCountSecond(std::int32_t arg_countSecond);
-		std::int32_t GetRemainSecond();
-
-		void StartTimer();
-		void StopTimer();
-		void ResetTimer();
+		bool IsGameStart() { return m_isGameStart; }
+		bool IsGameFinish() { return m_isGameFinish; }
 	private:
-		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
+		void StartGame();
+		void ResetGame();
 
-		Value_ptr<RelativeTimer> m_vlp_timer;
-		std::int32_t m_countSecond;
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
+		Value_weak_ptr<GameTimer> m_vwp_gameTimer;
+		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
+
+		bool m_isGameStart;
+		bool m_isGameFinish;
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(GameTimer, true);
+BUTI_REGIST_GAMECOMPONENT(StageManager, true);

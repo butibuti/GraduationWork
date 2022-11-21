@@ -59,6 +59,7 @@ void ButiEngine::GameSettings::OnShowUI()
 void ButiEngine::GameSettings::Start()
 {
 	InputCereal(m_data, "GameSettings.savedata");
+	GameDevice::GetVRTrackerInput().SetOrigin(m_data.trackerOrigin.GetInverse());
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameSettings::Clone()
@@ -125,6 +126,7 @@ ButiEngine::Vector3 ButiEngine::GameSettings::GetCorrection()
 void ButiEngine::GameSettings::SetOrigin()
 {
 	GameDevice::GetVRTrackerInput().SetOrigin(m_data.trackerIndex);
+	m_data.trackerOrigin = GameDevice::GetVRTrackerInput().GetOrigin();
 }
 
 void ButiEngine::GameSettings::SetMoveAreaFrontRightTop()

@@ -359,6 +359,8 @@
     <ClCompile Include="FriendFacePart.cpp" />
     <ClCompile Include="FriendFacePartSpawner.cpp" />
     <ClCompile Include="FriendHead.cpp" />
+    <ClCompile Include="FriendManager.cpp" />
+    <ClCompile Include="GameLevelManager.cpp" />
     <ClCompile Include="GameSettings.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="InputManager.cpp" />
@@ -367,6 +369,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="Naruko.cpp" />
+    <ClCompile Include="PauseManager.cpp" />
     <ClCompile Include="RemoveMeshDraw.cpp" />
     <ClCompile Include="ScoreManager.cpp" />
     <ClCompile Include="SeparateDrawObject.cpp" />
@@ -374,6 +377,7 @@
     <ClCompile Include="SoldierManager.cpp" />
     <ClCompile Include="SoldierSpawner.cpp" />
     <ClCompile Include="EditorObject.cpp" />
+    <ClCompile Include="StageManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_imguiEditor|x64'">Create</PrecompiledHeader>
@@ -382,6 +386,7 @@
     </ClCompile>
     <ClCompile Include="TestBehavior.cpp" />
     <ClCompile Include="Enemy_Test.cpp" />
+    <ClCompile Include="UI_GameLevel.cpp" />
     <ClCompile Include="UI_RemainTime.cpp" />
     <ClCompile Include="UI_Score.cpp" />
   </ItemGroup>
@@ -392,11 +397,14 @@
     <ClInclude Include="FriendFacePart.h" />
     <ClInclude Include="FriendFacePartSpawner.h" />
     <ClInclude Include="FriendHead.h" />
+    <ClInclude Include="FriendManager.h" />
+    <ClInclude Include="GameLevelManager.h" />
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LogoSceneManager.h" />
     <ClInclude Include="Naruko.h" />
+    <ClInclude Include="PauseManager.h" />
     <ClInclude Include="RemoveMeshDraw.h" />
     <ClInclude Include="ScoreManager.h" />
     <ClInclude Include="SeparateDrawObject.h" />
@@ -404,9 +412,11 @@
     <ClInclude Include="SoldierManager.h" />
     <ClInclude Include="SoldierSpawner.h" />
     <ClInclude Include="EditorObject.h" />
+    <ClInclude Include="StageManager.h" />
     <ClInclude Include="stdafx_u.h" />
     <ClInclude Include="TestBehavior.h" />
     <ClInclude Include="Enemy_Test.h" />
+    <ClInclude Include="UI_GameLevel.h" />
     <ClInclude Include="UI_RemainTime.h" />
     <ClInclude Include="UI_Score.h" />
   </ItemGroup>

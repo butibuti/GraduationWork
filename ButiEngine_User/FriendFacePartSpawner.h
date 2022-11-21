@@ -2,6 +2,8 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	class PauseManager;
+
 	class FriendFacePartSpawner :public GameComponent
 	{
 	public:
@@ -27,6 +29,8 @@ namespace ButiEngine {
 	private:
 		void SpawnFacePart();
 		void SetSpawnInterval();
+
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 
 		std::int32_t m_maxFacePartCount;
 		std::int32_t m_minSpawnIntervalFrame;

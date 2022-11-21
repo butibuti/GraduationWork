@@ -2,14 +2,14 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class PauseManager;
+	class GameLevelManager;
 
-	class GameTimer :public GameComponent
+	class FriendManager :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "GameTimer";
+			return "FriendManager";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -21,22 +21,19 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_countSecond);
 		}
 
-		void SetCountSecond(std::int32_t arg_countSecond);
-		std::int32_t GetRemainSecond();
+		std::int32_t GetFriendCount() { return m_friendCount; }
 
-		void StartTimer();
-		void StopTimer();
-		void ResetTimer();
+		void ResetCurrentLevelFriendCount() { m_currentLevelFriendCount = 0; }
+		void AddFriendCount();
 	private:
-		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
+		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
-		Value_ptr<RelativeTimer> m_vlp_timer;
-		std::int32_t m_countSecond;
+		std::int32_t m_friendCount;
+		std::int32_t m_currentLevelFriendCount;
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(GameTimer, true);
+BUTI_REGIST_GAMECOMPONENT(FriendManager, true);
