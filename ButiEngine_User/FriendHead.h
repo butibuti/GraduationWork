@@ -32,6 +32,14 @@ namespace ButiEngine {
 
 		bool IsHighSpeed() { return m_velocity.z >= 0.075f; }
 
+		bool CanStickEye() { return m_eyeCount < m_maxEyeCount; }
+		bool CanStickNose() { return m_noseCount < m_maxNoseCount; }
+		bool CanStickMouth() { return m_mouthCount < m_maxMouthCount; }
+		
+		void AddEyeCount() { m_eyeCount++; }
+		void AddNoseCount() { m_noseCount++; }
+		void AddMouthCount() { m_mouthCount++; }
+
 		void Dead();
 	private:
 		void Control();
@@ -41,6 +49,7 @@ namespace ButiEngine {
 
 		void CalcVelocity();
 		void CheckPut();
+		bool CanPut();
 
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
@@ -55,6 +64,16 @@ namespace ButiEngine {
 		Vector3 m_prevPos;
 		Vector3 m_crntPos;
 		Vector3 m_velocity;
+
+		//各パーツの数
+		std::int32_t m_eyeCount;
+		std::int32_t m_noseCount;
+		std::int32_t m_mouthCount;
+
+		//各パーツのつけられる上限
+		std::int32_t m_maxEyeCount;
+		std::int32_t m_maxNoseCount;
+		std::int32_t m_maxMouthCount;
 
 		//台に置いたか確認する用
 		Value_ptr<RelativeTimer> m_vlp_putTimer;

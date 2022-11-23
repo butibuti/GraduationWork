@@ -15,10 +15,7 @@ void ButiEngine::FriendHead::OnUpdate()
 
 	Control();
 	CalcVelocity();
-	if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_trackerIndex)
-	{
-		CheckPut();
-	}
+	CheckPut();
 
 #ifdef DEBUG
 	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::B))
@@ -58,6 +55,14 @@ void ButiEngine::FriendHead::Start()
 	m_prevPos = Vector3Const::Zero;
 	m_crntPos = Vector3Const::Zero;
 	m_velocity = Vector3Const::Zero;
+
+	m_eyeCount = 0;
+	m_noseCount = 0;
+	m_mouthCount = 0;
+
+	m_maxEyeCount = 2;
+	m_maxNoseCount = 1;
+	m_maxMouthCount = 1;
 
 	m_vlp_putTimer = ObjectFactory::Create<RelativeTimer>(60);
 }
@@ -126,11 +131,11 @@ void ButiEngine::FriendHead::ControlByGamePad()
 
 	if (GameDevice::GetInput().GetPadButton(ButiInput::PadButtons::XBOX_BUTTON_RIGHT))
 	{
-		gameObject.lock()->transform->RollLocalRotationZ_Degrees(-2.0f);
+		gameObject.lock()->transform->RollLocalRotationY_Degrees(-2.0f);
 	}
 	else if (GameDevice::GetInput().GetPadButton(ButiInput::PadButtons::XBOX_BUTTON_LEFT))
 	{
-		gameObject.lock()->transform->RollLocalRotationZ_Degrees(2.0f);
+		gameObject.lock()->transform->RollLocalRotationY_Degrees(2.0f);
 	}
 }
 
@@ -195,6 +200,21 @@ void ButiEngine::FriendHead::CalcVelocity()
 
 void ButiEngine::FriendHead::CheckPut()
 {
+	if (!CanPut())
+	{
+		return;
+	}
+
+	if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_A))
+	{
+		OnPut();
+	}
+
+	if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() <= m_trackerIndex)
+	{
+		return;
+	}
+
 	//‘ä‚É‹ß‚­‚ÄˆÚ“®‘¬“x‚ª’x‚©‚Á‚½‚ç’u‚¢‚½‚Æ”»’è‚·‚é
 	Matrix4x4 deviceMatrix;
 	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
@@ -226,4 +246,28 @@ void ButiEngine::FriendHead::CheckPut()
 	{
 		m_vlp_putTimer->Reset();
 	}
+}
+
+bool ButiEngine::FriendHead::CanPut()
+{
+	constexpr std::int32_t necessaryEyeCount = 2;
+	constexpr std::int32_t necessaryNoseCount = 1;
+	constexpr std::int32_t necessaryMouthCount = 1;
+
+	if (m_eyeCount < necessaryEyeCount)
+	{
+		return false;
+	}
+
+	if (m_noseCount < necessaryNoseCount)
+	{
+		return false;
+	}
+
+	if (m_mouthCount < necessaryMouthCount)
+	{
+		return false;
+	}
+
+	return true;
 }

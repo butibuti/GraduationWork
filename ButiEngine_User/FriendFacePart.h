@@ -49,10 +49,11 @@ namespace ButiEngine {
 		void MoveStraight();
 		void MoveThrow();
 		void SetMoveDirection();
+		void StickToFriendHead(Value_weak_ptr<GameObject> arg_vwp_head);
 
 		void Chase();
 
-		void OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_gameObject);
+		void OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_head);
 
 		bool CanUpdate();
 
@@ -65,7 +66,7 @@ namespace ButiEngine {
 		
 		MovePattern m_movePattern = MovePattern::Stay;
 
-		bool m_isCollisionHead;
+		bool m_isStuckToHead;
 		Vector3 m_moveDirection;
 		float m_moveSpeed;
 		float m_minMoveSpeed;

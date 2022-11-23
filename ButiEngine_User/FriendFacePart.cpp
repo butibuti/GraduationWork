@@ -31,7 +31,7 @@ void ButiEngine::FriendFacePart::OnUpdate()
 	switch (m_state)
 	{
 	case ButiEngine::FacePartState::Move:
-		if (!m_isCollisionHead)
+		if (!m_isStuckToHead)
 		{
 			Move();
 		}
@@ -107,7 +107,7 @@ void ButiEngine::FriendFacePart::Start()
 	m_vlp_changeGroupMaskTimer = ObjectFactory::Create<RelativeTimer>(30);
 	m_vlp_changeGroupMaskTimer->Start();
 
-	m_isCollisionHead = false;
+	m_isStuckToHead = false;
 	SetMoveDirection();
 	m_moveSpeed = ButiRandom::GetRandom(m_minMoveSpeed, m_maxMoveSpeed, 100);
 
@@ -231,6 +231,16 @@ void ButiEngine::FriendFacePart::SetMoveDirection()
 	m_moveDirection.Normalize();
 }
 
+void ButiEngine::FriendFacePart::StickToFriendHead(Value_weak_ptr<GameObject> arg_vwp_head)
+{
+	m_isStuckToHead = true;
+	gameObject.lock()->transform->SetBaseTransform(arg_vwp_head.lock()->transform);
+
+	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
+
+	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
+}
+
 void ButiEngine::FriendFacePart::Chase()
 {
 	if (m_vlp_chaseTimer->IsOn())
@@ -254,19 +264,43 @@ void ButiEngine::FriendFacePart::Chase()
 	}
 }
 
-void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_gameObject)
+void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_head)
 {
 	if (m_isRayCast)
 	{
 		return;
 	}
 
-	m_isCollisionHead = true;
-	gameObject.lock()->transform->SetBaseTransform(arg_vwp_gameObject.lock()->transform);
+	auto headComponent = arg_vwp_head.lock()->GetGameComponent<FriendHead>();
+	if (!headComponent)
+	{
+		return;
+	}
 
-	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
-
-	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
+	if (gameObject.lock()->HasGameObjectTag("Eye"))
+	{
+		if (headComponent->CanStickEye())
+		{
+			StickToFriendHead(arg_vwp_head);
+			headComponent->AddEyeCount();
+		}
+	}
+	else if (gameObject.lock()->HasGameObjectTag("Nose"))
+	{
+		if (headComponent->CanStickNose())
+		{
+			StickToFriendHead(arg_vwp_head);
+			headComponent->AddNoseCount();
+		}
+	}
+	else if (gameObject.lock()->HasGameObjectTag("Mouth"))
+	{
+		if (headComponent->CanStickMouth())
+		{
+			StickToFriendHead(arg_vwp_head);
+			headComponent->AddMouthCount();
+		}
+	}
 }
 
 bool ButiEngine::FriendFacePart::CanUpdate()

@@ -26,6 +26,10 @@ void ButiEngine::StageManager::OnUpdate()
 		{
 			ResetGame();
 		}
+		else if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_X))
+		{
+			ResetGame();
+		}
 	}
 }
 
