@@ -11,6 +11,7 @@ namespace ButiEngine {
 		Vector3 moveAreaFrontRightTop = Vector3Const::Zero;
 		Vector3 moveAreaBackLeftBottom = Vector3Const::Zero;
 		Vector3 tablePos = Vector3Const::Zero;
+		Vector3 bodyPos = Vector3Const::Zero;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
@@ -20,6 +21,7 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(moveAreaFrontRightTop);
 			ARCHIVE_BUTI(moveAreaBackLeftBottom);
 			ARCHIVE_BUTI(tablePos);
+			ARCHIVE_BUTI(bodyPos);
 		}
 	};
 
@@ -45,6 +47,7 @@ namespace ButiEngine {
 		Vector3 GetHeadMoveLimit() { return m_data.headMoveLimit; }
 		Vector3 GetCorrection();
 		Vector3 GetTablePos() { return m_data.tablePos; }
+		Vector3 GetBodyPos() { return m_data.bodyPos; }
 
 	private:
 		void SetOrigin();

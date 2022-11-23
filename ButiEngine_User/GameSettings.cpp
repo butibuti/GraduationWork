@@ -148,4 +148,9 @@ void ButiEngine::GameSettings::SetTablePos()
 	Matrix4x4 deviceMatrix;
 	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_data.trackerIndex], deviceMatrix);
 	m_data.tablePos = deviceMatrix.GetPosition();
+
+	Vector3 bodyPos = deviceMatrix.GetPosition();
+	bodyPos *= GetCorrection();
+	bodyPos.x *= -1.0f;
+	m_data.bodyPos = bodyPos;
 }

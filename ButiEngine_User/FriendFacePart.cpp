@@ -13,7 +13,7 @@ void ButiEngine::FriendFacePart::OnUpdate()
 	{
 		m_vlp_changeGroupMaskTimer->Stop();
 		//m_vwp_rigidBodyComponent.lock()->SetGroupMask(65530);
-		//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroupMask(65530);
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroupMask(65530);
 	}
 
 	if (!CanUpdate())
@@ -282,7 +282,7 @@ void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject
 		if (headComponent->CanStickEye())
 		{
 			StickToFriendHead(arg_vwp_head);
-			headComponent->AddEyeCount();
+			headComponent->StickEye(gameObject);
 		}
 	}
 	else if (gameObject.lock()->HasGameObjectTag("Nose"))
@@ -290,7 +290,7 @@ void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject
 		if (headComponent->CanStickNose())
 		{
 			StickToFriendHead(arg_vwp_head);
-			headComponent->AddNoseCount();
+			headComponent->StickNose(gameObject);
 		}
 	}
 	else if (gameObject.lock()->HasGameObjectTag("Mouth"))
@@ -298,7 +298,7 @@ void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject
 		if (headComponent->CanStickMouth())
 		{
 			StickToFriendHead(arg_vwp_head);
-			headComponent->AddMouthCount();
+			headComponent->StickMouth(gameObject);
 		}
 	}
 }

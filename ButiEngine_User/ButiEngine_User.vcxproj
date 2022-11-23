@@ -356,6 +356,7 @@
     <ClCompile Include="DefaultGameComponent.cpp" />
     <ClCompile Include="Effect_Box.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
+    <ClCompile Include="FriendBody.cpp" />
     <ClCompile Include="FriendFacePart.cpp" />
     <ClCompile Include="FriendFacePartSpawner.cpp" />
     <ClCompile Include="FriendHead.cpp" />
@@ -394,6 +395,7 @@
     <ClInclude Include="Debug_Camera.h" />
     <ClInclude Include="Effect_Box.h" />
     <ClInclude Include="EnemySpawner.h" />
+    <ClInclude Include="FriendBody.h" />
     <ClInclude Include="FriendFacePart.h" />
     <ClInclude Include="FriendFacePartSpawner.h" />
     <ClInclude Include="FriendHead.h" />

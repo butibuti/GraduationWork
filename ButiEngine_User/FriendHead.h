@@ -32,13 +32,13 @@ namespace ButiEngine {
 
 		bool IsHighSpeed() { return m_velocity.z >= 0.075f; }
 
-		bool CanStickEye() { return m_eyeCount < m_maxEyeCount; }
-		bool CanStickNose() { return m_noseCount < m_maxNoseCount; }
-		bool CanStickMouth() { return m_mouthCount < m_maxMouthCount; }
+		bool CanStickEye() { return m_vec_eyes.size() < m_maxEyeCount; }
+		bool CanStickNose() { return m_vec_noses.size() < m_maxNoseCount; }
+		bool CanStickMouth() { return m_vec_mouths.size() < m_maxMouthCount; }
 		
-		void AddEyeCount() { m_eyeCount++; }
-		void AddNoseCount() { m_noseCount++; }
-		void AddMouthCount() { m_mouthCount++; }
+		void StickEye(Value_weak_ptr<GameObject> arg_eye) { m_vec_eyes.push_back(arg_eye); }
+		void StickNose(Value_weak_ptr<GameObject> arg_nose) { m_vec_noses.push_back(arg_nose); }
+		void StickMouth(Value_weak_ptr<GameObject> arg_mouth) { m_vec_mouths.push_back(arg_mouth); }
 
 		void Dead();
 	private:
@@ -46,9 +46,11 @@ namespace ButiEngine {
 		void ControlByGamePad();
 		void ControlByVRTracker();
 		void OnPut();
+		void SpawnNewHead();
 
 		void CalcVelocity();
 		void CheckPut();
+		void CheckSpawnBody();
 		bool CanPut();
 
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
@@ -58,6 +60,8 @@ namespace ButiEngine {
 
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
 
+		Value_weak_ptr<GameObject> m_vwp_body;
+
 		std::int32_t m_trackerIndex;
 
 		//移動速度関連
@@ -65,15 +69,21 @@ namespace ButiEngine {
 		Vector3 m_crntPos;
 		Vector3 m_velocity;
 
-		//各パーツの数
-		std::int32_t m_eyeCount;
-		std::int32_t m_noseCount;
-		std::int32_t m_mouthCount;
+		//くっついているパーツ
+		std::vector<Value_weak_ptr<GameObject>> m_vec_eyes;
+		std::vector<Value_weak_ptr<GameObject>> m_vec_noses;
+		std::vector<Value_weak_ptr<GameObject>> m_vec_mouths;
 
 		//各パーツのつけられる上限
 		std::int32_t m_maxEyeCount;
 		std::int32_t m_maxNoseCount;
 		std::int32_t m_maxMouthCount;
+
+		//各パーツの基準位置
+		Vector3 m_leftEyeStandardPos;
+		Vector3 m_rightEyeStandardPos;
+		Vector3 m_noseStandardPos;
+		Vector3 m_mouthStandardPos;
 
 		//台に置いたか確認する用
 		Value_ptr<RelativeTimer> m_vlp_putTimer;

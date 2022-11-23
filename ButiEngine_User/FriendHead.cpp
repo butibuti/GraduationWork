@@ -5,6 +5,7 @@
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
 #include "PauseManager.h"
 #include "FriendManager.h"
+#include "FriendBody.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
@@ -14,8 +15,9 @@ void ButiEngine::FriendHead::OnUpdate()
 	}
 
 	Control();
-	CalcVelocity();
+	//CalcVelocity();
 	CheckPut();
+	//CheckSpawnBody();
 
 #ifdef DEBUG
 	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::B))
@@ -56,10 +58,6 @@ void ButiEngine::FriendHead::Start()
 	m_crntPos = Vector3Const::Zero;
 	m_velocity = Vector3Const::Zero;
 
-	m_eyeCount = 0;
-	m_noseCount = 0;
-	m_mouthCount = 0;
-
 	m_maxEyeCount = 2;
 	m_maxNoseCount = 1;
 	m_maxMouthCount = 1;
@@ -89,19 +87,6 @@ void ButiEngine::FriendHead::Control()
 	ControlByGamePad();
 
 	m_vwp_rigidBodyComponent.lock()->TransformApply();
-
-	//Vector3 moveLimit = m_vwp_gameSettings.lock()->GetHeadMoveLimit();
-
-	//Vector3 position = gameObject.lock()->transform->GetLocalPosition();
-
-	//position.x = min(position.x, moveLimit.x);
-	//position.x = max(position.x, -moveLimit.x);
-	//position.y = min(position.y, moveLimit.y);
-	//position.y = max(position.y, -moveLimit.y);
-	//position.z = min(position.z, moveLimit.z);
-	//position.z = max(position.z, -moveLimit.z);
-
-	//gameObject.lock()->transform->SetLocalPosition(position);
 }
 
 void ButiEngine::FriendHead::ControlByGamePad()
@@ -161,24 +146,8 @@ void ButiEngine::FriendHead::OnPut()
 	
 	SetIsRemove(true);
 	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
-	gameObject.lock()->transform->TranslateX(ButiRandom::GetInt(-5, 5));
-	gameObject.lock()->transform->TranslateY(ButiRandom::GetInt(-2, 2));
-	gameObject.lock()->transform->TranslateZ(ButiRandom::GetInt(-10, -5));
 
-	auto newHead = GetManager().lock()->AddObjectFromCereal("FriendHead");
-
-	Matrix4x4 deviceMatrix;
-	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
-	Vector3 pos = deviceMatrix.GetPosition();
-	pos *= m_vwp_gameSettings.lock()->GetCorrection();
-	pos.x *= -1;
-	auto rotation = deviceMatrix.GetRemovePosition();
-	rotation._13 *= -1;
-	rotation._31 *= -1;
-	rotation._12 *= -1;
-	rotation._21 *= -1;
-	newHead.lock()->transform->SetLocalPosition(pos);
-	newHead.lock()->transform->SetLocalRotation(rotation);
+	m_vwp_body.lock()->GetGameComponent<FriendBody>()->SetHead(gameObject);
 }
 
 void ButiEngine::FriendHead::CalcVelocity()
@@ -194,7 +163,7 @@ void ButiEngine::FriendHead::CalcVelocity()
 	}
 	else
 	{
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(2);
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(1);
 	}
 }
 
@@ -248,23 +217,39 @@ void ButiEngine::FriendHead::CheckPut()
 	}
 }
 
+void ButiEngine::FriendHead::CheckSpawnBody()
+{
+	if (m_vwp_body.lock())
+	{
+		return;
+	}
+
+	if (!CanPut())
+	{
+		return;
+	}
+
+	m_vwp_body = GetManager().lock()->AddObjectFromCereal("FriendBody");
+	m_vwp_body.lock()->transform->SetLocalPosition(m_vwp_gameSettings.lock()->GetBodyPos());
+}
+
 bool ButiEngine::FriendHead::CanPut()
 {
 	constexpr std::int32_t necessaryEyeCount = 2;
 	constexpr std::int32_t necessaryNoseCount = 1;
 	constexpr std::int32_t necessaryMouthCount = 1;
 
-	if (m_eyeCount < necessaryEyeCount)
+	if (m_vec_eyes.size() < necessaryEyeCount)
 	{
 		return false;
 	}
 
-	if (m_noseCount < necessaryNoseCount)
+	if (m_vec_noses.size() < necessaryNoseCount)
 	{
 		return false;
 	}
 
-	if (m_mouthCount < necessaryMouthCount)
+	if (m_vec_mouths.size() < necessaryMouthCount)
 	{
 		return false;
 	}
