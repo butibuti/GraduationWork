@@ -66,7 +66,7 @@ namespace ButiEngine {
 		
 		MovePattern m_movePattern = MovePattern::Stay;
 
-		bool m_isStuckToHead;
+		bool m_isCollisionHead;
 		Vector3 m_moveDirection;
 		float m_moveSpeed;
 		float m_minMoveSpeed;

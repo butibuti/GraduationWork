@@ -1,5 +1,7 @@
 #include "stdafx_u.h"
 #include "ScoreManager.h"
+#include "FriendHead.h"
+#include "FriendBody.h"
 
 void ButiEngine::ScoreManager::OnUpdate()
 {
@@ -15,9 +17,6 @@ void ButiEngine::ScoreManager::OnRemove()
 
 void ButiEngine::ScoreManager::OnShowUI()
 {
-	GUI::Text("Score:" + std::to_string(m_score));
-	GUI::BulletText(U8("ÉXÉRÉAè„å¿"));
-	GUI::DragInt("##MaxScore", m_maxScore, 1.0f, 0, 10000);
 }
 
 void ButiEngine::ScoreManager::Start()
@@ -28,18 +27,25 @@ void ButiEngine::ScoreManager::Start()
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::ScoreManager::Clone()
 {
 	auto clone = ObjectFactory::Create<ScoreManager>();
-	clone->m_maxScore = m_maxScore;
 	return clone;
 }
 
-void ButiEngine::ScoreManager::AddScore(const std::int32_t arg_addScore)
+void ButiEngine::ScoreManager::CalcScore()
 {
-	m_score += arg_addScore;
-	m_score = min(m_score, m_maxScore);
-}
+	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
+	auto body = GetManager().lock()->GetGameObject(GameObjectTag("FriendBody"));
 
-void ButiEngine::ScoreManager::RemoveScore(const std::int32_t arg_removeScore)
-{
-	m_score -= arg_removeScore;
-	m_score = max(m_score, 0);
+	auto headComponent = head.lock()->GetGameComponent<FriendHead>();
+	auto bodyComponent = body.lock()->GetGameComponent<FriendBody>();
+
+	std::int32_t eyeScore = headComponent->GetEyeScore();
+	std::int32_t noseScore = headComponent->GetNoseScore();
+	std::int32_t mouthScore = headComponent->GetMouthScore();
+
+	std::int32_t headScore = eyeScore + noseScore + mouthScore;
+	std::int32_t bodyScore = bodyComponent->GetScore();
+
+	std::int32_t addScore = headScore * bodyScore;
+
+	m_score += addScore;
 }

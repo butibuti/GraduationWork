@@ -48,7 +48,7 @@ void ButiEngine::Soldier::OnSet()
 
 						GetManager().lock()->GetGameObject("SoldierManager").lock()->GetGameComponent<SoldierManager>()->AddHomeSoldier(gameObject);
 
-						GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->AddScore(100);
+						//GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->AddScore(100);
 
 						m_isInHome = true;
 					}
@@ -74,7 +74,7 @@ void ButiEngine::Soldier::OnSet()
 
 						GetManager().lock()->GetGameObject("SoldierManager").lock()->GetGameComponent<SoldierManager>()->RemoveHomeSoldier(gameObject);
 
-						GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->RemoveScore(100);
+						//GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->RemoveScore(100);
 
 						m_isInHome = false;
 					}

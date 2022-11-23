@@ -26,6 +26,13 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_trackerIndex);
+			ARCHIVE_BUTI(m_leftEyeStandardPos);
+			ARCHIVE_BUTI(m_rightEyeStandardPos);
+			ARCHIVE_BUTI(m_noseStandardPos);
+			ARCHIVE_BUTI(m_mouthStandardPos);
+			ARCHIVE_BUTI(m_eyeFurthest);
+			ARCHIVE_BUTI(m_noseFurthest);
+			ARCHIVE_BUTI(m_mouthFurthest);
 		}
 
 		Vector3 GetVelocity() { return m_velocity; }
@@ -40,17 +47,19 @@ namespace ButiEngine {
 		void StickNose(Value_weak_ptr<GameObject> arg_nose) { m_vec_noses.push_back(arg_nose); }
 		void StickMouth(Value_weak_ptr<GameObject> arg_mouth) { m_vec_mouths.push_back(arg_mouth); }
 
+		std::int32_t GetEyeScore();
+		std::int32_t GetNoseScore();
+		std::int32_t GetMouthScore();
+
 		void Dead();
 	private:
 		void Control();
 		void ControlByGamePad();
 		void ControlByVRTracker();
 		void OnPut();
-		void SpawnNewHead();
 
 		void CalcVelocity();
 		void CheckPut();
-		void CheckSpawnBody();
 		bool CanPut();
 
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
@@ -59,8 +68,6 @@ namespace ButiEngine {
 		Value_weak_ptr<FriendManager> m_vwp_friendManager;
 
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
-
-		Value_weak_ptr<GameObject> m_vwp_body;
 
 		std::int32_t m_trackerIndex;
 
@@ -78,6 +85,11 @@ namespace ButiEngine {
 		std::int32_t m_maxEyeCount;
 		std::int32_t m_maxNoseCount;
 		std::int32_t m_maxMouthCount;
+
+		//スコアが0になる距離
+		float m_eyeFurthest;
+		float m_noseFurthest;
+		float m_mouthFurthest;
 
 		//各パーツの基準位置
 		Vector3 m_leftEyeStandardPos;

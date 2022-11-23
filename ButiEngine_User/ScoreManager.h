@@ -19,15 +19,12 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_maxScore);
 		}
 
 		std::int32_t GetScore() { return m_score; }
 
-		void AddScore(const std::int32_t arg_addScore);
-		void RemoveScore(const std::int32_t arg_removeScore);
+		void CalcScore();
 	private:
-		std::int32_t m_maxScore = 1000;
 		std::int32_t m_score;
 	};
 

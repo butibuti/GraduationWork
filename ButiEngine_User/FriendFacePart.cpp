@@ -22,6 +22,7 @@ void ButiEngine::FriendFacePart::OnUpdate()
 		{
 			if (m_vwp_rigidBodyComponent.lock())
 			{
+				m_vwp_rigidBodyComponent.lock()->SetIsAffectedGravity(false);
 				m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
 			}
 		}
@@ -31,7 +32,7 @@ void ButiEngine::FriendFacePart::OnUpdate()
 	switch (m_state)
 	{
 	case ButiEngine::FacePartState::Move:
-		if (!m_isStuckToHead)
+		if (!m_isCollisionHead)
 		{
 			Move();
 		}
@@ -62,7 +63,7 @@ void ButiEngine::FriendFacePart::OnSet()
 		}
 	);
 
-	gameObject.lock()->AddCollisionLeaveReaction(
+	gameObject.lock()->AddCollisionEnterReaction(
 		[this](ButiBullet::ContactData& arg_other)
 		{
 			if (arg_other.vwp_gameObject.lock())
@@ -107,14 +108,14 @@ void ButiEngine::FriendFacePart::Start()
 	m_vlp_changeGroupMaskTimer = ObjectFactory::Create<RelativeTimer>(30);
 	m_vlp_changeGroupMaskTimer->Start();
 
-	m_isStuckToHead = false;
+	m_isCollisionHead = false;
 	SetMoveDirection();
 	m_moveSpeed = ButiRandom::GetRandom(m_minMoveSpeed, m_maxMoveSpeed, 100);
 
 	if (m_movePattern == MovePattern::Throw)
 	{
 		m_vwp_rigidBodyComponent.lock()->SetIsAffectedGravity(true);
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetGravity(Vector3(0.0f, -2.0f, 0.0f));
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetGravity(Vector3(0.0f, -1.5f, 0.0f));
 		Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
 		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * 500);
 	}
@@ -206,7 +207,7 @@ void ButiEngine::FriendFacePart::Move()
 
 void ButiEngine::FriendFacePart::MoveStay()
 {
-	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
+	//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
 }
 
 void ButiEngine::FriendFacePart::MoveStraight()
@@ -233,7 +234,6 @@ void ButiEngine::FriendFacePart::SetMoveDirection()
 
 void ButiEngine::FriendFacePart::StickToFriendHead(Value_weak_ptr<GameObject> arg_vwp_head)
 {
-	m_isStuckToHead = true;
 	gameObject.lock()->transform->SetBaseTransform(arg_vwp_head.lock()->transform);
 
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
@@ -301,6 +301,8 @@ void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject
 			headComponent->StickMouth(gameObject);
 		}
 	}
+
+	m_isCollisionHead = true;
 }
 
 bool ButiEngine::FriendFacePart::CanUpdate()

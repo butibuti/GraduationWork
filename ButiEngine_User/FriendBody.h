@@ -22,9 +22,11 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
+			ARCHIVE_BUTI(m_scoreUpBorder);
 		}
 
 		void SetHead(Value_weak_ptr<GameObject> arg_vwp_head);
+		std::int32_t GetScore();
 	private:
 		void Rotate();
 		void SpawnNewHead();
@@ -34,8 +36,8 @@ namespace ButiEngine {
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 
 
-
 		bool m_isRotate;
+		float m_scoreUpBorder;
 	};
 
 }
