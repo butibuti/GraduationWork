@@ -370,6 +370,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="Naruko.cpp" />
+    <ClCompile Include="PartStickAnimation.cpp" />
     <ClCompile Include="PauseManager.cpp" />
     <ClCompile Include="RemoveMeshDraw.cpp" />
     <ClCompile Include="ScoreManager.cpp" />
@@ -406,6 +407,7 @@
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LogoSceneManager.h" />
     <ClInclude Include="Naruko.h" />
+    <ClInclude Include="PartStickAnimation.h" />
     <ClInclude Include="PauseManager.h" />
     <ClInclude Include="RemoveMeshDraw.h" />
     <ClInclude Include="ScoreManager.h" />

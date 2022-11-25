@@ -6,6 +6,8 @@
 #include "ButiBulletWrap/ButiBulletWrap/PhysicsWorld.h"
 #include "PauseManager.h"
 #include "StageManager.h"
+#include "SeparateDrawObject.h"
+#include "PartStickAnimation.h"
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
@@ -239,6 +241,9 @@ void ButiEngine::FriendFacePart::StickToFriendHead(Value_weak_ptr<GameObject> ar
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
 
 	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
+
+	auto drawObject = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject();
+	drawObject.lock()->AddGameComponent<PartStickAnimation>();
 }
 
 void ButiEngine::FriendFacePart::Chase()

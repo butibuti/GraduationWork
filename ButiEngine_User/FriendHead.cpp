@@ -85,7 +85,7 @@ void ButiEngine::FriendHead::Start()
 	m_maxNoseCount = 1;
 	m_maxMouthCount = 1;
 
-	m_vlp_putTimer = ObjectFactory::Create<RelativeTimer>(60);
+	m_vlp_putTimer = ObjectFactory::Create<RelativeTimer>(10);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()

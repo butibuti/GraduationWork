@@ -108,6 +108,9 @@
     <ClCompile Include="FriendBody.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PartStickAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx_u.h">
@@ -195,6 +198,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FriendBody.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PartStickAnimation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
