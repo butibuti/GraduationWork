@@ -12,22 +12,23 @@ void ButiEngine::GameLevelManager::OnUpdate()
 			m_vlp_levelUpTimer->Stop();
 			m_gameLevel++;
 			m_vwp_friendManager.lock()->ResetCurrentLevelFriendCount();
-		}
-
-		if (m_vlp_pauseTimer->Update())
-		{
-			m_vlp_pauseTimer->Stop();
-			m_vwp_pauseManager.lock()->SetIsPause(false);
 			m_isLevelUp = false;
 		}
+
+		//if (m_vlp_pauseTimer->Update())
+		//{
+		//	m_vlp_pauseTimer->Stop();
+		//	m_vwp_pauseManager.lock()->SetIsPause(false);
+		//	m_isLevelUp = false;
+		//}
 	}
 }
 
 void ButiEngine::GameLevelManager::OnSet()
 {
-	if (m_vec_necessaryFriendCounts.size() == 0)
+	if (m_maxLevel == 0)
 	{
-		m_vec_necessaryFriendCounts.push_back(1);
+		m_maxLevel = 1;
 	}
 }
 
@@ -117,12 +118,12 @@ void ButiEngine::GameLevelManager::LevelUp()
 	}
 
 	m_vlp_levelUpTimer->Reset();
-	m_vlp_pauseTimer->Reset();
+	//m_vlp_pauseTimer->Reset();
 
-	m_vwp_pauseManager.lock()->SetIsPause(true);
+	//m_vwp_pauseManager.lock()->SetIsPause(true);
 
 	m_vlp_levelUpTimer->Start();
-	m_vlp_pauseTimer->Start();
+	//m_vlp_pauseTimer->Start();
 
 	m_isLevelUp = true;
 }

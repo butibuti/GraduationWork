@@ -16,7 +16,7 @@ void ButiEngine::FriendHead::OnUpdate()
 	}
 
 	Control();
-	//CalcVelocity();
+	CalcVelocity();
 	CheckPut();
 	//CheckSpawnBody();
 
@@ -302,14 +302,14 @@ void ButiEngine::FriendHead::CalcVelocity()
 
 	m_velocity = m_crntPos - m_prevPos;
 
-	if (IsHighSpeed())
-	{
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(2);
-	}
-	else
-	{
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(1);
-	}
+	//if (IsHighSpeed())
+	//{
+	//	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(2);
+	//}
+	//else
+	//{
+	//	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroup(1);
+	//}
 }
 
 void ButiEngine::FriendHead::CheckPut()

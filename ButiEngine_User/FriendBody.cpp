@@ -2,6 +2,7 @@
 #include "FriendBody.h"
 #include "PauseManager.h"
 #include "GameSettings.h"
+#include "FriendCompleteDirecting.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -13,6 +14,11 @@ void ButiEngine::FriendBody::OnUpdate()
 	if (m_isRotate)
 	{
 		Rotate();
+	}
+
+	if (m_isMoveBack)
+	{
+		MoveBack();
 	}
 }
 
@@ -35,9 +41,12 @@ void ButiEngine::FriendBody::Start()
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 
-	//gameObject.lock()->transform->SetLocalPosition(m_vwp_gameSettings.lock()->GetBodyPos());
+	gameObject.lock()->transform->SetLocalPosition(m_vwp_gameSettings.lock()->GetBodyPos());
 
 	m_isRotate = true;
+
+	m_vlp_moveTimer = ObjectFactory::Create<RelativeTimer>(120);
+	m_moveTargetPos = Vector3Const::Zero;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
@@ -51,15 +60,21 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 {
 	arg_vwp_head.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
 	arg_vwp_head.lock()->transform->SetLocalPosition(Vector3Const::Zero);
-	m_isRotate = false;
+
+	gameObject.lock()->AddGameComponent<FriendCompleteDirecting>();
+
+	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
+
+	m_moveStartPos = pos;
+
+	m_moveTargetPos.x = pos.x + (ButiRandom::GetInt(-5, 5));
+	m_moveTargetPos.y = pos.y;
+	m_moveTargetPos.z = pos.z + (ButiRandom::GetInt(-10, -5));
+
+	m_isMoveBack = true;
+	m_vlp_moveTimer->Start();
+
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendBody"));
-
-	gameObject.lock()->transform->TranslateX(ButiRandom::GetInt(-5, 5));
-	gameObject.lock()->transform->TranslateY(ButiRandom::GetInt(-2, 2));
-	gameObject.lock()->transform->TranslateZ(ButiRandom::GetInt(-10, -5));
-
-	SpawnNewHead();
-	SpawnNewBody();
 }
 
 std::int32_t ButiEngine::FriendBody::GetScore()
@@ -83,6 +98,26 @@ void ButiEngine::FriendBody::Rotate()
 	gameObject.lock()->transform->RollLocalRotationY_Degrees(2.0f);
 }
 
+void ButiEngine::FriendBody::MoveBack()
+{
+	float progress = m_vlp_moveTimer->GetPercent();
+	Vector3 newPos = MathHelper::LerpPosition(m_moveStartPos, m_moveTargetPos, progress);
+
+	gameObject.lock()->transform->SetLocalPosition(newPos);
+
+	if (m_vlp_moveTimer->Update())
+	{
+		m_vlp_moveTimer->Stop();
+		m_isMoveBack = false;
+		m_isRotate = false;
+
+		gameObject.lock()->transform->SetLocalPosition(m_moveTargetPos);
+
+		SpawnNewHead();
+		SpawnNewBody();
+	}
+}
+
 void ButiEngine::FriendBody::SpawnNewHead()
 {
 	GetManager().lock()->AddObjectFromCereal("FriendHead");
@@ -90,6 +125,5 @@ void ButiEngine::FriendBody::SpawnNewHead()
 
 void ButiEngine::FriendBody::SpawnNewBody()
 {
-	auto newBody = GetManager().lock()->AddObjectFromCereal("FriendBody");
-	newBody.lock()->transform->SetLocalPosition(m_vwp_gameSettings.lock()->GetBodyPos());
+	GetManager().lock()->AddObjectFromCereal("FriendBody");
 }

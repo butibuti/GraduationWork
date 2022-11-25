@@ -29,6 +29,7 @@ namespace ButiEngine {
 		std::int32_t GetScore();
 	private:
 		void Rotate();
+		void MoveBack();
 		void SpawnNewHead();
 		void SpawnNewBody();
 
@@ -38,6 +39,11 @@ namespace ButiEngine {
 
 		bool m_isRotate;
 		float m_scoreUpBorder;
+
+		bool m_isMoveBack;
+		Value_ptr<RelativeTimer> m_vlp_moveTimer;
+		Vector3 m_moveStartPos;
+		Vector3 m_moveTargetPos;
 	};
 
 }

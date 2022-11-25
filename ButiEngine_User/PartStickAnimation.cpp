@@ -13,7 +13,6 @@ void ButiEngine::PartStickAnimation::OnUpdate()
 
 	m_theta += m_animationSpeed * GameDevice::GetWorldSpeed();
 
-	//Scale0.75‚©‚ç1.25‚ÌŠÔ‚ğs‚«—ˆ‚·‚é
 	float magnification = 1.0f + ((sin(MathHelper::ToRadian(m_theta)) - 0.5f) * 2.0f) * amplitude;
 	Vector3 newScale = m_standardScale * magnification;
 

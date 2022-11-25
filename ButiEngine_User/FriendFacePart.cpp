@@ -8,6 +8,7 @@
 #include "StageManager.h"
 #include "SeparateDrawObject.h"
 #include "PartStickAnimation.h"
+#include "SeparateDrawObject.h"
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
@@ -60,12 +61,13 @@ void ButiEngine::FriendFacePart::OnSet()
 				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("DeadArea"))
 				{
 					gameObject.lock()->SetIsRemove(true);
+					gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->SetIsRemove(true);
 				}
 			}
 		}
 	);
 
-	gameObject.lock()->AddCollisionEnterReaction(
+	gameObject.lock()->AddCollisionLeaveReaction(
 		[this](ButiBullet::ContactData& arg_other)
 		{
 			if (arg_other.vwp_gameObject.lock())
