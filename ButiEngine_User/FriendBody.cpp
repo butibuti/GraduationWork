@@ -35,6 +35,8 @@ void ButiEngine::FriendBody::Start()
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 
+	//gameObject.lock()->transform->SetLocalPosition(m_vwp_gameSettings.lock()->GetBodyPos());
+
 	m_isRotate = true;
 }
 
@@ -62,8 +64,10 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 
 std::int32_t ButiEngine::FriendBody::GetScore()
 {
+	//デフォルトは1
 	std::int32_t score = 1;
 
+	//正面を向いていたらスコア倍
 	float rotation = gameObject.lock()->transform->GetLocalRotation_Euler().y;
 
 	if (abs(rotation) <= m_scoreUpBorder)

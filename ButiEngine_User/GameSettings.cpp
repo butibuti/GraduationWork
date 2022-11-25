@@ -59,7 +59,7 @@ void ButiEngine::GameSettings::OnShowUI()
 void ButiEngine::GameSettings::Start()
 {
 	InputCereal(m_data, "GameSettings.savedata");
-	GameDevice::GetVRTrackerInput().SetOrigin(m_data.trackerOrigin.GetInverse());
+	GameDevice::GetVRTrackerInput().SetOrigin(m_data.trackerOrigin);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameSettings::Clone()
