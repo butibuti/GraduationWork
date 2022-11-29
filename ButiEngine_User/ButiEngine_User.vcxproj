@@ -356,6 +356,7 @@
     <ClCompile Include="Debug_Camera.cpp" />
     <ClCompile Include="DefaultGameComponent.cpp" />
     <ClCompile Include="Effect_Box.cpp" />
+    <ClCompile Include="Effect_CompleteFriend.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="FriendBody.cpp" />
     <ClCompile Include="FriendCompleteDirecting.cpp" />
@@ -401,6 +402,7 @@
     <ClInclude Include="ConcentratedLine.h" />
     <ClInclude Include="Debug_Camera.h" />
     <ClInclude Include="Effect_Box.h" />
+    <ClInclude Include="Effect_CompleteFriend.h" />
     <ClInclude Include="EnemySpawner.h" />
     <ClInclude Include="FriendBody.h" />
     <ClInclude Include="FriendCompleteDirecting.h" />

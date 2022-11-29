@@ -13,11 +13,17 @@
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
+	if (m_vlp_deadTimer->Update())
+	{
+		m_vlp_deadTimer->Stop();
+		gameObject.lock()->SetIsRemove(true);
+		gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->SetIsRemove(true);
+	}
+
 	if (m_vlp_changeGroupMaskTimer->Update())
 	{
 		m_vlp_changeGroupMaskTimer->Stop();
 		ChangeGroupMask();
-		
 	}
 
 	if (!CanUpdate())
@@ -59,14 +65,22 @@ void ButiEngine::FriendFacePart::OnSet()
 			if (arg_other.vwp_gameObject.lock())
 			{
 				//ƒ^ƒO”»’è
-				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("DeadArea"))
-				{
-					gameObject.lock()->SetIsRemove(true);
-					gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->SetIsRemove(true);
-				}
-				else if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("PartHitArea"))
+				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("PartHitArea"))
 				{
 					OnCollisionPartHitArea(arg_other.vwp_gameObject);
+				}
+			}
+		}
+	);
+
+	gameObject.lock()->AddCollisionStayReaction(
+		[this](ButiBullet::ContactData& arg_other)
+		{
+			if (arg_other.vwp_gameObject.lock())
+			{
+				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("AliveArea"))
+				{
+					m_vlp_deadTimer->Reset();
 				}
 			}
 		}
@@ -155,6 +169,9 @@ void ButiEngine::FriendFacePart::Start()
 
 	m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
 
+	m_vlp_deadTimer = ObjectFactory::Create<RelativeTimer>(180);
+	m_vlp_deadTimer->Start();
+
 	m_vlp_changeGroupMaskTimer = ObjectFactory::Create<RelativeTimer>(30);
 	m_vlp_changeGroupMaskTimer->Start();
 
@@ -166,8 +183,10 @@ void ButiEngine::FriendFacePart::Start()
 	{
 		m_vwp_rigidBodyComponent.lock()->SetIsAffectedGravity(true);
 		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetGravity(Vector3(0.0f, -1.5f, 0.0f));
+		m_moveDirection.y += 0.5f;
+		m_moveDirection.Normalize();
 		Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * 500);
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * 100);
 	}
 
 	m_state = FacePartState::Move;
@@ -211,7 +230,10 @@ void ButiEngine::FriendFacePart::MoveStay()
 void ButiEngine::FriendFacePart::MoveStraight()
 {
 	Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
-	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * 100);
+	if (m_vwp_rigidBodyComponent.lock())
+	{
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * 100);
+	}
 }
 
 void ButiEngine::FriendFacePart::MoveThrow()
@@ -242,6 +264,11 @@ void ButiEngine::FriendFacePart::StickToFriendHead()
 
 	auto drawObject = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject();
 	drawObject.lock()->AddGameComponent<PartStickAnimation>();
+
+	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/PartHit.wav"));
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
+
+	m_vlp_deadTimer->Stop();
 }
 
 void ButiEngine::FriendFacePart::Chase()
@@ -269,7 +296,7 @@ void ButiEngine::FriendFacePart::Chase()
 
 void ButiEngine::FriendFacePart::ChangeGroupMask()
 {
-	std::int32_t mask;
+	std::int32_t mask = 65535;
 	switch (m_type)
 	{
 	case ButiEngine::PartType::Eye:

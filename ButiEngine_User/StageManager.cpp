@@ -15,6 +15,14 @@ void ButiEngine::StageManager::OnUpdate()
 		return;
 	}
 
+	if (m_vlp_waitPlayBGMTimer->Update())
+	{
+		m_vlp_waitPlayBGMTimer->Stop();
+
+		auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/BGM.wav"));
+		GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlayBGM(sound, 0.1f);
+	}
+
 	if (m_vwp_gameTimer.lock()->GetRemainSecond() == 0)
 	{
 		m_vwp_pauseManager.lock()->SetIsPause(true);
@@ -39,6 +47,7 @@ void ButiEngine::StageManager::OnSet()
 
 void ButiEngine::StageManager::OnRemove()
 {
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->DestroyBGM();
 }
 
 void ButiEngine::StageManager::OnShowUI()
@@ -50,6 +59,8 @@ void ButiEngine::StageManager::Start()
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameTimer = GetManager().lock()->GetGameObject("GameTimer").lock()->GetGameComponent<GameTimer>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+
+	m_vlp_waitPlayBGMTimer = ObjectFactory::Create<RelativeTimer>(30);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::StageManager::Clone()
@@ -60,6 +71,8 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::StageManager::Clone
 void ButiEngine::StageManager::StartGame()
 {
 	m_isGameStart = true;
+
+	m_vlp_waitPlayBGMTimer->Start();
 }
 
 void ButiEngine::StageManager::ResetGame()

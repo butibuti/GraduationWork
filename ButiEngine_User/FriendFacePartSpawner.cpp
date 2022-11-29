@@ -181,7 +181,15 @@ ButiEngine::Vector3 ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartPos()
 std::string ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartName()
 {
 	std::string facePartName;
-	std::int32_t random = ButiRandom::GetInt(0, 3);
+
+	std::int32_t maxRandom = 3;
+	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
+	if (gameLevel >= 3)
+	{
+		maxRandom = 4;
+	}
+
+	std::int32_t random = ButiRandom::GetInt(0, maxRandom);
 	if (random <= 1)
 	{
 		facePartName = "FriendFacePart_Eye";
@@ -193,6 +201,10 @@ std::string ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartName()
 	else if (random <= 3)
 	{
 		facePartName = "FriendFacePart_Mouth";
+	}
+	else if (random <= 4)
+	{
+		facePartName = "FriendFacePart_Dummy";
 	}
 
 	return facePartName;

@@ -35,6 +35,8 @@ namespace ButiEngine {
 		Value_weak_ptr<GameTimer> m_vwp_gameTimer;
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
+		Value_ptr<RelativeTimer> m_vlp_waitPlayBGMTimer;
+
 		bool m_isGameStart;
 		bool m_isGameFinish;
 	};

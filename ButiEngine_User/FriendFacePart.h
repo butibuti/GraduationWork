@@ -73,6 +73,8 @@ namespace ButiEngine {
 
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
 
+		Value_ptr<RelativeTimer> m_vlp_deadTimer;
+
 		Value_ptr<RelativeTimer> m_vlp_changeGroupMaskTimer;
 
 		PartType m_type = PartType::Eye;

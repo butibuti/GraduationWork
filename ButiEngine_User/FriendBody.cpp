@@ -41,7 +41,7 @@ void ButiEngine::FriendBody::Start()
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 
-	gameObject.lock()->transform->SetLocalPosition(m_vwp_gameSettings.lock()->GetBodyPos());
+	//gameObject.lock()->transform->SetLocalPosition(m_vwp_gameSettings.lock()->GetBodyPos());
 
 	m_rotateSpeed = 8.0f;
 

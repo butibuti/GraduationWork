@@ -40,15 +40,12 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameCamera::Clone()
 void ButiEngine::GameCamera::NormalZoom(const std::int32_t arg_zoomInFrame)
 {
 	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
-	m_vwp_lookAt.lock()->SetLookTarget(headCenter.lock()->transform);
+	//m_vwp_lookAt.lock()->SetLookTarget(headCenter.lock()->transform);
 
 	Vector3 dir = (headCenter.lock()->transform->GetLocalPosition() - m_startPos).Normalize();
-	Vector3 targetPos = m_startPos + dir * 1.5f;
+	Vector3 targetPos = m_startPos + dir * 1.125f;
 
 	AddPositionAnimation(targetPos, arg_zoomInFrame);
-
-	m_vlp_waitShakeTimer->ChangeCountFrame(arg_zoomInFrame - 20);
-	m_vlp_waitShakeTimer->Start();
 }
 
 void ButiEngine::GameCamera::SpecialZoom(const std::int32_t arg_zoomInFrame)
@@ -57,7 +54,7 @@ void ButiEngine::GameCamera::SpecialZoom(const std::int32_t arg_zoomInFrame)
 	m_vwp_lookAt.lock()->SetLookTarget(headCenter.lock()->transform);
 
 	Vector3 dir = (headCenter.lock()->transform->GetLocalPosition() - m_startPos).Normalize();
-	Vector3 targetPos = m_startPos + dir * 2.0f;
+	Vector3 targetPos = m_startPos + dir * 3.0f;
 	Vector3 scattering;
 	float radius = 1.0f;
 	scattering.x = ButiRandom::GetRandom(-radius, radius, 10);
@@ -85,9 +82,9 @@ void ButiEngine::GameCamera::Shake(const std::int32_t arg_shakeFrame)
 	shake->SetShakeFrame(arg_shakeFrame);
 	shake->SetShakeSpeed(90.0f);
 	Vector3 amplitude;
-	amplitude.x = ButiRandom::GetRandom(1.0f, 2.0f, 10);
-	amplitude.y = ButiRandom::GetRandom(1.0f, 2.0f, 10);
-	amplitude.z = ButiRandom::GetRandom(1.0f, 2.0f, 10);
+	amplitude.x = ButiRandom::GetRandom(0.5f, 1.0f, 10);
+	amplitude.y = ButiRandom::GetRandom(0.5f, 1.0f, 10);
+	amplitude.z = ButiRandom::GetRandom(0.5f, 1.0f, 10);
 	shake->SetStartAmplitude(amplitude);
 }
 

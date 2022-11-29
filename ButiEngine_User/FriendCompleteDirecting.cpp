@@ -46,11 +46,23 @@ void ButiEngine::FriendCompleteDirecting::OnSet()
 	std::int32_t shakeFrame = 20;
 	m_vwp_gameCamera.lock()->Shake(shakeFrame);
 	
-	m_vlp_waitZoomTimer = ObjectFactory::Create<RelativeTimer>(shakeFrame - 5);
+	if (gameObject.lock()->GetGameComponent<FriendBody>()->GetScore() == 2)
+	{
+		m_vlp_waitZoomTimer = ObjectFactory::Create<RelativeTimer>(shakeFrame - 5);
+	}
+	else
+	{
+		m_vlp_waitZoomTimer = ObjectFactory::Create<RelativeTimer>(5);
+	}
 	m_vlp_waitZoomTimer->Start();
 
-	m_vlp_directingTimer = ObjectFactory::Create<RelativeTimer>(60);
+	m_vlp_directingTimer = ObjectFactory::Create<RelativeTimer>(70);
 	m_vlp_directingTimer->Start();
+
+	GetManager().lock()->AddObjectFromCereal("Effect_CompleteFriend");
+
+	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/CompleteFriend.wav"));
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
 }
 
 void ButiEngine::FriendCompleteDirecting::OnRemove()
