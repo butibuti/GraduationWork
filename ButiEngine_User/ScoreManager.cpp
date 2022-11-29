@@ -2,9 +2,16 @@
 #include "ScoreManager.h"
 #include "FriendHead.h"
 #include "FriendBody.h"
-
+#include"Heart.h"
 void ButiEngine::ScoreManager::OnUpdate()
 {
+#ifdef DEBUG
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::U)) {
+		m_score += 1000;
+		m_vlp_heart->SetScore(m_score);
+	}
+#endif // DEBUG
+
 }
 
 void ButiEngine::ScoreManager::OnSet()
@@ -22,6 +29,7 @@ void ButiEngine::ScoreManager::OnShowUI()
 void ButiEngine::ScoreManager::Start()
 {
 	m_score = 0;
+	m_vlp_heart = GetManager().lock()->GetGameObject("BackHeart").lock()->GetGameComponent<Heart>();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::ScoreManager::Clone()
@@ -48,4 +56,5 @@ void ButiEngine::ScoreManager::CalcScore()
 	std::int32_t addScore = headScore * bodyScore;
 
 	m_score += addScore;
+	m_vlp_heart->SetScore(m_score);
 }

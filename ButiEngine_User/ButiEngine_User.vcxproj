@@ -368,6 +368,7 @@
     <ClCompile Include="GameLevelManager.cpp" />
     <ClCompile Include="GameSettings.cpp" />
     <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="Heart.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LogoSceneManager.cpp" />
     <ClCompile Include="main.cpp">
@@ -378,6 +379,7 @@
     <ClCompile Include="PauseManager.cpp" />
     <ClCompile Include="RemoveMeshDraw.cpp" />
     <ClCompile Include="ScoreManager.cpp" />
+    <ClCompile Include="ScoreNumber.cpp" />
     <ClCompile Include="SeparateDrawObject.cpp" />
     <ClCompile Include="ShakeComponent.cpp" />
     <ClCompile Include="Soldier.cpp" />
@@ -413,6 +415,7 @@
     <ClInclude Include="GameLevelManager.h" />
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="Heart.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LogoSceneManager.h" />
     <ClInclude Include="Naruko.h" />
@@ -420,6 +423,7 @@
     <ClInclude Include="PauseManager.h" />
     <ClInclude Include="RemoveMeshDraw.h" />
     <ClInclude Include="ScoreManager.h" />
+    <ClInclude Include="ScoreNumber.h" />
     <ClInclude Include="SeparateDrawObject.h" />
     <ClInclude Include="ShakeComponent.h" />
     <ClInclude Include="Soldier.h" />
