@@ -126,7 +126,14 @@
     <ClCompile Include="FriendHead_PartHitArea.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Effect_CompleteFriend.cpp">
+=======
+    <ClCompile Include="Heart.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreNumber.cpp">
+>>>>>>> dev_20221129B
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -236,7 +243,14 @@
     <ClInclude Include="FriendHead_PartHitArea.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Effect_CompleteFriend.h">
+=======
+    <ClInclude Include="Heart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreNumber.h">
+>>>>>>> dev_20221129B
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
