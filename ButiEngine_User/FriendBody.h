@@ -22,7 +22,7 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_scoreUpBorder);
+			ARCHIVE_BUTI(m_frontBorder);
 		}
 
 		void SetHead(Value_weak_ptr<GameObject> arg_vwp_head);
@@ -30,15 +30,19 @@ namespace ButiEngine {
 	private:
 		void Rotate();
 		void MoveBack();
+		void StartMoveBack();
 		void SpawnNewHead();
 		void SpawnNewBody();
+		bool IsFront();
 
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 
+		float m_rotateSpeed;
 
 		bool m_isRotate;
-		float m_scoreUpBorder;
+		bool m_isStopRotate;
+		float m_frontBorder;
 
 		bool m_isMoveBack;
 		Value_ptr<RelativeTimer> m_vlp_moveTimer;

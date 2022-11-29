@@ -352,6 +352,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConcentratedLine.cpp" />
     <ClCompile Include="Debug_Camera.cpp" />
     <ClCompile Include="DefaultGameComponent.cpp" />
     <ClCompile Include="Effect_Box.cpp" />
@@ -361,6 +362,7 @@
     <ClCompile Include="FriendFacePart.cpp" />
     <ClCompile Include="FriendFacePartSpawner.cpp" />
     <ClCompile Include="FriendHead.cpp" />
+    <ClCompile Include="FriendHead_PartHitArea.cpp" />
     <ClCompile Include="FriendManager.cpp" />
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="GameLevelManager.cpp" />
@@ -377,6 +379,7 @@
     <ClCompile Include="RemoveMeshDraw.cpp" />
     <ClCompile Include="ScoreManager.cpp" />
     <ClCompile Include="SeparateDrawObject.cpp" />
+    <ClCompile Include="ShakeComponent.cpp" />
     <ClCompile Include="Soldier.cpp" />
     <ClCompile Include="SoldierManager.cpp" />
     <ClCompile Include="SoldierSpawner.cpp" />
@@ -395,6 +398,7 @@
     <ClCompile Include="UI_Score.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConcentratedLine.h" />
     <ClInclude Include="Debug_Camera.h" />
     <ClInclude Include="Effect_Box.h" />
     <ClInclude Include="EnemySpawner.h" />
@@ -403,6 +407,7 @@
     <ClInclude Include="FriendFacePart.h" />
     <ClInclude Include="FriendFacePartSpawner.h" />
     <ClInclude Include="FriendHead.h" />
+    <ClInclude Include="FriendHead_PartHitArea.h" />
     <ClInclude Include="FriendManager.h" />
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="GameLevelManager.h" />
@@ -416,6 +421,7 @@
     <ClInclude Include="RemoveMeshDraw.h" />
     <ClInclude Include="ScoreManager.h" />
     <ClInclude Include="SeparateDrawObject.h" />
+    <ClInclude Include="ShakeComponent.h" />
     <ClInclude Include="Soldier.h" />
     <ClInclude Include="SoldierManager.h" />
     <ClInclude Include="SoldierSpawner.h" />

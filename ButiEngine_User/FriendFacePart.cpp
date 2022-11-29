@@ -9,14 +9,15 @@
 #include "SeparateDrawObject.h"
 #include "PartStickAnimation.h"
 #include "SeparateDrawObject.h"
+#include "FriendHead_PartHitArea.h"
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
 	if (m_vlp_changeGroupMaskTimer->Update())
 	{
 		m_vlp_changeGroupMaskTimer->Stop();
-		//m_vwp_rigidBodyComponent.lock()->SetGroupMask(65530);
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroupMask(65530);
+		ChangeGroupMask();
+		
 	}
 
 	if (!CanUpdate())
@@ -63,6 +64,10 @@ void ButiEngine::FriendFacePart::OnSet()
 					gameObject.lock()->SetIsRemove(true);
 					gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->SetIsRemove(true);
 				}
+				else if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("PartHitArea"))
+				{
+					OnCollisionPartHitArea(arg_other.vwp_gameObject);
+				}
 			}
 		}
 	);
@@ -75,7 +80,7 @@ void ButiEngine::FriendFacePart::OnSet()
 				//ƒ^ƒO”»’è
 				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("FriendHead"))
 				{
-					OnCollisionFriendHead(arg_other.vwp_gameObject);
+					m_isCollisionHead = true;
 				}
 			}
 		}
@@ -89,6 +94,47 @@ void ButiEngine::FriendFacePart::OnRemove()
 
 void ButiEngine::FriendFacePart::OnShowUI()
 {
+	std::string typeStr;
+	switch (m_type)
+	{
+	case ButiEngine::PartType::Eye:
+		typeStr = "Eye";
+		break;
+	case ButiEngine::PartType::Nose:
+		typeStr = "Nose";
+		break;
+	case ButiEngine::PartType::Mouth:
+		typeStr = "Mouth";
+		break;
+	case ButiEngine::PartType::Dummy:
+		typeStr = "Dummy";
+		break;
+	default:
+		break;
+	}
+
+	GUI::BulletText("PartType:" + typeStr);
+
+	if (GUI::Button("Eye"))
+	{
+		m_type = PartType::Eye;
+	}
+	GUI::SameLine();
+	if (GUI::Button("Nose"))
+	{
+		m_type = PartType::Nose;
+	}
+	GUI::SameLine();
+	if (GUI::Button("Mouth"))
+	{
+		m_type = PartType::Mouth;
+	}
+	GUI::SameLine();
+	if (GUI::Button("Dummy"))
+	{
+		m_type = PartType::Dummy;
+	}
+
 	GUI::BulletText(U8("Å’á‘¬“x"));
 	if (GUI::DragFloat("##MinMoveSpeed", &m_minMoveSpeed, 0.01f, 0.0f, 100.0f))
 	{
@@ -128,8 +174,6 @@ void ButiEngine::FriendFacePart::Start()
 	m_vwp_head = GetManager().lock()->GetGameObject("FriendHead");
 	m_vlp_lockOnTimer = ObjectFactory::Create<RelativeTimer>(30);
 	m_vlp_chaseTimer = ObjectFactory::Create<RelativeTimer>(30);
-
-	m_isRayCast = false;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clone()
@@ -137,6 +181,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clo
 	auto clone = ObjectFactory::Create<FriendFacePart>();
 	clone->m_minMoveSpeed = m_minMoveSpeed;
 	clone->m_maxMoveSpeed = m_maxMoveSpeed;
+	clone->m_type = m_type;
 	return clone;
 }
 
@@ -155,57 +200,6 @@ void ButiEngine::FriendFacePart::Move()
 		break;
 	default:
 		break;
-	}
-
-	if (m_isRayCast)
-	{
-		ButiBullet::PhysicsRaycastResult rayRes;
-		if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
-			Raycast(gameObject.lock()->transform->GetWorldPosition(), -gameObject.lock()->transform->GetFront(), 100, 65531, &rayRes))
-		{
-			if (rayRes.physicsObject->GetOwnerData() == m_vwp_head)
-			{
-				//if (!m_vlp_lockOnTimer->IsOn())
-				//{
-				//	m_vlp_lockOnTimer->Start();
-				//}
-
-				//if (m_vlp_lockOnTimer->Update())
-				//{
-				//	m_vlp_lockOnTimer->Stop();
-
-				//	if (!m_vwp_chaseTarget.lock())
-				//	{
-				//		m_state = FacePartState::Chase;
-				//		m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(rayRes.point), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
-				//		m_vwp_chaseTarget.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
-				//		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
-				//		m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
-				//		m_vlp_chaseTimer->Start();
-				//	}
-				//}
-
-				auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
-				if (headComponent)
-				{
-					if (headComponent->IsHighSpeed())
-					{
-						m_state = FacePartState::Chase;
-						Vector3 headVelocity = headComponent->GetVelocity();
-						m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(rayRes.point + headVelocity), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
-						m_vwp_chaseTarget.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
-						m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
-						m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
-						m_vlp_chaseTimer->Start();
-					}
-				}
-			}
-		}
-		else
-		{
-			m_vlp_lockOnTimer->Reset();
-			m_vlp_lockOnTimer->Stop();
-		}
 	}
 }
 
@@ -236,13 +230,15 @@ void ButiEngine::FriendFacePart::SetMoveDirection()
 	m_moveDirection.Normalize();
 }
 
-void ButiEngine::FriendFacePart::StickToFriendHead(Value_weak_ptr<GameObject> arg_vwp_head)
+void ButiEngine::FriendFacePart::StickToFriendHead()
 {
-	gameObject.lock()->transform->SetBaseTransform(arg_vwp_head.lock()->transform);
+	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
+	gameObject.lock()->transform->SetBaseTransform(head.lock()->transform);
 
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
 
 	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->SetIsRemove(true);
 
 	auto drawObject = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject();
 	drawObject.lock()->AddGameComponent<PartStickAnimation>();
@@ -271,45 +267,38 @@ void ButiEngine::FriendFacePart::Chase()
 	}
 }
 
-void ButiEngine::FriendFacePart::OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_head)
+void ButiEngine::FriendFacePart::ChangeGroupMask()
 {
-	if (m_isRayCast)
+	std::int32_t mask;
+	switch (m_type)
 	{
-		return;
+	case ButiEngine::PartType::Eye:
+		mask = 65329;
+		break;
+	case ButiEngine::PartType::Nose:
+		mask = 65361;
+		break;
+	case ButiEngine::PartType::Mouth:
+		mask = 65425;
+		break;
+	case ButiEngine::PartType::Dummy:
+		break;
+	default:
+		break;
 	}
 
-	auto headComponent = arg_vwp_head.lock()->GetGameComponent<FriendHead>();
-	if (!headComponent)
-	{
-		return;
-	}
+	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroupMask(mask);
+}
 
-	if (gameObject.lock()->HasGameObjectTag("Eye"))
-	{
-		if (headComponent->CanStickEye())
-		{
-			StickToFriendHead(arg_vwp_head);
-			headComponent->StickEye(gameObject);
-		}
-	}
-	else if (gameObject.lock()->HasGameObjectTag("Nose"))
-	{
-		if (headComponent->CanStickNose())
-		{
-			StickToFriendHead(arg_vwp_head);
-			headComponent->StickNose(gameObject);
-		}
-	}
-	else if (gameObject.lock()->HasGameObjectTag("Mouth"))
-	{
-		if (headComponent->CanStickMouth())
-		{
-			StickToFriendHead(arg_vwp_head);
-			headComponent->StickMouth(gameObject);
-		}
-	}
+void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea)
+{
+	auto partHitAreaComponent = arg_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 
-	m_isCollisionHead = true;
+	if (partHitAreaComponent->CanStickPart(m_type))
+	{
+		StickToFriendHead();
+		partHitAreaComponent->StickPart(gameObject, m_type);
+	}
 }
 
 bool ButiEngine::FriendFacePart::CanUpdate()

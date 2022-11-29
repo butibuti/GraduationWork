@@ -32,8 +32,8 @@ void ButiEngine::FriendBody::OnRemove()
 
 void ButiEngine::FriendBody::OnShowUI()
 {
-	GUI::BulletText("ScoreUpBorder");
-	GUI::DragFloat("##scoreUpBorder", &m_scoreUpBorder, 0.1f, 0.0f, 180.0f);
+	GUI::BulletText("FrontBorder");
+	GUI::DragFloat("##frontBorder", &m_frontBorder, 0.1f, 0.0f, 180.0f);
 }
 
 void ButiEngine::FriendBody::Start()
@@ -43,16 +43,20 @@ void ButiEngine::FriendBody::Start()
 
 	gameObject.lock()->transform->SetLocalPosition(m_vwp_gameSettings.lock()->GetBodyPos());
 
-	m_isRotate = true;
+	m_rotateSpeed = 8.0f;
 
-	m_vlp_moveTimer = ObjectFactory::Create<RelativeTimer>(120);
+	m_isRotate = true;
+	m_isStopRotate = false;
+	m_isMoveBack = false;
+
+	m_vlp_moveTimer = ObjectFactory::Create<RelativeTimer>(90);
 	m_moveTargetPos = Vector3Const::Zero;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
 {
 	auto clone = ObjectFactory::Create<FriendBody>();
-	clone->m_scoreUpBorder = m_scoreUpBorder;
+	clone->m_frontBorder = m_frontBorder;
 	return clone;
 }
 
@@ -62,19 +66,9 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	arg_vwp_head.lock()->transform->SetLocalPosition(Vector3Const::Zero);
 
 	gameObject.lock()->AddGameComponent<FriendCompleteDirecting>();
-
-	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
-
-	m_moveStartPos = pos;
-
-	m_moveTargetPos.x = pos.x + (ButiRandom::GetInt(-5, 5));
-	m_moveTargetPos.y = pos.y;
-	m_moveTargetPos.z = pos.z + (ButiRandom::GetInt(-10, -5));
-
-	m_isMoveBack = true;
-	m_vlp_moveTimer->Start();
-
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendBody"));
+
+	StartMoveBack();
 }
 
 std::int32_t ButiEngine::FriendBody::GetScore()
@@ -85,7 +79,7 @@ std::int32_t ButiEngine::FriendBody::GetScore()
 	//³–Ê‚ðŒü‚¢‚Ä‚¢‚½‚çƒXƒRƒA”{
 	float rotation = gameObject.lock()->transform->GetLocalRotation_Euler().y;
 
-	if (abs(rotation) <= m_scoreUpBorder)
+	if (IsFront())
 	{
 		score = 2;
 	}
@@ -95,7 +89,15 @@ std::int32_t ButiEngine::FriendBody::GetScore()
 
 void ButiEngine::FriendBody::Rotate()
 {
-	gameObject.lock()->transform->RollLocalRotationY_Degrees(2.0f);
+	gameObject.lock()->transform->RollLocalRotationY_Degrees(m_rotateSpeed * GameDevice::GetWorldSpeed());
+
+	if (m_isStopRotate)
+	{
+		if (IsFront())
+		{
+			m_isRotate = false;
+		}
+	}
 }
 
 void ButiEngine::FriendBody::MoveBack()
@@ -109,13 +111,27 @@ void ButiEngine::FriendBody::MoveBack()
 	{
 		m_vlp_moveTimer->Stop();
 		m_isMoveBack = false;
-		m_isRotate = false;
+		m_isStopRotate = true;
 
 		gameObject.lock()->transform->SetLocalPosition(m_moveTargetPos);
 
 		SpawnNewHead();
 		SpawnNewBody();
 	}
+}
+
+void ButiEngine::FriendBody::StartMoveBack()
+{
+	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
+
+	m_moveStartPos = pos;
+
+	m_moveTargetPos.x = pos.x + (ButiRandom::GetInt(-5, 5));
+	m_moveTargetPos.y = pos.y;
+	m_moveTargetPos.z = pos.z + (ButiRandom::GetInt(-10, -5));
+
+	m_isMoveBack = true;
+	m_vlp_moveTimer->Start();
 }
 
 void ButiEngine::FriendBody::SpawnNewHead()
@@ -126,4 +142,12 @@ void ButiEngine::FriendBody::SpawnNewHead()
 void ButiEngine::FriendBody::SpawnNewBody()
 {
 	GetManager().lock()->AddObjectFromCereal("FriendBody");
+}
+
+bool ButiEngine::FriendBody::IsFront()
+{
+	Vector3 front = gameObject.lock()->transform->GetFront();
+	float angle = abs(MathHelper::ToDegree(std::acos(front.Dot(Vector3Const::ZAxis))));
+
+	return angle <= m_frontBorder;
 }

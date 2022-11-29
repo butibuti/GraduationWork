@@ -2,6 +2,14 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	enum class PartType
+	{
+		Eye,
+		Nose,
+		Mouth,
+		Dummy,
+	};
+
 	enum class FacePartState
 	{
 		Move,
@@ -39,6 +47,7 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_minMoveSpeed);
 			ARCHIVE_BUTI(m_maxMoveSpeed);
+			ARCHIVE_BUTI(m_type);
 		}
 
 		void SetMovePattern(const MovePattern arg_movePattern) { m_movePattern = arg_movePattern; }
@@ -49,11 +58,13 @@ namespace ButiEngine {
 		void MoveStraight();
 		void MoveThrow();
 		void SetMoveDirection();
-		void StickToFriendHead(Value_weak_ptr<GameObject> arg_vwp_head);
+		void StickToFriendHead();
 
 		void Chase();
 
-		void OnCollisionFriendHead(Value_weak_ptr<GameObject> arg_vwp_head);
+		void ChangeGroupMask();
+
+		void OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
 
 		bool CanUpdate();
 
@@ -63,6 +74,8 @@ namespace ButiEngine {
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
 
 		Value_ptr<RelativeTimer> m_vlp_changeGroupMaskTimer;
+
+		PartType m_type = PartType::Eye;
 		
 		MovePattern m_movePattern = MovePattern::Stay;
 
@@ -78,8 +91,6 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_chaseTarget;
 		Value_ptr<RelativeTimer> m_vlp_lockOnTimer;
 		Value_ptr<RelativeTimer> m_vlp_chaseTimer;
-
-		bool m_isRayCast;
 	};
 
 }

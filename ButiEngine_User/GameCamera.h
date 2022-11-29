@@ -24,13 +24,15 @@ namespace ButiEngine {
 		void NormalZoom(const std::int32_t arg_zoomInFrame);
 		void SpecialZoom(const std::int32_t arg_zoomInFrame);
 		void ZoomOut(const std::int32_t arg_zoomOutFrame);
+		void Shake(const std::int32_t arg_shakeFrame);
 	private:
 		void AddPositionAnimation(const Vector3& arg_targetPos, const std::int32_t arg_animFrame);
-		void StartShake(const std::int32_t arg_shakeFrame);
 
 		Value_weak_ptr<LookAtComponent> m_vwp_lookAt;
 
 		Vector3 m_startPos;
+
+		Value_ptr<RelativeTimer> m_vlp_waitShakeTimer;
 	};
 
 }
