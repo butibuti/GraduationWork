@@ -15,6 +15,7 @@ void ButiEngine::ScoreNumber::OnUpdate()
 	}
 	if (m_vlp_timer->GetPercent() >= 0.25f && !m_isChanged) {
 		ChangeNumberMesh();
+		m_vlp_timer->SetCount(m_vlp_timer->GetCurrentCountFrame() + rotateFrame * 0.5f);
 	}
 	gameObject.lock()->transform->SetLocalRotationX_Degrees(-360.0f * m_vlp_timer->GetPercent());
 }
