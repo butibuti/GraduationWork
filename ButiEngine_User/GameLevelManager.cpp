@@ -112,7 +112,7 @@ void ButiEngine::GameLevelManager::LevelUp()
 
 	if (m_gameLevel == 0)
 	{
-		m_gameLevel++;
+		m_gameLevel = 2;
 		m_vwp_friendManager.lock()->ResetCurrentLevelFriendCount();
 		return;
 	}

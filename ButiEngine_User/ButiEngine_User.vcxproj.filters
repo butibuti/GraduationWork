@@ -1,262 +1,92 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="ConcentratedLine.cpp" />
+    <ClCompile Include="Debug_Camera.cpp" />
+    <ClCompile Include="DefaultGameComponent.cpp" />
+    <ClCompile Include="Effect_Box.cpp" />
+    <ClCompile Include="Effect_CompleteFriend.cpp" />
+    <ClCompile Include="EnemySpawner.cpp" />
+    <ClCompile Include="FriendBody.cpp" />
+    <ClCompile Include="FriendCompleteDirecting.cpp" />
+    <ClCompile Include="FriendFacePart.cpp" />
+    <ClCompile Include="FriendFacePartSpawner.cpp" />
+    <ClCompile Include="FriendHead.cpp" />
+    <ClCompile Include="FriendHead_PartHitArea.cpp" />
+    <ClCompile Include="FriendManager.cpp" />
+    <ClCompile Include="GameCamera.cpp" />
+    <ClCompile Include="GameLevelManager.cpp" />
+    <ClCompile Include="GameSettings.cpp" />
+    <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="Heart.cpp" />
+    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="LogoSceneManager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Naruko.cpp" />
+    <ClCompile Include="PartStickAnimation.cpp" />
+    <ClCompile Include="PauseManager.cpp" />
+    <ClCompile Include="RemoveMeshDraw.cpp" />
+    <ClCompile Include="ScoreManager.cpp" />
+    <ClCompile Include="ScoreNumber.cpp" />
+    <ClCompile Include="SeparateDrawObject.cpp" />
+    <ClCompile Include="ShakeComponent.cpp" />
+    <ClCompile Include="Soldier.cpp" />
+    <ClCompile Include="SoldierManager.cpp" />
+    <ClCompile Include="SoldierSpawner.cpp" />
+    <ClCompile Include="EditorObject.cpp" />
+    <ClCompile Include="StageManager.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="TestBehavior.cpp" />
+    <ClCompile Include="Enemy_Test.cpp" />
+    <ClCompile Include="UI_GameLevel.cpp" />
+    <ClCompile Include="UI_RemainTime.cpp" />
+    <ClCompile Include="UI_Score.cpp" />
+    <ClCompile Include="Effect_PartHitFlash.cpp" />
+    <ClCompile Include="Effect_Hukidashi.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestBehavior.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LogoSceneManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DefaultGameComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SeparateDrawObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Soldier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Naruko.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SoldierSpawner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy_Test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemySpawner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ScoreManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SoldierManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI_Score.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameTimer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI_RemainTime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FriendHead.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameSettings.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FriendFacePart.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EditorObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FriendFacePartSpawner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RemoveMeshDraw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug_Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Effect_Box.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StageManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameLevelManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FriendManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PauseManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI_GameLevel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FriendBody.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PartStickAnimation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FriendCompleteDirecting.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShakeComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConcentratedLine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FriendHead_PartHitArea.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="Effect_CompleteFriend.cpp">
-=======
-    <ClCompile Include="Heart.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ScoreNumber.cpp">
->>>>>>> dev_20221129B
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="ConcentratedLine.h" />
+    <ClInclude Include="Debug_Camera.h" />
+    <ClInclude Include="Effect_Box.h" />
+    <ClInclude Include="Effect_CompleteFriend.h" />
+    <ClInclude Include="EnemySpawner.h" />
+    <ClInclude Include="FriendBody.h" />
+    <ClInclude Include="FriendCompleteDirecting.h" />
+    <ClInclude Include="FriendFacePart.h" />
+    <ClInclude Include="FriendFacePartSpawner.h" />
+    <ClInclude Include="FriendHead.h" />
+    <ClInclude Include="FriendHead_PartHitArea.h" />
+    <ClInclude Include="FriendManager.h" />
+    <ClInclude Include="GameCamera.h" />
+    <ClInclude Include="GameLevelManager.h" />
+    <ClInclude Include="GameSettings.h" />
+    <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="Heart.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="LogoSceneManager.h" />
+    <ClInclude Include="Naruko.h" />
+    <ClInclude Include="PartStickAnimation.h" />
+    <ClInclude Include="PauseManager.h" />
+    <ClInclude Include="RemoveMeshDraw.h" />
+    <ClInclude Include="ScoreManager.h" />
+    <ClInclude Include="ScoreNumber.h" />
+    <ClInclude Include="SeparateDrawObject.h" />
+    <ClInclude Include="ShakeComponent.h" />
+    <ClInclude Include="Soldier.h" />
+    <ClInclude Include="SoldierManager.h" />
+    <ClInclude Include="SoldierSpawner.h" />
+    <ClInclude Include="EditorObject.h" />
+    <ClInclude Include="StageManager.h" />
+    <ClInclude Include="stdafx_u.h" />
+    <ClInclude Include="TestBehavior.h" />
+    <ClInclude Include="Enemy_Test.h" />
+    <ClInclude Include="UI_GameLevel.h" />
+    <ClInclude Include="UI_RemainTime.h" />
+    <ClInclude Include="UI_Score.h" />
+    <ClInclude Include="Effect_PartHitFlash.h" />
+    <ClInclude Include="Effect_Hukidashi.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx_u.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestBehavior.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LogoSceneManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Soldier.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Naruko.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SoldierSpawner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy_Test.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnemySpawner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScoreManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SoldierManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI_Score.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameTimer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI_RemainTime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FriendHead.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameSettings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FriendFacePart.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EditorObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FriendFacePartSpawner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RemoveMeshDraw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Debug_Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Effect_Box.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StageManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameLevelManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FriendManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PauseManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI_GameLevel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SeparateDrawObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FriendBody.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PartStickAnimation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FriendCompleteDirecting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShakeComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConcentratedLine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FriendHead_PartHitArea.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-<<<<<<< HEAD
-    <ClInclude Include="Effect_CompleteFriend.h">
-=======
-    <ClInclude Include="Heart.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScoreNumber.h">
->>>>>>> dev_20221129B
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\output\Debug\Resources\Application\ButiEngine.ini">
-      <Filter>Resource Files</Filter>
-    </None>
+    <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />
   </ItemGroup>
 </Project>

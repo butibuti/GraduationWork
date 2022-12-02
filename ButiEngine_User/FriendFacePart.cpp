@@ -10,14 +10,20 @@
 #include "PartStickAnimation.h"
 #include "SeparateDrawObject.h"
 #include "FriendHead_PartHitArea.h"
+#include "GameLevelManager.h"
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
 	if (m_vlp_deadTimer->Update())
 	{
 		m_vlp_deadTimer->Stop();
-		gameObject.lock()->SetIsRemove(true);
-		gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->SetIsRemove(true);
+		Dead();
+	}
+
+	if (m_vlp_lifeTimer && m_vlp_lifeTimer->Update())
+	{
+		m_vlp_lifeTimer->Stop();
+		Dead();
 	}
 
 	if (m_vlp_changeGroupMaskTimer->Update())
@@ -172,6 +178,15 @@ void ButiEngine::FriendFacePart::Start()
 	m_vlp_deadTimer = ObjectFactory::Create<RelativeTimer>(180);
 	m_vlp_deadTimer->Start();
 
+	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
+
+	if (gameLevel != 0)
+	{
+		m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(600);
+		m_vlp_lifeTimer->Start();
+	}
+
 	m_vlp_changeGroupMaskTimer = ObjectFactory::Create<RelativeTimer>(30);
 	m_vlp_changeGroupMaskTimer->Start();
 
@@ -202,6 +217,12 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clo
 	clone->m_maxMoveSpeed = m_maxMoveSpeed;
 	clone->m_type = m_type;
 	return clone;
+}
+
+void ButiEngine::FriendFacePart::Dead()
+{
+	gameObject.lock()->SetIsRemove(true);
+	gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->SetIsRemove(true);
 }
 
 void ButiEngine::FriendFacePart::Move()
@@ -252,23 +273,32 @@ void ButiEngine::FriendFacePart::SetMoveDirection()
 	m_moveDirection.Normalize();
 }
 
-void ButiEngine::FriendFacePart::StickToFriendHead()
+void ButiEngine::FriendFacePart::StickToFriendHead(Value_weak_ptr<GameObject> arg_vwp_partHitArea)
 {
 	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
 	gameObject.lock()->transform->SetBaseTransform(head.lock()->transform);
 
+	gameObject.lock()->transform->SetLocalPositionZ(arg_vwp_partHitArea.lock()->transform->GetLocalPosition().z);
+
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
 
 	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
-	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->SetIsRemove(true);
+	//gameObject.lock()->GetGameComponent<MeshDrawComponent>()->SetIsRemove(true);
 
 	auto drawObject = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject();
 	drawObject.lock()->AddGameComponent<PartStickAnimation>();
+
+	auto partHitFlash = GetManager().lock()->AddObjectFromCereal("Effect_PartHitFlash");
+	partHitFlash.lock()->transform->SetLocalPosition(gameObject.lock()->transform->GetWorldPosition());
 
 	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/PartHit.wav"));
 	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
 
 	m_vlp_deadTimer->Stop();
+	if (m_vlp_lifeTimer)
+	{
+		m_vlp_lifeTimer->Stop();
+	}
 }
 
 void ButiEngine::FriendFacePart::Chase()
@@ -300,15 +330,16 @@ void ButiEngine::FriendFacePart::ChangeGroupMask()
 	switch (m_type)
 	{
 	case ButiEngine::PartType::Eye:
-		mask = 65329;
+		mask = 65313;
 		break;
 	case ButiEngine::PartType::Nose:
-		mask = 65361;
+		mask = 65345;
 		break;
 	case ButiEngine::PartType::Mouth:
-		mask = 65425;
+		mask = 65409;
 		break;
 	case ButiEngine::PartType::Dummy:
+		mask = 65505;
 		break;
 	default:
 		break;
@@ -323,7 +354,7 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 
 	if (partHitAreaComponent->CanStickPart(m_type))
 	{
-		StickToFriendHead();
+		StickToFriendHead(arg_vwp_partHitArea);
 		partHitAreaComponent->StickPart(gameObject, m_type);
 	}
 }

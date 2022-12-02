@@ -36,6 +36,8 @@ namespace ButiEngine {
 		std::int32_t GetEyeScore();
 		std::int32_t GetNoseScore();
 		std::int32_t GetMouthScore();
+
+		bool IsBeautiful();
 	private:
 		void Control();
 		void ControlByGamePad();

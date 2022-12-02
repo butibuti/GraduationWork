@@ -8,7 +8,7 @@ void ButiEngine::GameCamera::OnUpdate()
 	if (m_vlp_waitShakeTimer->Update())
 	{
 		m_vlp_waitShakeTimer->Stop();
-		Shake(20);
+		StartShake(20);
 	}
 }
 
@@ -40,7 +40,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameCamera::Clone()
 void ButiEngine::GameCamera::NormalZoom(const std::int32_t arg_zoomInFrame)
 {
 	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
-	//m_vwp_lookAt.lock()->SetLookTarget(headCenter.lock()->transform);
+	m_vwp_lookAt.lock()->SetLookTarget(headCenter.lock()->transform);
 
 	Vector3 dir = (headCenter.lock()->transform->GetLocalPosition() - m_startPos).Normalize();
 	Vector3 targetPos = m_startPos + dir * 1.125f;
@@ -76,7 +76,7 @@ void ButiEngine::GameCamera::ZoomOut(const std::int32_t arg_zoomOutFrame)
 	AddPositionAnimation(m_startPos, arg_zoomOutFrame);
 }
 
-void ButiEngine::GameCamera::Shake(const std::int32_t arg_shakeFrame)
+void ButiEngine::GameCamera::StartShake(const std::int32_t arg_shakeFrame)
 {
 	auto shake = gameObject.lock()->AddGameComponent<ShakeComponent>();
 	shake->SetShakeFrame(arg_shakeFrame);
@@ -86,6 +86,12 @@ void ButiEngine::GameCamera::Shake(const std::int32_t arg_shakeFrame)
 	amplitude.y = ButiRandom::GetRandom(0.5f, 1.0f, 10);
 	amplitude.z = ButiRandom::GetRandom(0.5f, 1.0f, 10);
 	shake->SetStartAmplitude(amplitude);
+}
+
+void ButiEngine::GameCamera::StopShake()
+{
+	auto shake = gameObject.lock()->GetGameComponent<ShakeComponent>();
+	shake->SetIsRemove(true);
 }
 
 void ButiEngine::GameCamera::AddPositionAnimation(const Vector3& arg_targetPos, const std::int32_t arg_animFrame)

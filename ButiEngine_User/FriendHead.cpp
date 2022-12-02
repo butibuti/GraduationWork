@@ -8,6 +8,7 @@
 #include "FriendBody.h"
 #include "ScoreManager.h"
 #include "FriendHead_PartHitArea.h"
+#include "GameLevelManager.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
@@ -19,7 +20,6 @@ void ButiEngine::FriendHead::OnUpdate()
 	Control();
 	CalcVelocity();
 	CheckPut();
-	//CheckSpawnBody();
 
 #ifdef DEBUG
 	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::B))
@@ -95,7 +95,7 @@ void ButiEngine::FriendHead::Start()
 	m_vwp_noseHitArea.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
 	m_vwp_mouthHitArea.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
 
-	m_vlp_putTimer = ObjectFactory::Create<RelativeTimer>(10);
+	m_vlp_putTimer = ObjectFactory::Create<RelativeTimer>(1);
 
 	m_isPut = false;
 }
@@ -109,6 +109,14 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
 
 std::int32_t ButiEngine::FriendHead::GetEyeScore()
 {
+	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
+
+	if (gameLevel == 0)
+	{
+		return 0;
+	}
+
 	std::int32_t score = 0;
 	score += m_vwp_leftEyeHitAreaComponent.lock()->GetCalcScore();
 	score += m_vwp_rightEyeHitAreaComponent.lock()->GetCalcScore();
@@ -117,12 +125,47 @@ std::int32_t ButiEngine::FriendHead::GetEyeScore()
 
 std::int32_t ButiEngine::FriendHead::GetNoseScore()
 {
+	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
+
+	if (gameLevel == 0)
+	{
+		return 0;
+	}
+
 	return m_vwp_noseHitAreaComponent.lock()->GetCalcScore();
 }
 
 std::int32_t ButiEngine::FriendHead::GetMouthScore()
 {
+	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
+
+	if (gameLevel == 0)
+	{
+		return 0;
+	}
+
 	return m_vwp_mouthHitAreaComponent.lock()->GetCalcScore();
+}
+
+bool ButiEngine::FriendHead::IsBeautiful()
+{
+	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
+
+	if (gameLevel == 0)
+	{
+		return false;
+	}
+
+	std::int32_t dummyPartCount = 0;
+	dummyPartCount += m_vwp_leftEyeHitAreaComponent.lock()->GetDummyPartCount();
+	dummyPartCount += m_vwp_rightEyeHitAreaComponent.lock()->GetDummyPartCount();
+	dummyPartCount += m_vwp_noseHitAreaComponent.lock()->GetDummyPartCount();
+	dummyPartCount += m_vwp_mouthHitAreaComponent.lock()->GetDummyPartCount();
+	
+	return dummyPartCount == 0;
 }
 
 void ButiEngine::FriendHead::Control()
@@ -191,10 +234,11 @@ void ButiEngine::FriendHead::ControlByVRTracker()
 void ButiEngine::FriendHead::OnPut()
 {
 	GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->CalcScore();
-	m_vwp_friendManager.lock()->AddFriendCount();
 
 	auto body = GetManager().lock()->GetGameObject(GameObjectTag("FriendBody"));
 	body.lock()->GetGameComponent<FriendBody>()->SetHead(gameObject);
+
+	m_vwp_friendManager.lock()->AddFriendCount();
 
 	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 
@@ -226,36 +270,57 @@ void ButiEngine::FriendHead::CheckPut()
 		return;
 	}
 
-	//‘ä‚É‹ß‚­‚ÄˆÚ“®‘¬“x‚ª’x‚©‚Á‚½‚ç’u‚¢‚½‚Æ”»’è‚·‚é
-	Matrix4x4 deviceMatrix;
-	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
-	Vector3 pos = deviceMatrix.GetPosition();
-	Vector3 tablePos = m_vwp_gameSettings.lock()->GetTablePos();
+	////‘ä‚É‹ß‚­‚ÄˆÚ“®‘¬“x‚ª’x‚©‚Á‚½‚ç’u‚¢‚½‚Æ”»’è‚·‚é
+	//Matrix4x4 deviceMatrix;
+	//GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
+	//Vector3 pos = deviceMatrix.GetPosition();
+	//Vector3 tablePos = m_vwp_gameSettings.lock()->GetTablePos();
 
-	constexpr float putTelerance = 0.05f;
-	constexpr float putMoveSpeedBorder = 0.01f;
+	constexpr float putTeleranceY = 0.05f;
+	constexpr float putTeleranceXZ = 0.75f;
+	//constexpr float putMoveSpeedBorder = 0.01f;
 
-	float distanceSqr = (pos - tablePos).GetLengthSqr();
-	float putTleranceSqr = putTelerance * putTelerance;
+	//float distanceY = abs(pos.y - tablePos.y);
+	//float distanceYSqr = distanceY * distanceY;
+	//float putTleranceYSqr = putTeleranceY * putTeleranceY;
+	//float distanceXZSqr = (Vector2(pos.x, pos.z) - Vector2(tablePos.x, tablePos.z)).GetLengthSqr();
 
-	float moveSpeedSqr = abs(m_velocity.GetLengthSqr());
-	float putMoveSpeedBorderSqr = putMoveSpeedBorder * putMoveSpeedBorder;
+	//float moveSpeedSqr = abs(m_velocity.GetLengthSqr());
+	//float putMoveSpeedBorderSqr = putMoveSpeedBorder * putMoveSpeedBorder;
 
-	if (distanceSqr <= putTleranceSqr && moveSpeedSqr <= putMoveSpeedBorderSqr)
+	//if (distanceYSqr <= putTleranceYSqr && 
+	//	distanceXZSqr <= putTeleranceXZ && 
+	//	moveSpeedSqr <= putMoveSpeedBorderSqr)
+	//{
+	//	if (!m_vlp_putTimer->IsOn())
+	//	{
+	//		m_vlp_putTimer->Start();
+	//	}
+
+	//	if (m_vlp_putTimer->Update())
+	//	{
+	//		OnPut();
+	//	}
+	//}
+	//else
+	//{
+	//	m_vlp_putTimer->Reset();
+	//}
+
+	auto body = GetManager().lock()->GetGameObject(GameObjectTag("FriendBody"));
+	if (!body.lock())
 	{
-		if (!m_vlp_putTimer->IsOn())
-		{
-			m_vlp_putTimer->Start();
-		}
-
-		if (m_vlp_putTimer->Update())
-		{
-			OnPut();
-		}
+		return;
 	}
-	else
+
+	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
+	Vector3 bodyPos = body.lock()->transform->GetLocalPosition();
+
+	float distanceSqr = (pos - bodyPos).GetLengthSqr();
+
+	if (distanceSqr <= putTeleranceXZ)
 	{
-		m_vlp_putTimer->Reset();
+		OnPut();
 	}
 }
 

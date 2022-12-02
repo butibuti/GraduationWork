@@ -357,6 +357,8 @@
     <ClCompile Include="DefaultGameComponent.cpp" />
     <ClCompile Include="Effect_Box.cpp" />
     <ClCompile Include="Effect_CompleteFriend.cpp" />
+    <ClCompile Include="Effect_Hukidashi.cpp" />
+    <ClCompile Include="Effect_PartHitFlash.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="FriendBody.cpp" />
     <ClCompile Include="FriendCompleteDirecting.cpp" />
@@ -405,6 +407,8 @@
     <ClInclude Include="Debug_Camera.h" />
     <ClInclude Include="Effect_Box.h" />
     <ClInclude Include="Effect_CompleteFriend.h" />
+    <ClInclude Include="Effect_Hukidashi.h" />
+    <ClInclude Include="Effect_PartHitFlash.h" />
     <ClInclude Include="EnemySpawner.h" />
     <ClInclude Include="FriendBody.h" />
     <ClInclude Include="FriendCompleteDirecting.h" />

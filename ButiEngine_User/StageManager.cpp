@@ -8,7 +8,7 @@ void ButiEngine::StageManager::OnUpdate()
 {
 	if (!m_isGameStart)
 	{
-		if (m_vwp_gameLevelManager.lock()->GetGameLevel() == 1)
+		if (m_vwp_gameLevelManager.lock()->GetGameLevel() == 2)
 		{
 			StartGame();
 		}
@@ -19,8 +19,8 @@ void ButiEngine::StageManager::OnUpdate()
 	{
 		m_vlp_waitPlayBGMTimer->Stop();
 
-		auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/BGM.wav"));
-		GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlayBGM(sound, 0.1f);
+		//auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/BGM.wav"));
+		//GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlayBGM(sound, 0.1f);
 	}
 
 	if (m_vwp_gameTimer.lock()->GetRemainSecond() == 0)

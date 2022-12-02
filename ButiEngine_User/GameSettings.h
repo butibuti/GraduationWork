@@ -51,8 +51,10 @@ namespace ButiEngine {
 
 	private:
 		void SetOrigin();
-		void SetMoveAreaFrontRightTop();
-		void SetMoveAreaBackLeftBottom();
+		void SetMoveAreaFront();
+		void SetMoveAreaRightTop();
+		void SetMoveAreaBack();
+		void SetMoveAreaLeftBottom();
 		void SetTablePos();
 
 		GameSettingsData m_data;

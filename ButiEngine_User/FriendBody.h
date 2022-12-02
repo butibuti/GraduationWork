@@ -4,6 +4,7 @@ namespace ButiEngine {
 
 	class GameSettings;
 	class PauseManager;
+	class GameLevelManager;
 
 	class FriendBody :public GameComponent
 	{
@@ -23,31 +24,43 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_frontBorder);
+			ARCHIVE_BUTI(m_vec_rotateSpeeds);
+			ARCHIVE_BUTI(m_vec_moveHorizontalFrame);
 		}
 
 		void SetHead(Value_weak_ptr<GameObject> arg_vwp_head);
-		std::int32_t GetScore();
+		
+		bool IsFront();
+		bool IsFast();
 	private:
 		void Rotate();
 		void MoveBack();
 		void StartMoveBack();
+		void MoveHorizontal();
+
 		void SpawnNewHead();
 		void SpawnNewBody();
-		bool IsFront();
 
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
+		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
-		float m_rotateSpeed;
+		std::vector<float> m_vec_rotateSpeeds;
 
 		bool m_isRotate;
 		bool m_isStopRotate;
 		float m_frontBorder;
 
 		bool m_isMoveBack;
-		Value_ptr<RelativeTimer> m_vlp_moveTimer;
-		Vector3 m_moveStartPos;
-		Vector3 m_moveTargetPos;
+		Value_ptr<RelativeTimer> m_vlp_moveBackTimer;
+		Vector3 m_moveBackStartPos;
+		Vector3 m_moveBackTargetPos;
+
+		std::vector<std::int32_t> m_vec_moveHorizontalFrame;
+		bool m_isMoveHorizontal;
+		Value_ptr<RelativeTimer> m_vlp_moveHorizontalTimer;
+		Vector3 m_moveHorizontalStartPos;
+		Vector3 m_moveHorizontalTargetPos;
 	};
 
 }

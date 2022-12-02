@@ -52,13 +52,14 @@ namespace ButiEngine {
 
 		void SetMovePattern(const MovePattern arg_movePattern) { m_movePattern = arg_movePattern; }
 
+		void Dead();
 	private:
 		void Move();
 		void MoveStay();
 		void MoveStraight();
 		void MoveThrow();
 		void SetMoveDirection();
-		void StickToFriendHead();
+		void StickToFriendHead(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
 
 		void Chase();
 
@@ -74,6 +75,7 @@ namespace ButiEngine {
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
 
 		Value_ptr<RelativeTimer> m_vlp_deadTimer;
+		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
 
 		Value_ptr<RelativeTimer> m_vlp_changeGroupMaskTimer;
 

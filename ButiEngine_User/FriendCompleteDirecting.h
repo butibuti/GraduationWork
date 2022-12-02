@@ -24,12 +24,20 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 		}
 	private:
+		void SpawnHukidashi();
+		void SetHukidashiParameter();
+
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_weak_ptr<GameObject> m_vwp_cameraMan;
 		Value_weak_ptr<GameCamera> m_vwp_gameCamera;
 
 		Value_ptr<RelativeTimer> m_vlp_directingTimer;
 		Value_ptr<RelativeTimer> m_vlp_waitZoomTimer;
+
+		bool m_isSpecialDirecting;
+
+		Value_ptr<RelativeTimer> m_vlp_spawnHukidashiIntervalTimer;
+		std::vector<std::string> m_vec_hukidashiNames;
 	};
 
 }

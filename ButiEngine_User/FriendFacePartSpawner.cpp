@@ -58,16 +58,10 @@ void ButiEngine::FriendFacePartSpawner::OnShowUI()
 		GUI::DragInt("##MaxFacePartCount" + std::to_string(i), m_vec_maxFacePartCounts[i], 1.0f, 0, 100);
 
 		GUI::BulletText(U8("ê∂ê¨Ç∑ÇÈä‘äuÇÃâ∫å¿"));
-		if (GUI::DragInt("##MinSpawnIntervalFrame" + std::to_string(i), m_vec_minSpawnIntervalFrames[i], 1.0f, 0, 600))
-		{
-			SetSpawnInterval();
-		}
+		GUI::DragInt("##MinSpawnIntervalFrame" + std::to_string(i), m_vec_minSpawnIntervalFrames[i], 1.0f, 0, 600);
 
 		GUI::BulletText(U8("ê∂ê¨Ç∑ÇÈä‘äuÇÃè„å¿"));
-		if (GUI::DragInt("##MaxSpawnIntervalFrame" + std::to_string(i), m_vec_maxSpawnIntervalFrames[i], 1.0f, 0, 600))
-		{
-			SetSpawnInterval();
-		}
+		GUI::DragInt("##MaxSpawnIntervalFrame" + std::to_string(i), m_vec_maxSpawnIntervalFrames[i], 1.0f, 0, 600);
 	}
 }
 
