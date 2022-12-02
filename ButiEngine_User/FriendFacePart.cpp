@@ -205,7 +205,6 @@ void ButiEngine::FriendFacePart::Start()
 	}
 
 	m_state = FacePartState::Move;
-	m_vwp_head = GetManager().lock()->GetGameObject("FriendHead");
 	m_vlp_lockOnTimer = ObjectFactory::Create<RelativeTimer>(30);
 	m_vlp_chaseTimer = ObjectFactory::Create<RelativeTimer>(30);
 }
@@ -245,7 +244,6 @@ void ButiEngine::FriendFacePart::Move()
 
 void ButiEngine::FriendFacePart::MoveStay()
 {
-	//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
 }
 
 void ButiEngine::FriendFacePart::MoveStraight()
@@ -283,7 +281,6 @@ void ButiEngine::FriendFacePart::StickToFriendHead(Value_weak_ptr<GameObject> ar
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
 
 	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
-	//gameObject.lock()->GetGameComponent<MeshDrawComponent>()->SetIsRemove(true);
 
 	auto drawObject = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject();
 	drawObject.lock()->AddGameComponent<PartStickAnimation>();
@@ -314,7 +311,8 @@ void ButiEngine::FriendFacePart::Chase()
 		m_vlp_chaseTimer->Stop();
 
 		gameObject.lock()->transform->SetLocalPosition(m_vwp_chaseTarget.lock()->transform->GetWorldPosition());
-		gameObject.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
+		auto friendHead = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
+		gameObject.lock()->transform->SetBaseTransform(friendHead.lock()->transform);
 
 		m_vwp_chaseTarget.lock()->SetIsRemove(true);
 		m_vwp_chaseTarget = Value_weak_ptr<GameObject>();

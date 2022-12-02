@@ -186,7 +186,7 @@ std::string ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartName()
 	std::int32_t random = ButiRandom::GetInt(0, maxRandom);
 	if (random <= 1)
 	{
-		facePartName = "FriendFacePart_Eye";
+		facePartName = "FriendFacePart_Eyes";
 	}
 	else if (random <= 2)
 	{

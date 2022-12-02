@@ -49,6 +49,8 @@ namespace ButiEngine {
 		bool CanPut();
 		bool CanUpdate();
 
+		void SetPartHitAreaParameter();
+
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
@@ -66,15 +68,18 @@ namespace ButiEngine {
 		Vector3 m_velocity;
 
 		//各パーツがくっつく範囲
-		Value_weak_ptr<GameObject> m_vwp_leftEyeHitArea;
-		Value_weak_ptr<GameObject> m_vwp_rightEyeHitArea;
+		Value_weak_ptr<GameObject> m_vwp_eyesHitArea;
 		Value_weak_ptr<GameObject> m_vwp_noseHitArea;
 		Value_weak_ptr<GameObject> m_vwp_mouthHitArea;
 
-		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_leftEyeHitAreaComponent;
-		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_rightEyeHitAreaComponent;
+		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_eyesHitAreaComponent;
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_noseHitAreaComponent;
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_mouthHitAreaComponent;
+
+		//パーツのスコアが0になる距離
+		Vector3 m_eyesStandardPos;
+		Vector3 m_noseStandardPos;
+		Vector3 m_mouthStandardPos;
 
 		//台に置いたか確認する用
 		Value_ptr<RelativeTimer> m_vlp_putTimer;

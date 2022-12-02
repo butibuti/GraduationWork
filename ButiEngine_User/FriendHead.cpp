@@ -41,13 +41,9 @@ void ButiEngine::FriendHead::OnRemove()
 	{
 		m_vwp_headCenter.lock()->SetIsRemove(true);
 	}
-	if (m_vwp_leftEyeHitAreaComponent.lock())
+	if (m_vwp_eyesHitAreaComponent.lock())
 	{
-		m_vwp_leftEyeHitAreaComponent.lock()->RemoveAllComponent();
-	}
-	if (m_vwp_rightEyeHitAreaComponent.lock())
-	{
-		m_vwp_rightEyeHitAreaComponent.lock()->RemoveAllComponent();
+		m_vwp_eyesHitAreaComponent.lock()->RemoveAllComponent();
 	}
 	if (m_vwp_noseHitAreaComponent.lock())
 	{
@@ -80,20 +76,7 @@ void ButiEngine::FriendHead::Start()
 	m_crntPos = Vector3Const::Zero;
 	m_velocity = Vector3Const::Zero;
 
-	m_vwp_leftEyeHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_LeftEye");
-	m_vwp_rightEyeHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_RightEye");
-	m_vwp_noseHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Nose");
-	m_vwp_mouthHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Mouth");
-
-	m_vwp_leftEyeHitAreaComponent = m_vwp_leftEyeHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
-	m_vwp_rightEyeHitAreaComponent = m_vwp_rightEyeHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
-	m_vwp_noseHitAreaComponent = m_vwp_noseHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
-	m_vwp_mouthHitAreaComponent = m_vwp_mouthHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
-
-	m_vwp_leftEyeHitArea.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
-	m_vwp_rightEyeHitArea.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
-	m_vwp_noseHitArea.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
-	m_vwp_mouthHitArea.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
+	SetPartHitAreaParameter();
 
 	m_vlp_putTimer = ObjectFactory::Create<RelativeTimer>(1);
 
@@ -118,8 +101,7 @@ std::int32_t ButiEngine::FriendHead::GetEyeScore()
 	}
 
 	std::int32_t score = 0;
-	score += m_vwp_leftEyeHitAreaComponent.lock()->GetCalcScore();
-	score += m_vwp_rightEyeHitAreaComponent.lock()->GetCalcScore();
+	score += m_vwp_eyesHitAreaComponent.lock()->GetCalcScore();
 	return score;
 }
 
@@ -160,8 +142,7 @@ bool ButiEngine::FriendHead::IsBeautiful()
 	}
 
 	std::int32_t dummyPartCount = 0;
-	dummyPartCount += m_vwp_leftEyeHitAreaComponent.lock()->GetDummyPartCount();
-	dummyPartCount += m_vwp_rightEyeHitAreaComponent.lock()->GetDummyPartCount();
+	dummyPartCount += m_vwp_eyesHitAreaComponent.lock()->GetDummyPartCount();
 	dummyPartCount += m_vwp_noseHitAreaComponent.lock()->GetDummyPartCount();
 	dummyPartCount += m_vwp_mouthHitAreaComponent.lock()->GetDummyPartCount();
 	
@@ -326,11 +307,7 @@ void ButiEngine::FriendHead::CheckPut()
 
 bool ButiEngine::FriendHead::CanPut()
 {
-	if (!m_vwp_leftEyeHitAreaComponent.lock()->GetStickPart().lock())
-	{
-		return false;
-	}
-	if (!m_vwp_rightEyeHitAreaComponent.lock()->GetStickPart().lock())
+	if (!m_vwp_eyesHitAreaComponent.lock()->GetStickPart().lock())
 	{
 		return false;
 	}
@@ -359,4 +336,23 @@ bool ButiEngine::FriendHead::CanUpdate()
 	}
 
 	return true;
+}
+
+void ButiEngine::FriendHead::SetPartHitAreaParameter()
+{
+	m_vwp_eyesHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Eyes");
+	m_vwp_noseHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Nose");
+	m_vwp_mouthHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Mouth");
+
+	m_vwp_eyesHitAreaComponent = m_vwp_eyesHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
+	m_vwp_noseHitAreaComponent = m_vwp_noseHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
+	m_vwp_mouthHitAreaComponent = m_vwp_mouthHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
+
+	m_vwp_eyesHitArea.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);
+	m_vwp_noseHitArea.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);
+	m_vwp_mouthHitArea.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);
+
+	m_eyesStandardPos = m_vwp_eyesHitArea.lock()->transform->GetLocalPosition();
+	m_noseStandardPos = m_vwp_noseHitArea.lock()->transform->GetLocalPosition();
+	m_mouthStandardPos = m_vwp_mouthHitArea.lock()->transform->GetLocalPosition();
 }

@@ -91,7 +91,6 @@ namespace ButiEngine {
 
 
 		FacePartState m_state;
-		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_chaseTarget;
 		Value_ptr<RelativeTimer> m_vlp_lockOnTimer;
 		Value_ptr<RelativeTimer> m_vlp_chaseTimer;
