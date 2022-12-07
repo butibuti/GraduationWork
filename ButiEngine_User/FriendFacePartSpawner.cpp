@@ -176,27 +176,27 @@ std::string ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartName()
 {
 	std::string facePartName;
 
-	std::int32_t maxRandom = 3;
+	std::int32_t maxRandom = 2;
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
 	if (gameLevel >= 3)
 	{
-		maxRandom = 4;
+		maxRandom = 3;
 	}
 
 	std::int32_t random = ButiRandom::GetInt(0, maxRandom);
-	if (random <= 1)
+	if (random <= 0)
 	{
 		facePartName = "FriendFacePart_Eyes";
 	}
-	else if (random <= 2)
+	else if (random <= 1)
 	{
 		facePartName = "FriendFacePart_Nose";
 	}
-	else if (random <= 3)
+	else if (random <= 2)
 	{
 		facePartName = "FriendFacePart_Mouth";
 	}
-	else if (random <= 4)
+	else if (random <= 3)
 	{
 		facePartName = "FriendFacePart_Dummy";
 	}
