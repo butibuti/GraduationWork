@@ -401,10 +401,17 @@ void ButiEngine::FriendFacePart::SetMoveSpeed()
 
 void ButiEngine::FriendFacePart::StickToHead()
 {
-	m_state = FacePartState::Stop;
-
 	gameObject.lock()->transform->SetLocalPosition(m_vwp_chaseTarget.lock()->transform->GetWorldPosition());
+
 	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
+	if (!head.lock())
+	{
+		m_vwp_chaseTarget.lock()->SetIsRemove(true);
+		m_vwp_chaseTarget = Value_weak_ptr<GameObject>();
+		m_state = FacePartState::Move;
+		return;
+	}
+
 	gameObject.lock()->transform->SetBaseTransform(head.lock()->transform);
 
 	m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->StickPart(gameObject, m_type);
@@ -415,6 +422,8 @@ void ButiEngine::FriendFacePart::StickToHead()
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
 
 	StickEffect();
+
+	m_state = FacePartState::Stop;
 }
 
 void ButiEngine::FriendFacePart::StickEffect()
