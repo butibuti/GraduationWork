@@ -59,8 +59,10 @@ namespace ButiEngine {
 		void MoveStraight();
 		void MoveThrow();
 		void SetMoveDirection();
-		void StickToFriendHead(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
+		void StickToHead();
+		void StickEffect();
 
+		void StartChase();
 		void Chase();
 
 		void ChangeGroupMask();
@@ -68,6 +70,7 @@ namespace ButiEngine {
 		void OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
 
 		bool CanUpdate();
+		Vector3 GetChaseTargetPos();
 
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
@@ -91,6 +94,9 @@ namespace ButiEngine {
 
 
 		FacePartState m_state;
+
+		Value_weak_ptr<GameObject> m_vwp_partHitArea;
+		Vector3 m_chaseStartPos;
 		Value_weak_ptr<GameObject> m_vwp_chaseTarget;
 		Value_ptr<RelativeTimer> m_vlp_lockOnTimer;
 		Value_ptr<RelativeTimer> m_vlp_chaseTimer;

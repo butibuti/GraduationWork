@@ -23,7 +23,7 @@ public:
 
 	std::int32_t GetScore() { return m_score; }
 
-	void CalcScore();
+	void CalcScore(Value_weak_ptr<GameObject> arg_vwp_head, Value_weak_ptr<GameObject> arg_vwp_body);
 private:
 	std::int32_t m_score;
 	Value_ptr<Heart> m_vlp_heart;

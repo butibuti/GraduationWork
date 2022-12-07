@@ -25,19 +25,26 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_partFurthest);
 		}
 
-		void SetHead(Value_weak_ptr<GameObject> arg_vwp_head) { m_vwp_head = arg_vwp_head; }
+		void SetParent(Value_weak_ptr<GameObject> arg_vwp_parent)
+		{
+			m_vwp_parent = arg_vwp_parent; 
+			gameObject.lock()->transform->SetBaseTransform(arg_vwp_parent.lock()->transform, true);
+		}
 
 		Value_weak_ptr<GameObject> GetStickPart() { return m_vwp_part; }
 		std::int32_t GetDummyPartCount() { return m_vec_vwp_dummyParts.size(); }
 
 		bool CanStickPart(const PartType arg_type);
+
+		void SetCanStickPart(const bool arg_canStickPart) { m_canStickPart = arg_canStickPart; }
+
 		void StickPart(Value_weak_ptr<GameObject> arg_vwp_part, const PartType arg_type);
 
 		std::int32_t GetCalcScore();
 
 		void RemoveAllComponent();
 	private:
-		Value_weak_ptr<GameObject> m_vwp_head;
+		Value_weak_ptr<GameObject> m_vwp_parent;
 
 		Value_weak_ptr<GameObject> m_vwp_part;
 		std::vector<Value_weak_ptr<GameObject>> m_vec_vwp_dummyParts;
@@ -46,8 +53,12 @@ namespace ButiEngine {
 
 		std::int32_t m_score;
 
+		Vector3 m_standardPos;
+
 		//ƒXƒRƒA‚ª0‚É‚È‚é‹——£
 		float m_partFurthest;
+
+		bool m_canStickPart;
 	};
 
 }

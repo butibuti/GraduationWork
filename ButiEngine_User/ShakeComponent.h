@@ -25,7 +25,11 @@ namespace ButiEngine {
 		void SetStartAmplitude(const Vector3& arg_amplitude) { m_startAmplitude = arg_amplitude; }
 		void SetShakeSpeed(const float arg_speed) { m_shakeSpeed = arg_speed; }
 
+		void Dead();
+
 	private:
+		void ResetRotation();
+
 		Value_ptr<RelativeTimer> m_vlp_shakeTimer;
 
 		Matrix4x4 m_startRotation;

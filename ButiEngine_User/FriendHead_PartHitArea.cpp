@@ -65,6 +65,10 @@ void ButiEngine::FriendHead_PartHitArea::OnShowUI()
 void ButiEngine::FriendHead_PartHitArea::Start()
 {
 	m_score = -1;
+	m_canStickPart = true;
+
+	m_standardPos = gameObject.lock()->transform->GetLocalPosition();
+	m_standardPos += m_vwp_parent.lock()->transform->GetLocalPosition();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead_PartHitArea::Clone()
@@ -77,12 +81,17 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead_PartHitA
 
 bool ButiEngine::FriendHead_PartHitArea::CanStickPart(const PartType arg_type)
 {
-	if (arg_type != PartType::Dummy && m_vwp_part.lock())
+	//if (!GameDevice::GetInput().CheckKey(ButiInput::Keys::Space))
+	//{
+	//	return false;
+	//}
+
+	if (arg_type == PartType::Dummy)
 	{
-		return false;
+		return true;
 	}
 
-	return true;
+	return m_canStickPart;
 }
 
 void ButiEngine::FriendHead_PartHitArea::StickPart(Value_weak_ptr<GameObject> arg_vwp_part, const PartType arg_type)
@@ -90,7 +99,6 @@ void ButiEngine::FriendHead_PartHitArea::StickPart(Value_weak_ptr<GameObject> ar
 	if (arg_type == PartType::Dummy)
 	{
 		m_vec_vwp_dummyParts.push_back(arg_vwp_part);
-		return;
 	}
 	else if(!m_vwp_part.lock())
 	{
@@ -108,7 +116,7 @@ std::int32_t ButiEngine::FriendHead_PartHitArea::GetCalcScore()
 	m_score = 0;
 
 	Vector3 partPos = m_vwp_part.lock()->transform->GetLocalPosition();
-	float distance = partPos.Distance(gameObject.lock()->transform->GetLocalPosition());
+	float distance = partPos.Distance(m_standardPos);
 
 	float progress = 1.0f - (distance / m_partFurthest);
 	progress = MathHelper::Clamp(progress, 0.0f, 1.0f);

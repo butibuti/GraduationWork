@@ -2,12 +2,12 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class Effect_Hukidashi :public GameComponent
+	class FriendHead_Center :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "Effect_Hukidashi";
+			return "FriendHead_Center";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -20,14 +20,12 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 		}
+
+		Value_weak_ptr<GameObject> GetCollisionFriendBody() { return m_vwp_collisionFriendBody; }
 	private:
-		void AddScaleAnimation(const Vector3& arg_targetScale, const std::int32_t arg_animFrame, const Easing::EasingType arg_easeType);
-
-		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
-
-		float m_scaleMagnification;
+		Value_weak_ptr<GameObject> m_vwp_collisionFriendBody;
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(Effect_Hukidashi, true);
+BUTI_REGIST_GAMECOMPONENT(FriendHead_Center, true);

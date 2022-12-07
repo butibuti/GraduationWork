@@ -43,6 +43,9 @@
     <ClCompile Include="UI_Score.cpp" />
     <ClCompile Include="Effect_PartHitFlash.cpp" />
     <ClCompile Include="Effect_Hukidashi.cpp" />
+    <ClCompile Include="FriendHead_Center.cpp" />
+    <ClCompile Include="FriendBody_Neck.cpp" />
+    <ClCompile Include="Effect_Belt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConcentratedLine.h" />
@@ -85,6 +88,9 @@
     <ClInclude Include="UI_Score.h" />
     <ClInclude Include="Effect_PartHitFlash.h" />
     <ClInclude Include="Effect_Hukidashi.h" />
+    <ClInclude Include="FriendHead_Center.h" />
+    <ClInclude Include="FriendBody_Neck.h" />
+    <ClInclude Include="Effect_Belt.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

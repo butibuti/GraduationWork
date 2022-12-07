@@ -4,6 +4,7 @@
 #include "GameSettings.h"
 #include "FriendCompleteDirecting.h"
 #include "GameLevelManager.h"
+#include "FriendBody_Neck.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -75,6 +76,10 @@ void ButiEngine::FriendBody::Start()
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 
+	m_vwp_neck = GetManager().lock()->AddObjectFromCereal("FriendBody_Neck");
+	m_vwp_neck.lock()->SetObjectName(gameObject.lock()->GetGameObjectName() + "_Neck");
+	m_vwp_neck.lock()->GetGameComponent<FriendBody_Neck>()->SetParent(gameObject);
+
 	m_isRotate = true;
 	m_isStopRotate = false;
 
@@ -83,6 +88,7 @@ void ButiEngine::FriendBody::Start()
 	m_moveBackStartPos = Vector3Const::Zero;
 	m_moveBackTargetPos = Vector3Const::Zero;
 
+	m_isTurned = false;
 	m_isMoveHorizontal = true;
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
 	m_vlp_moveHorizontalTimer = ObjectFactory::Create<RelativeTimer>(m_vec_moveHorizontalFrame[gameLevel]);
@@ -110,6 +116,11 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 
 	gameObject.lock()->AddGameComponent<FriendCompleteDirecting>();
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendBody"));
+	
+	if (m_vwp_neck.lock())
+	{
+		m_vwp_neck.lock()->SetIsRemove(true);
+	}
 
 	StartMoveBack();
 }
@@ -131,6 +142,11 @@ bool ButiEngine::FriendBody::IsFast()
 {
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
 	if (gameLevel == 0)
+	{
+		return false;
+	}
+
+	if (m_isTurned)
 	{
 		return false;
 	}
@@ -204,7 +220,10 @@ void ButiEngine::FriendBody::MoveHorizontal()
 
 	gameObject.lock()->transform->SetLocalPosition(newPos);
 
-	m_vlp_moveHorizontalTimer->Update();
+	if (m_vlp_moveHorizontalTimer->Update())
+	{
+		m_isTurned = true;
+	}
 }
 
 void ButiEngine::FriendBody::SpawnNewHead()

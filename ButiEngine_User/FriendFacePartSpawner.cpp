@@ -29,6 +29,9 @@ void ButiEngine::FriendFacePartSpawner::OnRemove()
 
 void ButiEngine::FriendFacePartSpawner::OnShowUI()
 {
+	GUI::BulletText(U8("パーツ出現する位置"));
+	GUI::DragFloat("##SpawnPos", m_spawnPosZ, 0.1f, -100.0f, 100.0f);
+
 	if (!m_vwp_gameLevelManager.lock())
 	{
 		m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
@@ -84,18 +87,15 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePartSpawn
 	clone->m_vec_maxFacePartCounts = m_vec_maxFacePartCounts;
 	clone->m_vec_minSpawnIntervalFrames = m_vec_minSpawnIntervalFrames;
 	clone->m_vec_maxSpawnIntervalFrames = m_vec_maxSpawnIntervalFrames;
+	clone->m_spawnPosZ = m_spawnPosZ;
 	return clone;
 }
 
 void ButiEngine::FriendFacePartSpawner::FirstSpawnFacePart()
 {
-	auto eye1 = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eye");
-	eye1.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
-	eye1.lock()->GetGameComponent<FriendFacePart>()->SetMovePattern(MovePattern::Stay);
-
-	auto eye2 = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eye");
-	eye2.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
-	eye2.lock()->GetGameComponent<FriendFacePart>()->SetMovePattern(MovePattern::Stay);
+	auto eye = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eyes");
+	eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
+	eye.lock()->GetGameComponent<FriendFacePart>()->SetMovePattern(MovePattern::Stay);
 
 	auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
 	nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
@@ -154,7 +154,7 @@ ButiEngine::Vector3 ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartPos()
 	auto spawnAreas = GetManager().lock()->GetGameObjects(GameObjectTag(tagName));
 	if (spawnAreas.GetSize() == 0)
 	{
-		return Vector3(0, 0, 2);
+		return Vector3(0.0f, 0.0f, m_spawnPosZ);
 	}
 
 	auto spawnArea = spawnAreas[ButiRandom::GetInt(0, spawnAreas.GetSize() - 1)];
@@ -167,7 +167,7 @@ ButiEngine::Vector3 ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartPos()
 	Vector3 spawnPos;
 	spawnPos.x = ButiRandom::GetRandom(minPos.x, maxPos.x, 10);
 	spawnPos.y = ButiRandom::GetRandom(minPos.y, maxPos.y, 10);
-	spawnPos.z = 2.0f;
+	spawnPos.z = m_spawnPosZ;
 
 	return spawnPos;
 }

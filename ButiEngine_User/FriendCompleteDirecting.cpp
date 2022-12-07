@@ -5,6 +5,7 @@
 #include "FriendBody.h"
 #include "FriendHead.h"
 #include "ConcentratedLine.h"
+#include "Effect_Belt.h"
 
 void ButiEngine::FriendCompleteDirecting::OnUpdate()
 {
@@ -13,20 +14,26 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 		SpawnHukidashi();
 	}
 
-	if (m_vlp_waitZoomTimer->Update())
+	if (m_vlp_waitZoomInTimer->Update())
 	{
-		m_vlp_waitZoomTimer->Stop();
-
-		m_vwp_gameCamera.lock()->StopShake();
+		m_vlp_waitZoomInTimer->Stop();
 
 		if (m_isSpecialDirecting)
 		{
-			m_vwp_gameCamera.lock()->SpecialZoom(30);
+			m_vwp_gameCamera.lock()->SpecialZoom(m_zoomFrame);
+
+			m_vwp_belt_left = GetManager().lock()->AddObjectFromCereal("Effect_Belt");
+			m_vwp_belt_left.lock()->GetGameComponent<Effect_Belt>()->SetIsSpawnToRight(false);
+			m_vwp_belt_right = GetManager().lock()->AddObjectFromCereal("Effect_Belt");
+			m_vwp_belt_right.lock()->GetGameComponent<Effect_Belt>()->SetIsSpawnToRight(true);
 		}
 		else
 		{
-			m_vwp_gameCamera.lock()->NormalZoom(15);
+			m_vwp_gameCamera.lock()->NormalZoom(m_zoomFrame);
 		}
+
+		m_vlp_spawnHukidashiIntervalTimer->Start();
+		SpawnHukidashi();
 
 		auto concentratedLine = GetManager().lock()->AddObjectFromCereal("ConcentratedLine");
 		concentratedLine.lock()->GetGameComponent<ConcentratedLine>()->SetLifeTime(60);
@@ -36,6 +43,12 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 
 	if (m_vlp_directingTimer->Update())
 	{
+		if (m_isSpecialDirecting)
+		{
+			m_vwp_belt_left.lock()->GetGameComponent<Effect_Belt>()->Disappear(8);
+			m_vwp_belt_right.lock()->GetGameComponent<Effect_Belt>()->Disappear(8);
+		}
+
 		m_vwp_pauseManager.lock()->SetIsPause(false);
 		m_vwp_gameCamera.lock()->ZoomOut(20);
 		SetIsRemove(true);
@@ -60,24 +73,14 @@ void ButiEngine::FriendCompleteDirecting::OnSet()
 
 	if (headComponent->IsBeautiful() && bodyComponent->IsFast() && bodyComponent->IsFront())
 	{
-		//m_isSpecialDirecting = true;
-	}
-	
-	if (m_isSpecialDirecting)
-	{
-		m_vlp_waitZoomTimer = ObjectFactory::Create<RelativeTimer>(shakeFrame - 5);
-	}
-	else
-	{
-		m_vlp_waitZoomTimer = ObjectFactory::Create<RelativeTimer>(10);
+		m_isSpecialDirecting = true;
 	}
 
-	m_vlp_waitZoomTimer->Start();
-
-	m_vlp_directingTimer = ObjectFactory::Create<RelativeTimer>(70);
-	m_vlp_directingTimer->Start();
-
+	SetGameCameraParameter();
 	SetHukidashiParameter();
+
+	m_vlp_directingTimer = ObjectFactory::Create<RelativeTimer>(m_waitZoomInFrame + m_waitZoomOutFrame);
+	m_vlp_directingTimer->Start();
 
 	GetManager().lock()->AddObjectFromCereal("Effect_CompleteFriend");
 
@@ -119,6 +122,25 @@ void ButiEngine::FriendCompleteDirecting::SpawnHukidashi()
 	}
 }
 
+void ButiEngine::FriendCompleteDirecting::SetGameCameraParameter()
+{
+	m_waitZoomInFrame = 10;
+	m_waitZoomOutFrame = 30;
+	m_zoomFrame = 15;
+
+	if (m_isSpecialDirecting)
+	{
+		m_waitZoomInFrame = 30;
+		m_waitZoomOutFrame = 60;
+		m_zoomFrame = 10;
+	}
+
+	m_vlp_waitZoomInTimer = ObjectFactory::Create<RelativeTimer>(m_waitZoomInFrame);
+	m_vlp_waitZoomInTimer->Start();
+
+	m_waitZoomOutFrame += m_zoomFrame;
+}
+
 void ButiEngine::FriendCompleteDirecting::SetHukidashiParameter()
 {
 	auto headComponent = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead")).lock()->GetGameComponent<FriendHead>();
@@ -126,12 +148,11 @@ void ButiEngine::FriendCompleteDirecting::SetHukidashiParameter()
 
 	if (m_isSpecialDirecting)
 	{
-		m_vlp_spawnHukidashiIntervalTimer = ObjectFactory::Create<RelativeTimer>(1);
+		m_vlp_spawnHukidashiIntervalTimer = ObjectFactory::Create<RelativeTimer>(10);
 	}
 	else
 	{
-		m_vlp_spawnHukidashiIntervalTimer = ObjectFactory::Create<RelativeTimer>(1);
-		m_vlp_spawnHukidashiIntervalTimer->Start();
+		m_vlp_spawnHukidashiIntervalTimer = ObjectFactory::Create<RelativeTimer>(10);
 	}
 
 	if (headComponent->IsBeautiful())
@@ -146,6 +167,4 @@ void ButiEngine::FriendCompleteDirecting::SetHukidashiParameter()
 	{
 		m_vec_hukidashiNames.push_back("Effect_Hukidashi_Front");
 	}
-
-	SpawnHukidashi();
 }

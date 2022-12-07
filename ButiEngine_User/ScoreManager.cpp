@@ -38,13 +38,10 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::ScoreManager::Clone
 	return clone;
 }
 
-void ButiEngine::ScoreManager::CalcScore()
+void ButiEngine::ScoreManager::CalcScore(Value_weak_ptr<GameObject> arg_vwp_head, Value_weak_ptr<GameObject> arg_vwp_body)
 {
-	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
-	auto body = GetManager().lock()->GetGameObject(GameObjectTag("FriendBody"));
-
-	auto headComponent = head.lock()->GetGameComponent<FriendHead>();
-	auto bodyComponent = body.lock()->GetGameComponent<FriendBody>();
+	auto headComponent = arg_vwp_head.lock()->GetGameComponent<FriendHead>();
+	auto bodyComponent = arg_vwp_body.lock()->GetGameComponent<FriendBody>();
 
 	std::int32_t addScore = 0;
 	addScore += headComponent->GetEyeScore();

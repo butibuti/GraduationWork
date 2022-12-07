@@ -9,6 +9,7 @@
 #include "ScoreManager.h"
 #include "FriendHead_PartHitArea.h"
 #include "GameLevelManager.h"
+#include "FriendHead_Center.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
@@ -20,13 +21,6 @@ void ButiEngine::FriendHead::OnUpdate()
 	Control();
 	CalcVelocity();
 	CheckPut();
-
-#ifdef DEBUG
-	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::B))
-	{
-		GetManager().lock()->AddObjectFromCereal("Box");
-	}
-#endif // DEBUG
 }
 
 void ButiEngine::FriendHead::OnSet()
@@ -41,17 +35,17 @@ void ButiEngine::FriendHead::OnRemove()
 	{
 		m_vwp_headCenter.lock()->SetIsRemove(true);
 	}
-	if (m_vwp_eyesHitAreaComponent.lock())
+	if (m_vwp_eyesHitArea.lock())
 	{
-		m_vwp_eyesHitAreaComponent.lock()->RemoveAllComponent();
+		m_vwp_eyesHitArea.lock()->SetIsRemove(true);
 	}
-	if (m_vwp_noseHitAreaComponent.lock())
+	if (m_vwp_noseHitArea.lock())
 	{
-		m_vwp_noseHitAreaComponent.lock()->RemoveAllComponent();
+		m_vwp_noseHitArea.lock()->SetIsRemove(true);
 	}
-	if (m_vwp_mouthHitAreaComponent.lock())
+	if (m_vwp_mouthHitArea.lock())
 	{
-		m_vwp_mouthHitAreaComponent.lock()->RemoveAllComponent();
+		m_vwp_mouthHitArea.lock()->SetIsRemove(true);
 	}
 }
 
@@ -71,6 +65,7 @@ void ButiEngine::FriendHead::Start()
 
 	m_vwp_headCenter = GetManager().lock()->AddObjectFromCereal("HeadCenter");
 	m_vwp_headCenter.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
+	m_vwp_headCenterComponent = m_vwp_headCenter.lock()->GetGameComponent<FriendHead_Center>();
 
 	m_prevPos = Vector3Const::Zero;
 	m_crntPos = Vector3Const::Zero;
@@ -81,6 +76,11 @@ void ButiEngine::FriendHead::Start()
 	m_vlp_putTimer = ObjectFactory::Create<RelativeTimer>(1);
 
 	m_isPut = false;
+
+#ifdef DEBUG
+	gameObject.lock()->transform->SetLocalPosition(Vector3Const::Zero);
+	m_vwp_rigidBodyComponent.lock()->TransformApply();
+#endif // DEBUG
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
@@ -212,12 +212,11 @@ void ButiEngine::FriendHead::ControlByVRTracker()
 	gameObject.lock()->transform->SetLocalRotation(rotation);
 }
 
-void ButiEngine::FriendHead::OnPut()
+void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
 {
-	GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->CalcScore();
+	GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->CalcScore(gameObject, arg_vwp_body);
 
-	auto body = GetManager().lock()->GetGameObject(GameObjectTag("FriendBody"));
-	body.lock()->GetGameComponent<FriendBody>()->SetHead(gameObject);
+	arg_vwp_body.lock()->GetGameComponent<FriendBody>()->SetHead(gameObject);
 
 	m_vwp_friendManager.lock()->AddFriendCount();
 
@@ -241,15 +240,15 @@ void ButiEngine::FriendHead::CheckPut()
 		return;
 	}
 
-	if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_A))
-	{
-		OnPut();
-	}
+	//if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_A))
+	//{
+	//	OnPut();
+	//}
 
-	if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() <= m_trackerIndex)
-	{
-		return;
-	}
+	//if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() <= m_trackerIndex)
+	//{
+	//	return;
+	//}
 
 	////‘ä‚É‹ß‚­‚ÄˆÚ“®‘¬“x‚ª’x‚©‚Á‚½‚ç’u‚¢‚½‚Æ”»’è‚·‚é
 	//Matrix4x4 deviceMatrix;
@@ -257,8 +256,8 @@ void ButiEngine::FriendHead::CheckPut()
 	//Vector3 pos = deviceMatrix.GetPosition();
 	//Vector3 tablePos = m_vwp_gameSettings.lock()->GetTablePos();
 
-	constexpr float putTeleranceY = 0.05f;
-	constexpr float putTeleranceXZ = 0.75f;
+	//constexpr float putTeleranceY = 0.05f;
+	//constexpr float putTeleranceXZ = 0.75f;
 	//constexpr float putMoveSpeedBorder = 0.01f;
 
 	//float distanceY = abs(pos.y - tablePos.y);
@@ -288,20 +287,10 @@ void ButiEngine::FriendHead::CheckPut()
 	//	m_vlp_putTimer->Reset();
 	//}
 
-	auto body = GetManager().lock()->GetGameObject(GameObjectTag("FriendBody"));
-	if (!body.lock())
+	auto collisionBody = m_vwp_headCenterComponent.lock()->GetCollisionFriendBody();
+	if (collisionBody.lock())
 	{
-		return;
-	}
-
-	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
-	Vector3 bodyPos = body.lock()->transform->GetLocalPosition();
-
-	float distanceSqr = (pos - bodyPos).GetLengthSqr();
-
-	if (distanceSqr <= putTeleranceXZ)
-	{
-		OnPut();
+		OnPut(collisionBody);
 	}
 }
 
@@ -348,11 +337,7 @@ void ButiEngine::FriendHead::SetPartHitAreaParameter()
 	m_vwp_noseHitAreaComponent = m_vwp_noseHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 	m_vwp_mouthHitAreaComponent = m_vwp_mouthHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 
-	m_vwp_eyesHitArea.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);
-	m_vwp_noseHitArea.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);
-	m_vwp_mouthHitArea.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);
-
-	m_eyesStandardPos = m_vwp_eyesHitArea.lock()->transform->GetLocalPosition();
-	m_noseStandardPos = m_vwp_noseHitArea.lock()->transform->GetLocalPosition();
-	m_mouthStandardPos = m_vwp_mouthHitArea.lock()->transform->GetLocalPosition();
+	m_vwp_eyesHitAreaComponent.lock()->SetParent(m_vwp_headCenter);
+	m_vwp_noseHitAreaComponent.lock()->SetParent(m_vwp_headCenter);
+	m_vwp_mouthHitAreaComponent.lock()->SetParent(m_vwp_headCenter);
 }

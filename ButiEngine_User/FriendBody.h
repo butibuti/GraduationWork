@@ -45,6 +45,8 @@ namespace ButiEngine {
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
+		Value_weak_ptr<GameObject> m_vwp_neck;
+
 		std::vector<float> m_vec_rotateSpeeds;
 
 		bool m_isRotate;
@@ -56,6 +58,7 @@ namespace ButiEngine {
 		Vector3 m_moveBackStartPos;
 		Vector3 m_moveBackTargetPos;
 
+		bool m_isTurned;
 		std::vector<std::int32_t> m_vec_moveHorizontalFrame;
 		bool m_isMoveHorizontal;
 		Value_ptr<RelativeTimer> m_vlp_moveHorizontalTimer;

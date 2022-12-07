@@ -25,6 +25,7 @@ namespace ButiEngine {
 		}
 	private:
 		void SpawnHukidashi();
+		void SetGameCameraParameter();
 		void SetHukidashiParameter();
 
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
@@ -32,12 +33,20 @@ namespace ButiEngine {
 		Value_weak_ptr<GameCamera> m_vwp_gameCamera;
 
 		Value_ptr<RelativeTimer> m_vlp_directingTimer;
-		Value_ptr<RelativeTimer> m_vlp_waitZoomTimer;
+		Value_ptr<RelativeTimer> m_vlp_waitZoomInTimer;
+		Value_ptr<RelativeTimer> m_vlp_waitZoomOutTimer;
 
 		bool m_isSpecialDirecting;
 
 		Value_ptr<RelativeTimer> m_vlp_spawnHukidashiIntervalTimer;
 		std::vector<std::string> m_vec_hukidashiNames;
+		
+		std::int32_t m_waitZoomInFrame;
+		std::int32_t m_waitZoomOutFrame;
+		std::int32_t m_zoomFrame;
+
+		Value_weak_ptr<GameObject> m_vwp_belt_left;
+		Value_weak_ptr<GameObject> m_vwp_belt_right;
 	};
 
 }

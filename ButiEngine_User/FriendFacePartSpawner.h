@@ -26,6 +26,7 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_vec_maxFacePartCounts);
 			ARCHIVE_BUTI(m_vec_minSpawnIntervalFrames);
 			ARCHIVE_BUTI(m_vec_maxSpawnIntervalFrames);
+			ARCHIVE_BUTI(m_spawnPosZ);
 		}
 
 	private:
@@ -47,6 +48,8 @@ namespace ButiEngine {
 		std::vector<std::int32_t> m_vec_maxSpawnIntervalFrames;
 
 		Value_ptr<RelativeTimer> m_vlp_spawnTimer;
+
+		float m_spawnPosZ;
 	};
 
 }

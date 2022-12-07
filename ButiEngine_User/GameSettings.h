@@ -4,14 +4,14 @@ namespace ButiEngine {
 
 	struct GameSettingsData
 	{
-		std::int32_t trackerIndex = 0;
+		std::int32_t trackerIndex;
 
 		Matrix4x4 trackerOrigin;
-		Vector3 headMoveLimit = Vector3Const::Zero;
-		Vector3 moveAreaFrontRightTop = Vector3Const::Zero;
-		Vector3 moveAreaBackLeftBottom = Vector3Const::Zero;
-		Vector3 tablePos = Vector3Const::Zero;
-		Vector3 bodyPos = Vector3Const::Zero;
+		Vector3 headMoveLimit;
+		Vector3 moveAreaFrontRightTop;
+		Vector3 moveAreaBackLeftBottom;
+		Vector3 tablePos;
+		Vector3 bodyPos;
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
@@ -58,6 +58,8 @@ namespace ButiEngine {
 		void SetTablePos();
 
 		GameSettingsData m_data;
+
+		bool m_isDebugMode;
 	};
 
 }

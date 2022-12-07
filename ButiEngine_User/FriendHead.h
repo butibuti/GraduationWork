@@ -8,6 +8,7 @@ namespace ButiEngine {
 	class PauseManager;
 	class FriendManager;
 	class FriendHead_PartHitArea;
+	class FriendHead_Center;
 
 	class FriendHead :public GameComponent
 	{
@@ -42,7 +43,7 @@ namespace ButiEngine {
 		void Control();
 		void ControlByGamePad();
 		void ControlByVRTracker();
-		void OnPut();
+		void OnPut(Value_weak_ptr<GameObject> arg_vwp_body);
 
 		void CalcVelocity();
 		void CheckPut();
@@ -61,6 +62,7 @@ namespace ButiEngine {
 		std::int32_t m_trackerIndex;
 
 		Value_weak_ptr<GameObject> m_vwp_headCenter;
+		Value_weak_ptr<FriendHead_Center> m_vwp_headCenterComponent;
 
 		//移動速度関連
 		Vector3 m_prevPos;
@@ -75,11 +77,6 @@ namespace ButiEngine {
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_eyesHitAreaComponent;
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_noseHitAreaComponent;
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_mouthHitAreaComponent;
-
-		//パーツのスコアが0になる距離
-		Vector3 m_eyesStandardPos;
-		Vector3 m_noseStandardPos;
-		Vector3 m_mouthStandardPos;
 
 		//台に置いたか確認する用
 		Value_ptr<RelativeTimer> m_vlp_putTimer;

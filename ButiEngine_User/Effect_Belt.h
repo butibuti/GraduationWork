@@ -2,12 +2,12 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class Effect_Hukidashi :public GameComponent
+	class Effect_Belt :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "Effect_Hukidashi";
+			return "Effect_Belt";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -20,14 +20,17 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 		}
+
+		void SetIsSpawnToRight(const bool arg_isSpawnToRight) { m_isSpawnToRight = arg_isSpawnToRight; }
+
+		void Disappear(const std::int32_t arg_disappearFrame);
 	private:
-		void AddScaleAnimation(const Vector3& arg_targetScale, const std::int32_t arg_animFrame, const Easing::EasingType arg_easeType);
+		void AddPositionAnimation(const Vector3& arg_targetPos, const std::int32_t arg_animFrame);
 
-		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
-
-		float m_scaleMagnification;
+		bool m_isSpawnToRight;
+		Vector3 m_startPos;
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(Effect_Hukidashi, true);
+BUTI_REGIST_GAMECOMPONENT(Effect_Belt, true);

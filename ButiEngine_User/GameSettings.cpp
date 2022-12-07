@@ -3,6 +3,26 @@
 
 void ButiEngine::GameSettings::OnUpdate()
 {
+	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::LeftCtrl) &&
+		GameDevice::GetInput().CheckKey(ButiInput::Keys::LeftShift) &&
+		GameDevice::GetInput().TriggerKey(ButiInput::Keys::D))
+	{
+		m_isDebugMode = !m_isDebugMode;
+		if (m_isDebugMode)
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>()->ReRegist();
+		}
+		else
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>()->UnRegist();
+		}
+	}
+
+	if (!m_isDebugMode)
+	{
+		return;
+	}
+
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::O))
 	{
 		SetOrigin();
@@ -100,6 +120,10 @@ void ButiEngine::GameSettings::Start()
 {
 	InputCereal(m_data, "GameSettings.savedata");
 	GameDevice::GetVRTrackerInput().SetOrigin(m_data.trackerOrigin);
+
+	m_isDebugMode = false;
+
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->UnRegist();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameSettings::Clone()

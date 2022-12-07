@@ -1,6 +1,7 @@
 #include "stdafx_u.h"
 #include "FriendFacePart.h"
 #include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
+#include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
 #include "FriendHead.h"
 #include "ButiBulletWrap/ButiBulletWrap/PhysicsManager.h"
 #include "ButiBulletWrap/ButiBulletWrap/PhysicsWorld.h"
@@ -92,19 +93,19 @@ void ButiEngine::FriendFacePart::OnSet()
 		}
 	);
 
-	gameObject.lock()->AddCollisionLeaveReaction(
-		[this](ButiBullet::ContactData& arg_other)
-		{
-			if (arg_other.vwp_gameObject.lock())
-			{
-				//タグ判定
-				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("FriendHead"))
-				{
-					m_isCollisionHead = true;
-				}
-			}
-		}
-	);
+	//gameObject.lock()->AddCollisionLeaveReaction(
+	//	[this](ButiBullet::ContactData& arg_other)
+	//	{
+	//		if (arg_other.vwp_gameObject.lock())
+	//		{
+	//			//タグ判定
+	//			if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("FriendHead"))
+	//			{
+	//				m_isCollisionHead = true;
+	//			}
+	//		}
+	//	}
+	//);
 
 }
 
@@ -206,7 +207,7 @@ void ButiEngine::FriendFacePart::Start()
 
 	m_state = FacePartState::Move;
 	m_vlp_lockOnTimer = ObjectFactory::Create<RelativeTimer>(30);
-	m_vlp_chaseTimer = ObjectFactory::Create<RelativeTimer>(30);
+	m_vlp_chaseTimer = ObjectFactory::Create<RelativeTimer>(1);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clone()
@@ -271,17 +272,26 @@ void ButiEngine::FriendFacePart::SetMoveDirection()
 	m_moveDirection.Normalize();
 }
 
-void ButiEngine::FriendFacePart::StickToFriendHead(Value_weak_ptr<GameObject> arg_vwp_partHitArea)
+void ButiEngine::FriendFacePart::StickToHead()
 {
+	m_state = FacePartState::Stop;
+
+	gameObject.lock()->transform->SetLocalPosition(m_vwp_chaseTarget.lock()->transform->GetWorldPosition());
 	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
 	gameObject.lock()->transform->SetBaseTransform(head.lock()->transform);
 
-	gameObject.lock()->transform->SetLocalPositionZ(arg_vwp_partHitArea.lock()->transform->GetLocalPosition().z);
+	m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->StickPart(gameObject, m_type);
+
+	m_vwp_chaseTarget.lock()->SetIsRemove(true);
+	m_vwp_chaseTarget = Value_weak_ptr<GameObject>();
 
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
 
-	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
+	StickEffect();
+}
 
+void ButiEngine::FriendFacePart::StickEffect()
+{
 	auto drawObject = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject();
 	drawObject.lock()->AddGameComponent<PartStickAnimation>();
 
@@ -290,19 +300,35 @@ void ButiEngine::FriendFacePart::StickToFriendHead(Value_weak_ptr<GameObject> ar
 
 	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/PartHit.wav"));
 	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
+}
 
-	m_vlp_deadTimer->Stop();
-	if (m_vlp_lifeTimer)
+void ButiEngine::FriendFacePart::StartChase()
+{
+	if (m_vwp_chaseTarget.lock())
 	{
-		m_vlp_lifeTimer->Stop();
+		return;
 	}
+
+	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
+
+	m_state = FacePartState::Chase;
+	m_chaseStartPos = gameObject.lock()->transform->GetLocalPosition();
+	Vector3 chaseTargetPos = GetChaseTargetPos();
+	m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(chaseTargetPos), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
+	m_vwp_chaseTarget.lock()->transform->SetBaseTransform(head.lock()->transform);
+	auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+	if (rigidBodyComponent)
+	{
+		rigidBodyComponent->SetIsRemove(true);
+	}
+	m_vlp_chaseTimer->Start();
 }
 
 void ButiEngine::FriendFacePart::Chase()
 {
 	if (m_vlp_chaseTimer->IsOn())
 	{
-		Vector3 pos = MathHelper::LerpPosition(gameObject.lock()->transform->GetLocalPosition(), m_vwp_chaseTarget.lock()->transform->GetWorldPosition(), m_vlp_chaseTimer->GetPercent());
+		Vector3 pos = MathHelper::LerpPosition(m_chaseStartPos, m_vwp_chaseTarget.lock()->transform->GetWorldPosition(), Easing::EaseOutQuart(m_vlp_chaseTimer->GetPercent()));
 		gameObject.lock()->transform->SetLocalPosition(pos);
 	}
 
@@ -310,20 +336,13 @@ void ButiEngine::FriendFacePart::Chase()
 	{
 		m_vlp_chaseTimer->Stop();
 
-		gameObject.lock()->transform->SetLocalPosition(m_vwp_chaseTarget.lock()->transform->GetWorldPosition());
-		auto friendHead = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
-		gameObject.lock()->transform->SetBaseTransform(friendHead.lock()->transform);
-
-		m_vwp_chaseTarget.lock()->SetIsRemove(true);
-		m_vwp_chaseTarget = Value_weak_ptr<GameObject>();
-
-
-		m_state = FacePartState::Stop;
+		StickToHead();
 	}
 }
 
 void ButiEngine::FriendFacePart::ChangeGroupMask()
 {
+	return;
 	std::int32_t mask = 65535;
 	switch (m_type)
 	{
@@ -348,12 +367,23 @@ void ButiEngine::FriendFacePart::ChangeGroupMask()
 
 void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea)
 {
+	m_vwp_partHitArea = arg_vwp_partHitArea;
 	auto partHitAreaComponent = arg_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 
 	if (partHitAreaComponent->CanStickPart(m_type))
 	{
-		StickToFriendHead(arg_vwp_partHitArea);
-		partHitAreaComponent->StickPart(gameObject, m_type);
+		partHitAreaComponent->SetCanStickPart(false);
+
+		m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
+		gameObject.lock()->GetGameComponent<TriggerComponent>()->SetIsRemove(true);
+
+		m_vlp_deadTimer->Stop();
+		if (m_vlp_lifeTimer)
+		{
+			m_vlp_lifeTimer->Stop();
+		}
+
+		StartChase();
 	}
 }
 
@@ -370,4 +400,38 @@ bool ButiEngine::FriendFacePart::CanUpdate()
 	}
 
 	return true;
+}
+
+ButiEngine::Vector3 ButiEngine::FriendFacePart::GetChaseTargetPos()
+{
+	Vector3 rayStartPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
+	rayStartPos.z += 50.0f;
+	Vector3 chaseTargetPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
+
+	List<ButiBullet::PhysicsRaycastResult> list_rayRes;
+	if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
+		RaycastAllHit(rayStartPos, -Vector3Const::ZAxis, 100.0f, 1, &list_rayRes))
+	{
+		float nearestDistance = 1000.0f;
+		float chaseTargetPosZ = chaseTargetPos.z;
+
+		for (auto& res : list_rayRes)
+		{
+			auto obj= Value_weak_ptr<GameObject>();
+			obj = res.physicsObject->GetOwnerData();
+			
+
+			if (obj.lock()->HasGameObjectTag("FriendHead"))
+			{
+				float distance = abs(res.point.z - rayStartPos.z);
+				if (distance <= nearestDistance)
+				{
+					nearestDistance = distance;
+					chaseTargetPosZ = res.point.z;
+				}
+			}
+		}
+	}
+
+	return chaseTargetPos;
 }
