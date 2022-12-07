@@ -5,6 +5,7 @@ namespace ButiEngine {
 	class StageManager;
 	class PauseManager;
 	class GameLevelManager;
+	enum class MovePattern;
 
 	class FriendFacePartSpawner :public GameComponent
 	{
@@ -42,10 +43,12 @@ namespace ButiEngine {
 		void SpawnDummyPart();
 		void SetSpawnDummyPartInterval();
 
-		Vector3 GetRandomSpawnPartPos();
+		Vector3 GetRandomSpawnPartPos(const MovePattern arg_movePattern);
 		std::string GetRandomSpawnPartName();
 
 		bool CanUpdate();
+
+		void ResizeLevelParameter();
 
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;

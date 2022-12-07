@@ -36,6 +36,7 @@ namespace ButiEngine {
 		void LevelUp();
 	private:
 		void ChangeLevel(const std::int32_t arg_nextLevel);
+		void ResizeLevelParameter();
 
 		std::int32_t m_gameLevel;
 		std::int32_t m_maxLevel;

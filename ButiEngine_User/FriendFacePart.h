@@ -27,6 +27,7 @@ namespace ButiEngine {
 	class StageManager;
 	class PauseManager;
 	class RigidBodyComponent;
+	class GameLevelManager;
 
 	class FriendFacePart :public GameComponent
 	{
@@ -45,12 +46,18 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_minMoveSpeed);
-			ARCHIVE_BUTI(m_maxMoveSpeed);
 			ARCHIVE_BUTI(m_type);
+			ARCHIVE_BUTI(m_vec_minStraightMoveSpeeds);
+			ARCHIVE_BUTI(m_vec_maxStraightMoveSpeeds);
+			ARCHIVE_BUTI(m_vec_minThrowMoveSpeeds);
+			ARCHIVE_BUTI(m_vec_maxThrowMoveSpeeds);
+			ARCHIVE_BUTI(m_vec_stayProbabilities);
+			ARCHIVE_BUTI(m_vec_straightProbabilities);
+			ARCHIVE_BUTI(m_vec_throwProbabilities);
 		}
 
-		void SetMovePattern(const MovePattern arg_movePattern) { m_movePattern = arg_movePattern; }
+		void SetMovePattern(const std::int32_t arg_gameLevel);
+		MovePattern GetMovePattern() { return m_movePattern; }
 
 		void Dead();
 	private:
@@ -58,7 +65,11 @@ namespace ButiEngine {
 		void MoveStay();
 		void MoveStraight();
 		void MoveThrow();
+		void InitThrow();
+
 		void SetMoveDirection();
+		void SetMoveSpeed();
+
 		void StickToHead();
 		void StickEffect();
 
@@ -72,8 +83,11 @@ namespace ButiEngine {
 		bool CanUpdate();
 		Vector3 GetChaseTargetPos();
 
+		void ResizeLevelParameter();
+
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
+		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
 		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
 
@@ -82,6 +96,14 @@ namespace ButiEngine {
 
 		Value_ptr<RelativeTimer> m_vlp_changeGroupMaskTimer;
 
+		std::vector<float> m_vec_minStraightMoveSpeeds;
+		std::vector<float> m_vec_maxStraightMoveSpeeds;
+		std::vector<float> m_vec_minThrowMoveSpeeds;
+		std::vector<float> m_vec_maxThrowMoveSpeeds;
+		std::vector<float> m_vec_stayProbabilities;
+		std::vector<float> m_vec_straightProbabilities;
+		std::vector<float> m_vec_throwProbabilities;
+
 		PartType m_type = PartType::Eye;
 		
 		MovePattern m_movePattern = MovePattern::Stay;
@@ -89,16 +111,12 @@ namespace ButiEngine {
 		bool m_isCollisionHead;
 		Vector3 m_moveDirection;
 		float m_moveSpeed;
-		float m_minMoveSpeed;
-		float m_maxMoveSpeed;
-
 
 		FacePartState m_state;
 
 		Value_weak_ptr<GameObject> m_vwp_partHitArea;
 		Vector3 m_chaseStartPos;
 		Value_weak_ptr<GameObject> m_vwp_chaseTarget;
-		Value_ptr<RelativeTimer> m_vlp_lockOnTimer;
 		Value_ptr<RelativeTimer> m_vlp_chaseTimer;
 	};
 

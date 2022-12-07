@@ -39,34 +39,30 @@ void ButiEngine::FriendBody::OnRemove()
 
 void ButiEngine::FriendBody::OnShowUI()
 {
+	GUI::BulletText("FrontBorder");
+	GUI::DragFloat("##frontBorder", &m_frontBorder, 0.1f, 0.0f, 180.0f);
+
 	if (!m_vwp_gameLevelManager.lock())
 	{
 		m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 	}
 
+	ResizeLevelParameter();
+
 	std::int32_t maxLevel = m_vwp_gameLevelManager.lock()->GetMaxLevel();
-	if (m_vec_rotateSpeeds.size() != (maxLevel + 1))
-	{
-		m_vec_rotateSpeeds.resize(maxLevel + 1);
-	}
-
-	if (m_vec_moveHorizontalFrame.size() != (maxLevel + 1))
-	{
-		m_vec_moveHorizontalFrame.resize(maxLevel + 1);
-	}
-
-	GUI::BulletText("FrontBorder");
-	GUI::DragFloat("##frontBorder", &m_frontBorder, 0.1f, 0.0f, 180.0f);
 
 	for (std::int32_t i = 1; i < maxLevel + 1; i++)
 	{
-		GUI::Text("Level:" + std::to_string(i));
+		if (GUI::TreeNode("Level:" + std::to_string(i)))
+		{
+			GUI::BulletText("RotateSpeed");
+			GUI::DragFloat("##rotateSpeed" + std::to_string(i), &m_vec_rotateSpeeds[i], 0.1f, 0.0f, 1000.0f);
 
-		GUI::BulletText("RotateSpeed");
-		GUI::DragFloat("##rotateSpeed" + std::to_string(i), &m_vec_rotateSpeeds[i], 0.1f, 0.0f, 1000.0f);
+			GUI::BulletText("MoveFrame");
+			GUI::DragInt("##moveFrame" + std::to_string(i), &m_vec_moveHorizontalFrame[i], 1.0f, 1.0f, 1000.0f);
 
-		GUI::BulletText("MoveFrame");
-		GUI::DragInt("##moveFrame" + std::to_string(i), &m_vec_moveHorizontalFrame[i], 1.0f, 1.0f, 1000.0f);
+			GUI::TreePop();
+		}
 	}
 }
 
@@ -75,6 +71,8 @@ void ButiEngine::FriendBody::Start()
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+
+	ResizeLevelParameter();
 
 	m_vwp_neck = GetManager().lock()->AddObjectFromCereal("FriendBody_Neck");
 	m_vwp_neck.lock()->SetObjectName(gameObject.lock()->GetGameObjectName() + "_Neck");
@@ -234,4 +232,18 @@ void ButiEngine::FriendBody::SpawnNewHead()
 void ButiEngine::FriendBody::SpawnNewBody()
 {
 	GetManager().lock()->AddObjectFromCereal("FriendBody");
+}
+
+void ButiEngine::FriendBody::ResizeLevelParameter()
+{
+	std::int32_t maxLevel = m_vwp_gameLevelManager.lock()->GetMaxLevel();
+	if (m_vec_rotateSpeeds.size() != (maxLevel + 1))
+	{
+		m_vec_rotateSpeeds.resize(maxLevel + 1);
+	}
+
+	if (m_vec_moveHorizontalFrame.size() != (maxLevel + 1))
+	{
+		m_vec_moveHorizontalFrame.resize(maxLevel + 1);
+	}
 }

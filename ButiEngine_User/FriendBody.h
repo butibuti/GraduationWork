@@ -41,6 +41,8 @@ namespace ButiEngine {
 		void SpawnNewHead();
 		void SpawnNewBody();
 
+		void ResizeLevelParameter();
+
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;

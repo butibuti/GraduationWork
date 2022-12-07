@@ -81,11 +81,7 @@ void ButiEngine::GameLevelManager::OnShowUI()
 		}
 	}
 
-	if (m_vec_necessaryFriendCounts.size() != (m_maxLevel + 1))
-	{
-		m_vec_necessaryFriendCounts.resize(m_maxLevel + 1);
-		m_vec_levelUpIntervalFrames.resize(m_maxLevel + 1);
-	}
+	ResizeLevelParameter();
 
 	for (std::int32_t i = 1; i < m_maxLevel + 1; i++)
 	{
@@ -201,4 +197,17 @@ void ButiEngine::GameLevelManager::ChangeLevel(const std::int32_t arg_nextLevel)
 	//m_vlp_pauseTimer->Start();
 
 	m_isLevelUp = true;
+}
+
+void ButiEngine::GameLevelManager::ResizeLevelParameter()
+{
+	if (m_vec_necessaryFriendCounts.size() != (m_maxLevel + 1))
+	{
+		m_vec_necessaryFriendCounts.resize(m_maxLevel + 1);
+	}
+
+	if (m_vec_levelUpIntervalFrames.size() != (m_maxLevel + 1))
+	{
+		m_vec_levelUpIntervalFrames.resize(m_maxLevel + 1);
+	}
 }

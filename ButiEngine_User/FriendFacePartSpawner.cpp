@@ -43,25 +43,9 @@ void ButiEngine::FriendFacePartSpawner::OnShowUI()
 		m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 	}
 
+	ResizeLevelParameter();
+
 	std::int32_t maxLevel = m_vwp_gameLevelManager.lock()->GetMaxLevel();
-	if (m_vec_maxFacePartCounts.size() != (maxLevel + 1))
-	{
-		m_vec_maxFacePartCounts.resize(maxLevel + 1);
-		m_vec_maxDummyPartCounts.resize(maxLevel + 1);
-	}
-
-	if (m_vec_minSpawnFacePartIntervalFrames.size() != (maxLevel + 1))
-	{
-		m_vec_minSpawnFacePartIntervalFrames.resize(maxLevel + 1);
-		m_vec_minSpawnDummyPartIntervalFrames.resize(maxLevel + 1);
-	}
-
-	if (m_vec_maxSpawnFacePartIntervalFrames.size() != (maxLevel + 1))
-	{
-		m_vec_maxSpawnFacePartIntervalFrames.resize(maxLevel + 1);
-		m_vec_maxSpawnDummyPartIntervalFrames.resize(maxLevel + 1);
-	}
-
 	for (std::int32_t i = 1;i < maxLevel + 1;i++)
 	{
 
@@ -106,6 +90,8 @@ void ButiEngine::FriendFacePartSpawner::Start()
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 
+	ResizeLevelParameter();
+
 	FirstSpawnFacePart();
 
 	m_vlp_spawnFacePartTimer = ObjectFactory::Create<RelativeTimer>(60);
@@ -135,16 +121,19 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePartSpawn
 void ButiEngine::FriendFacePartSpawner::FirstSpawnFacePart()
 {
 	auto eye = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eyes");
-	eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
-	eye.lock()->GetGameComponent<FriendFacePart>()->SetMovePattern(MovePattern::Stay);
+	auto eyePartComponent = eye.lock()->GetGameComponent<FriendFacePart>();
+	eyePartComponent->SetMovePattern(0);
+	eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(eyePartComponent->GetMovePattern()));
 
 	auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
-	nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
-	nose.lock()->GetGameComponent<FriendFacePart>()->SetMovePattern(MovePattern::Stay);
+	auto nosePartComponent = nose.lock()->GetGameComponent<FriendFacePart>();
+	nosePartComponent->SetMovePattern(0);
+	nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(nosePartComponent->GetMovePattern()));
 
 	auto mouth = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Mouth");
-	mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
-	mouth.lock()->GetGameComponent<FriendFacePart>()->SetMovePattern(MovePattern::Stay);
+	auto mouthPartComponent = mouth.lock()->GetGameComponent<FriendFacePart>();
+	mouthPartComponent->SetMovePattern(0);
+	mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(mouthPartComponent->GetMovePattern()));
 }
 
 void ButiEngine::FriendFacePartSpawner::SpawnFacePart()
@@ -157,22 +146,9 @@ void ButiEngine::FriendFacePartSpawner::SpawnFacePart()
 	}
 
 	auto facePart = GetManager().lock()->AddObjectFromCereal(GetRandomSpawnPartName());
-	facePart.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
-	
 	auto facePartComponent = facePart.lock()->GetGameComponent<FriendFacePart>();
-
-	if (gameLevel <= 1)
-	{
-		facePartComponent->SetMovePattern(MovePattern::Stay);
-	}
-	else if (gameLevel <= 2)
-	{
-		facePartComponent->SetMovePattern(MovePattern::Straight);
-	}
-	else if (gameLevel <= 3)
-	{
-		facePartComponent->SetMovePattern(MovePattern::Throw);
-	}
+	facePartComponent->SetMovePattern(gameLevel);
+	facePart.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(facePartComponent->GetMovePattern()));
 }
 
 void ButiEngine::FriendFacePartSpawner::SetSpawnFacePartInterval()
@@ -199,22 +175,9 @@ void ButiEngine::FriendFacePartSpawner::SpawnDummyPart()
 	}
 
 	auto dummyPart = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Dummy");
-	dummyPart.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
-
-	auto facePartComponent = dummyPart.lock()->GetGameComponent<FriendFacePart>();
-
-	if (gameLevel <= 1)
-	{
-		facePartComponent->SetMovePattern(MovePattern::Stay);
-	}
-	else if (gameLevel <= 2)
-	{
-		facePartComponent->SetMovePattern(MovePattern::Straight);
-	}
-	else if (gameLevel <= 3)
-	{
-		facePartComponent->SetMovePattern(MovePattern::Throw);
-	}
+	auto dummyPartComponent = dummyPart.lock()->GetGameComponent<FriendFacePart>();
+	dummyPartComponent->SetMovePattern(gameLevel);
+	dummyPart.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(dummyPartComponent->GetMovePattern()));
 }
 
 void ButiEngine::FriendFacePartSpawner::SetSpawnDummyPartInterval()
@@ -231,9 +194,19 @@ void ButiEngine::FriendFacePartSpawner::SetSpawnDummyPartInterval()
 	m_vlp_spawnDummyPartTimer->Reset();
 }
 
-ButiEngine::Vector3 ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartPos()
+ButiEngine::Vector3 ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartPos(const MovePattern arg_movePattern)
 {
-	std::string tagName = "FriendFacePartSpawnArea_" + std::to_string(m_vwp_gameLevelManager.lock()->GetGameLevel());
+	std::string movePatternStr = "Stay";
+	if (arg_movePattern == MovePattern::Straight)
+	{
+		movePatternStr = "Straight";
+	}
+	else if (arg_movePattern == MovePattern::Throw)
+	{
+		movePatternStr = "Throw";
+	}
+
+	std::string tagName = "FriendFacePartSpawnArea_" + movePatternStr;
 	auto spawnAreas = GetManager().lock()->GetGameObjects(GameObjectTag(tagName));
 	if (spawnAreas.GetSize() == 0)
 	{
@@ -291,4 +264,26 @@ bool ButiEngine::FriendFacePartSpawner::CanUpdate()
 	}
 
 	return true;
+}
+
+void ButiEngine::FriendFacePartSpawner::ResizeLevelParameter()
+{
+	std::int32_t maxLevel = m_vwp_gameLevelManager.lock()->GetMaxLevel();
+	if (m_vec_maxFacePartCounts.size() != (maxLevel + 1))
+	{
+		m_vec_maxFacePartCounts.resize(maxLevel + 1);
+		m_vec_maxDummyPartCounts.resize(maxLevel + 1);
+	}
+
+	if (m_vec_minSpawnFacePartIntervalFrames.size() != (maxLevel + 1))
+	{
+		m_vec_minSpawnFacePartIntervalFrames.resize(maxLevel + 1);
+		m_vec_minSpawnDummyPartIntervalFrames.resize(maxLevel + 1);
+	}
+
+	if (m_vec_maxSpawnFacePartIntervalFrames.size() != (maxLevel + 1))
+	{
+		m_vec_maxSpawnFacePartIntervalFrames.resize(maxLevel + 1);
+		m_vec_maxSpawnDummyPartIntervalFrames.resize(maxLevel + 1);
+	}
 }

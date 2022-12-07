@@ -156,16 +156,86 @@ void ButiEngine::FriendFacePart::OnShowUI()
 		m_type = PartType::Dummy;
 	}
 
-	GUI::BulletText(U8("最低速度"));
-	if (GUI::DragFloat("##MinMoveSpeed", &m_minMoveSpeed, 0.01f, 0.0f, 100.0f))
+	if (!m_vwp_gameLevelManager.lock())
 	{
-		m_moveSpeed = ButiRandom::GetRandom(m_minMoveSpeed, m_maxMoveSpeed, 100);
+		m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 	}
 
-	GUI::BulletText(U8("最高速度"));
-	if (GUI::DragFloat("##MaxMoveSpeed", &m_maxMoveSpeed, 0.01f, 0.0f, 100.0f))
+	ResizeLevelParameter();
+
+	std::int32_t maxLevel = m_vwp_gameLevelManager.lock()->GetMaxLevel();
+
+	for (std::int32_t i = 1; i < maxLevel + 1; i++)
 	{
-		m_moveSpeed = ButiRandom::GetRandom(m_minMoveSpeed, m_maxMoveSpeed, 100);
+		if (GUI::TreeNode("Level:" + std::to_string(i)))
+		{
+			if (GUI::TreeNode(U8("出現確率")))
+			{
+				GUI::BulletText(U8("その場待機"));
+				GUI::DragFloat("##StayProbability" + std::to_string(i), &m_vec_stayProbabilities[i], 0.1f, 0.0f, 100.0f);
+
+				GUI::BulletText(U8("直線移動"));
+				GUI::DragFloat("##StraightProbability" + std::to_string(i), &m_vec_straightProbabilities[i], 0.1f, 0.0f, 100.0f);
+
+				GUI::BulletText(U8("放物線"));
+				GUI::DragFloat("##ThrowProbability" + std::to_string(i), &m_vec_throwProbabilities[i], 0.1f, 0.0f, 100.0f);
+
+				GUI::TreePop();
+			}
+
+			if (GUI::TreeNode(U8("移動速度")))
+			{
+				if (GUI::TreeNode(U8("直線移動")))
+				{
+					GUI::BulletText(U8("最低速度"));
+					if (GUI::DragFloat("##MinStraightMoveSpeed" + std::to_string(i), &m_vec_minStraightMoveSpeeds[i], 0.01f, 0.0f, 100.0f))
+					{
+						if (m_movePattern == MovePattern::Straight)
+						{
+							m_moveSpeed = ButiRandom::GetRandom(m_vec_minStraightMoveSpeeds[i], m_vec_maxStraightMoveSpeeds[i], 100);
+						}
+					}
+
+					GUI::BulletText(U8("最高速度"));
+					if (GUI::DragFloat("##MaxStraightMoveSpeed" + std::to_string(i), &m_vec_maxStraightMoveSpeeds[i], 0.01f, 0.0f, 100.0f))
+					{
+						if (m_movePattern == MovePattern::Straight)
+						{
+							m_moveSpeed = ButiRandom::GetRandom(m_vec_minStraightMoveSpeeds[i], m_vec_maxStraightMoveSpeeds[i], 100);
+						}
+					}
+
+					GUI::TreePop();
+				}
+
+				if (GUI::TreeNode(U8("放物線")))
+				{
+					GUI::BulletText(U8("最低速度"));
+					if (GUI::DragFloat("##MinThrowMoveSpeed" + std::to_string(i), &m_vec_minThrowMoveSpeeds[i], 0.01f, 0.0f, 100.0f))
+					{
+						if (m_movePattern == MovePattern::Throw)
+						{
+							m_moveSpeed = ButiRandom::GetRandom(m_vec_minThrowMoveSpeeds[i], m_vec_maxThrowMoveSpeeds[i], 100);
+						}
+					}
+
+					GUI::BulletText(U8("最高速度"));
+					if (GUI::DragFloat("##MaxThrowMoveSpeed" + std::to_string(i), &m_vec_maxThrowMoveSpeeds[i], 0.01f, 0.0f, 100.0f))
+					{
+						if (m_movePattern == MovePattern::Throw)
+						{
+							m_moveSpeed = ButiRandom::GetRandom(m_vec_minThrowMoveSpeeds[i], m_vec_maxThrowMoveSpeeds[i], 100);
+						}
+					}
+
+					GUI::TreePop();
+				}
+
+				GUI::TreePop();
+			}
+
+			GUI::TreePop();
+		}
 	}
 }
 
@@ -173,14 +243,16 @@ void ButiEngine::FriendFacePart::Start()
 {
 	m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 
 	m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+
+	ResizeLevelParameter();
 
 	m_vlp_deadTimer = ObjectFactory::Create<RelativeTimer>(180);
 	m_vlp_deadTimer->Start();
 
-	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
-	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
+	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
 
 	if (gameLevel != 0)
 	{
@@ -192,30 +264,27 @@ void ButiEngine::FriendFacePart::Start()
 	m_vlp_changeGroupMaskTimer->Start();
 
 	m_isCollisionHead = false;
-	SetMoveDirection();
-	m_moveSpeed = ButiRandom::GetRandom(m_minMoveSpeed, m_maxMoveSpeed, 100);
 
-	if (m_movePattern == MovePattern::Throw)
-	{
-		m_vwp_rigidBodyComponent.lock()->SetIsAffectedGravity(true);
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetGravity(Vector3(0.0f, -1.5f, 0.0f));
-		m_moveDirection.y += 0.5f;
-		m_moveDirection.Normalize();
-		Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * 100);
-	}
+	SetMoveDirection();
+	SetMoveSpeed();
+
+	InitThrow();
 
 	m_state = FacePartState::Move;
-	m_vlp_lockOnTimer = ObjectFactory::Create<RelativeTimer>(30);
 	m_vlp_chaseTimer = ObjectFactory::Create<RelativeTimer>(1);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clone()
 {
 	auto clone = ObjectFactory::Create<FriendFacePart>();
-	clone->m_minMoveSpeed = m_minMoveSpeed;
-	clone->m_maxMoveSpeed = m_maxMoveSpeed;
 	clone->m_type = m_type;
+	clone->m_vec_minStraightMoveSpeeds = m_vec_minStraightMoveSpeeds;
+	clone->m_vec_maxStraightMoveSpeeds = m_vec_maxStraightMoveSpeeds;
+	clone->m_vec_minThrowMoveSpeeds = m_vec_minThrowMoveSpeeds;
+	clone->m_vec_maxThrowMoveSpeeds = m_vec_maxThrowMoveSpeeds;
+	clone->m_vec_stayProbabilities = m_vec_stayProbabilities;
+	clone->m_vec_straightProbabilities = m_vec_straightProbabilities;
+	clone->m_vec_throwProbabilities = m_vec_throwProbabilities;
 	return clone;
 }
 
@@ -252,12 +321,56 @@ void ButiEngine::FriendFacePart::MoveStraight()
 	Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
 	if (m_vwp_rigidBodyComponent.lock())
 	{
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity * 100);
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity);
 	}
 }
 
 void ButiEngine::FriendFacePart::MoveThrow()
 {
+}
+
+void ButiEngine::FriendFacePart::InitThrow()
+{
+	if (m_movePattern == MovePattern::Throw)
+	{
+		m_vwp_rigidBodyComponent.lock()->SetIsAffectedGravity(true);
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetGravity(Vector3(0.0f, -1.5f, 0.0f));
+		m_moveDirection.y += 0.5f;
+		m_moveDirection.Normalize();
+		Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
+		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity);
+	}
+}
+
+void ButiEngine::FriendFacePart::SetMovePattern(const std::int32_t arg_gameLevel)
+{
+	if (arg_gameLevel == 0)
+	{
+		m_movePattern = MovePattern::Stay;
+		return;
+	}
+
+	float random = ButiRandom::GetRandom(0.0f, 100.0f, 10);
+	float stayBorder = m_vec_stayProbabilities[arg_gameLevel];
+	float straightBorder = stayBorder + m_vec_straightProbabilities[arg_gameLevel];
+	float throwBorder = straightBorder + m_vec_throwProbabilities[arg_gameLevel];
+
+	if (random <= stayBorder)
+	{
+		m_movePattern = MovePattern::Stay;
+	}
+	else if (random <= straightBorder)
+	{
+		m_movePattern = MovePattern::Straight;
+	}
+	else if (random <= throwBorder)
+	{
+		m_movePattern = MovePattern::Throw;
+	}
+	else
+	{
+		m_movePattern = MovePattern::Stay;
+	}
 }
 
 void ButiEngine::FriendFacePart::SetMoveDirection()
@@ -270,6 +383,20 @@ void ButiEngine::FriendFacePart::SetMoveDirection()
 	m_moveDirection = diff * Matrix4x4::RollZ(MathHelper::ToRadian(ButiRandom::GetRandom(-20.0f, 20.0f, 10)));
 
 	m_moveDirection.Normalize();
+}
+
+void ButiEngine::FriendFacePart::SetMoveSpeed()
+{
+	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
+
+	if (m_movePattern == MovePattern::Straight)
+	{
+		m_moveSpeed = ButiRandom::GetRandom(m_vec_minStraightMoveSpeeds[gameLevel], m_vec_maxStraightMoveSpeeds[gameLevel], 100);
+	}
+	else if(m_movePattern == MovePattern::Throw)
+	{
+		m_moveSpeed = ButiRandom::GetRandom(m_vec_minThrowMoveSpeeds[gameLevel], m_vec_maxThrowMoveSpeeds[gameLevel], 100);
+	}
 }
 
 void ButiEngine::FriendFacePart::StickToHead()
@@ -443,4 +570,38 @@ ButiEngine::Vector3 ButiEngine::FriendFacePart::GetChaseTargetPos()
 	}
 
 	return chaseTargetPos;
+}
+
+void ButiEngine::FriendFacePart::ResizeLevelParameter()
+{
+	std::int32_t maxLevel = m_vwp_gameLevelManager.lock()->GetMaxLevel();
+
+	if (m_vec_minStraightMoveSpeeds.size() != (maxLevel + 1))
+	{
+		m_vec_minStraightMoveSpeeds.resize(maxLevel + 1);
+	}
+	if (m_vec_maxStraightMoveSpeeds.size() != (maxLevel + 1))
+	{
+		m_vec_maxStraightMoveSpeeds.resize(maxLevel + 1);
+	}
+	if (m_vec_minThrowMoveSpeeds.size() != (maxLevel + 1))
+	{
+		m_vec_minThrowMoveSpeeds.resize(maxLevel + 1);
+	}
+	if (m_vec_maxThrowMoveSpeeds.size() != (maxLevel + 1))
+	{
+		m_vec_maxThrowMoveSpeeds.resize(maxLevel + 1);
+	}
+	if (m_vec_stayProbabilities.size() != (maxLevel + 1))
+	{
+		m_vec_stayProbabilities.resize(maxLevel + 1);
+	}
+	if (m_vec_straightProbabilities.size() != (maxLevel + 1))
+	{
+		m_vec_straightProbabilities.resize(maxLevel + 1);
+	}
+	if (m_vec_throwProbabilities.size() != (maxLevel + 1))
+	{
+		m_vec_throwProbabilities.resize(maxLevel + 1);
+	}
 }
