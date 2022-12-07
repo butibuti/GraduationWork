@@ -23,16 +23,24 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_vec_maxFacePartCounts);
-			ARCHIVE_BUTI(m_vec_minSpawnIntervalFrames);
-			ARCHIVE_BUTI(m_vec_maxSpawnIntervalFrames);
+
 			ARCHIVE_BUTI(m_spawnPosZ);
+
+			ARCHIVE_BUTI(m_vec_maxFacePartCounts);
+			ARCHIVE_BUTI(m_vec_minSpawnFacePartIntervalFrames);
+			ARCHIVE_BUTI(m_vec_maxSpawnFacePartIntervalFrames);
+
+			ARCHIVE_BUTI(m_vec_maxDummyPartCounts);
+			ARCHIVE_BUTI(m_vec_minSpawnDummyPartIntervalFrames);
+			ARCHIVE_BUTI(m_vec_maxSpawnDummyPartIntervalFrames);
 		}
 
 	private:
 		void FirstSpawnFacePart();
 		void SpawnFacePart();
-		void SetSpawnInterval();
+		void SetSpawnFacePartInterval();
+		void SpawnDummyPart();
+		void SetSpawnDummyPartInterval();
 
 		Vector3 GetRandomSpawnPartPos();
 		std::string GetRandomSpawnPartName();
@@ -43,13 +51,17 @@ namespace ButiEngine {
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
-		std::vector<std::int32_t> m_vec_maxFacePartCounts;
-		std::vector<std::int32_t> m_vec_minSpawnIntervalFrames;
-		std::vector<std::int32_t> m_vec_maxSpawnIntervalFrames;
-
-		Value_ptr<RelativeTimer> m_vlp_spawnTimer;
-
 		float m_spawnPosZ;
+
+		Value_ptr<RelativeTimer> m_vlp_spawnFacePartTimer;
+		std::vector<std::int32_t> m_vec_maxFacePartCounts;
+		std::vector<std::int32_t> m_vec_minSpawnFacePartIntervalFrames;
+		std::vector<std::int32_t> m_vec_maxSpawnFacePartIntervalFrames;
+
+		Value_ptr<RelativeTimer> m_vlp_spawnDummyPartTimer;
+		std::vector<std::int32_t> m_vec_maxDummyPartCounts;
+		std::vector<std::int32_t> m_vec_minSpawnDummyPartIntervalFrames;
+		std::vector<std::int32_t> m_vec_maxSpawnDummyPartIntervalFrames;
 	};
 
 }

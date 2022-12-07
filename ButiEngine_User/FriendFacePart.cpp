@@ -343,6 +343,7 @@ void ButiEngine::FriendFacePart::Chase()
 void ButiEngine::FriendFacePart::ChangeGroupMask()
 {
 	return;
+
 	std::int32_t mask = 65535;
 	switch (m_type)
 	{
@@ -372,7 +373,10 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 
 	if (partHitAreaComponent->CanStickPart(m_type))
 	{
-		partHitAreaComponent->SetCanStickPart(false);
+		if (m_type != PartType::Dummy)
+		{
+			partHitAreaComponent->SetCanStickPart(false);
+		}
 
 		m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 		gameObject.lock()->GetGameComponent<TriggerComponent>()->SetIsRemove(true);
@@ -405,7 +409,12 @@ bool ButiEngine::FriendFacePart::CanUpdate()
 ButiEngine::Vector3 ButiEngine::FriendFacePart::GetChaseTargetPos()
 {
 	Vector3 rayStartPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
+	if (m_type == PartType::Dummy)
+	{
+		rayStartPos = gameObject.lock()->transform->GetLocalPosition();
+	}
 	rayStartPos.z += 50.0f;
+
 	Vector3 chaseTargetPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
 
 	List<ButiBullet::PhysicsRaycastResult> list_rayRes;

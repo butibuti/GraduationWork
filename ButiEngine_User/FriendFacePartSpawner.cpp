@@ -12,10 +12,16 @@ void ButiEngine::FriendFacePartSpawner::OnUpdate()
 		return;
 	}
 
-	if (m_vlp_spawnTimer->Update())
+	if (m_vlp_spawnFacePartTimer->Update())
 	{
 		SpawnFacePart();
-		SetSpawnInterval();
+		SetSpawnFacePartInterval();
+	}
+
+	if (m_vlp_spawnDummyPartTimer->Update())
+	{
+		SpawnDummyPart();
+		SetSpawnDummyPartInterval();
 	}
 }
 
@@ -41,30 +47,56 @@ void ButiEngine::FriendFacePartSpawner::OnShowUI()
 	if (m_vec_maxFacePartCounts.size() != (maxLevel + 1))
 	{
 		m_vec_maxFacePartCounts.resize(maxLevel + 1);
+		m_vec_maxDummyPartCounts.resize(maxLevel + 1);
 	}
 
-	if (m_vec_minSpawnIntervalFrames.size() != (maxLevel + 1))
+	if (m_vec_minSpawnFacePartIntervalFrames.size() != (maxLevel + 1))
 	{
-		m_vec_minSpawnIntervalFrames.resize(maxLevel + 1);
+		m_vec_minSpawnFacePartIntervalFrames.resize(maxLevel + 1);
+		m_vec_minSpawnDummyPartIntervalFrames.resize(maxLevel + 1);
 	}
 
-	if (m_vec_maxSpawnIntervalFrames.size() != (maxLevel + 1))
+	if (m_vec_maxSpawnFacePartIntervalFrames.size() != (maxLevel + 1))
 	{
-		m_vec_maxSpawnIntervalFrames.resize(maxLevel + 1);
+		m_vec_maxSpawnFacePartIntervalFrames.resize(maxLevel + 1);
+		m_vec_maxSpawnDummyPartIntervalFrames.resize(maxLevel + 1);
 	}
 
 	for (std::int32_t i = 1;i < maxLevel + 1;i++)
 	{
-		GUI::Text("Level:" + std::to_string(i));
 
-		GUI::BulletText(U8("¶¬‚·‚éãŒÀ"));
-		GUI::DragInt("##MaxFacePartCount" + std::to_string(i), m_vec_maxFacePartCounts[i], 1.0f, 0, 100);
+		if (GUI::TreeNode("Level:" + std::to_string(i)))
+		{
+			if (GUI::TreeNode("FacePart"))
+			{
+				GUI::BulletText(U8("¶¬‚·‚éãŒÀ"));
+				GUI::DragInt("##MaxFacePartCount" + std::to_string(i), m_vec_maxFacePartCounts[i], 1.0f, 0, 100);
 
-		GUI::BulletText(U8("¶¬‚·‚éŠÔŠu‚Ì‰ºŒÀ"));
-		GUI::DragInt("##MinSpawnIntervalFrame" + std::to_string(i), m_vec_minSpawnIntervalFrames[i], 1.0f, 0, 600);
+				GUI::BulletText(U8("¶¬‚·‚éŠÔŠu‚Ì‰ºŒÀ"));
+				GUI::DragInt("##MinSpawnFacePartIntervalFrame" + std::to_string(i), m_vec_minSpawnFacePartIntervalFrames[i], 1.0f, 0, 600);
 
-		GUI::BulletText(U8("¶¬‚·‚éŠÔŠu‚ÌãŒÀ"));
-		GUI::DragInt("##MaxSpawnIntervalFrame" + std::to_string(i), m_vec_maxSpawnIntervalFrames[i], 1.0f, 0, 600);
+				GUI::BulletText(U8("¶¬‚·‚éŠÔŠu‚ÌãŒÀ"));
+				GUI::DragInt("##MaxSpawnFacePartIntervalFrame" + std::to_string(i), m_vec_maxSpawnFacePartIntervalFrames[i], 1.0f, 0, 600);
+
+				GUI::TreePop();
+			}
+
+			if (GUI::TreeNode("DummyPart"))
+			{
+				GUI::BulletText(U8("¶¬‚·‚éãŒÀ"));
+				GUI::DragInt("##MaxDummyPartCount" + std::to_string(i), m_vec_maxDummyPartCounts[i], 1.0f, 0, 100);
+
+				GUI::BulletText(U8("¶¬‚·‚éŠÔŠu‚Ì‰ºŒÀ"));
+				GUI::DragInt("##MinSpawnDummyPartIntervalFrame" + std::to_string(i), m_vec_minSpawnDummyPartIntervalFrames[i], 1.0f, 0, 600);
+
+				GUI::BulletText(U8("¶¬‚·‚éŠÔŠu‚ÌãŒÀ"));
+				GUI::DragInt("##MaxSpawnDummyPartIntervalFrame" + std::to_string(i), m_vec_maxSpawnDummyPartIntervalFrames[i], 1.0f, 0, 600);
+
+				GUI::TreePop();
+			}
+
+			GUI::TreePop();
+		}
 	}
 }
 
@@ -76,18 +108,27 @@ void ButiEngine::FriendFacePartSpawner::Start()
 
 	FirstSpawnFacePart();
 
-	m_vlp_spawnTimer = ObjectFactory::Create<RelativeTimer>(60);
-	SetSpawnInterval();
-	m_vlp_spawnTimer->Start();
+	m_vlp_spawnFacePartTimer = ObjectFactory::Create<RelativeTimer>(60);
+	SetSpawnFacePartInterval();
+	m_vlp_spawnFacePartTimer->Start();
+
+	m_vlp_spawnDummyPartTimer = ObjectFactory::Create<RelativeTimer>(60);
+	SetSpawnDummyPartInterval();
+	m_vlp_spawnDummyPartTimer->Start();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePartSpawner::Clone()
 {
 	auto clone = ObjectFactory::Create<FriendFacePartSpawner>();
-	clone->m_vec_maxFacePartCounts = m_vec_maxFacePartCounts;
-	clone->m_vec_minSpawnIntervalFrames = m_vec_minSpawnIntervalFrames;
-	clone->m_vec_maxSpawnIntervalFrames = m_vec_maxSpawnIntervalFrames;
 	clone->m_spawnPosZ = m_spawnPosZ;
+
+	clone->m_vec_maxFacePartCounts = m_vec_maxFacePartCounts;
+	clone->m_vec_minSpawnFacePartIntervalFrames = m_vec_minSpawnFacePartIntervalFrames;
+	clone->m_vec_maxSpawnFacePartIntervalFrames = m_vec_maxSpawnFacePartIntervalFrames;
+
+	clone->m_vec_maxDummyPartCounts = m_vec_maxDummyPartCounts;
+	clone->m_vec_minSpawnDummyPartIntervalFrames = m_vec_minSpawnDummyPartIntervalFrames;
+	clone->m_vec_maxSpawnDummyPartIntervalFrames = m_vec_maxSpawnDummyPartIntervalFrames;
 	return clone;
 }
 
@@ -134,18 +175,60 @@ void ButiEngine::FriendFacePartSpawner::SpawnFacePart()
 	}
 }
 
-void ButiEngine::FriendFacePartSpawner::SetSpawnInterval()
+void ButiEngine::FriendFacePartSpawner::SetSpawnFacePartInterval()
 {
-	if (!m_vlp_spawnTimer)
+	if (!m_vlp_spawnFacePartTimer)
 	{
 		return;
 	}
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	std::int32_t spawnIntervalFrame = ButiRandom::GetInt(m_vec_minSpawnIntervalFrames[gameLevel], m_vec_maxSpawnIntervalFrames[gameLevel]);
+	std::int32_t spawnIntervalFrame = ButiRandom::GetInt(m_vec_minSpawnFacePartIntervalFrames[gameLevel], m_vec_maxSpawnFacePartIntervalFrames[gameLevel]);
 	spawnIntervalFrame = max(spawnIntervalFrame, 0);
 
-	m_vlp_spawnTimer->ChangeCountFrame(spawnIntervalFrame);
-	m_vlp_spawnTimer->Reset();
+	m_vlp_spawnFacePartTimer->ChangeCountFrame(spawnIntervalFrame);
+	m_vlp_spawnFacePartTimer->Reset();
+}
+
+void ButiEngine::FriendFacePartSpawner::SpawnDummyPart()
+{
+	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
+	auto dummyParts = GetManager().lock()->GetGameObjects(GameObjectTag("FriendFacePart_Dummy"));
+	if (dummyParts.GetSize() >= m_vec_maxDummyPartCounts[gameLevel])
+	{
+		return;
+	}
+
+	auto dummyPart = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Dummy");
+	dummyPart.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
+
+	auto facePartComponent = dummyPart.lock()->GetGameComponent<FriendFacePart>();
+
+	if (gameLevel <= 1)
+	{
+		facePartComponent->SetMovePattern(MovePattern::Stay);
+	}
+	else if (gameLevel <= 2)
+	{
+		facePartComponent->SetMovePattern(MovePattern::Straight);
+	}
+	else if (gameLevel <= 3)
+	{
+		facePartComponent->SetMovePattern(MovePattern::Throw);
+	}
+}
+
+void ButiEngine::FriendFacePartSpawner::SetSpawnDummyPartInterval()
+{
+	if (!m_vlp_spawnDummyPartTimer)
+	{
+		return;
+	}
+	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
+	std::int32_t spawnIntervalFrame = ButiRandom::GetInt(m_vec_minSpawnDummyPartIntervalFrames[gameLevel], m_vec_maxSpawnDummyPartIntervalFrames[gameLevel]);
+	spawnIntervalFrame = max(spawnIntervalFrame, 0);
+
+	m_vlp_spawnDummyPartTimer->ChangeCountFrame(spawnIntervalFrame);
+	m_vlp_spawnDummyPartTimer->Reset();
 }
 
 ButiEngine::Vector3 ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartPos()
@@ -177,11 +260,6 @@ std::string ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartName()
 	std::string facePartName;
 
 	std::int32_t maxRandom = 2;
-	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	if (gameLevel >= 3)
-	{
-		maxRandom = 3;
-	}
 
 	std::int32_t random = ButiRandom::GetInt(0, maxRandom);
 	if (random <= 0)
@@ -195,10 +273,6 @@ std::string ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartName()
 	else if (random <= 2)
 	{
 		facePartName = "FriendFacePart_Mouth";
-	}
-	else if (random <= 3)
-	{
-		facePartName = "FriendFacePart_Dummy";
 	}
 
 	return facePartName;
