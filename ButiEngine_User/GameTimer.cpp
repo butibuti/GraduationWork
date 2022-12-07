@@ -86,7 +86,10 @@ std::int32_t ButiEngine::GameTimer::GetRemainSecond()
 		return m_countSecond;
 	}
 
-	return (m_vlp_timer->GetRemainFrame() / 60.0f) + 1;
+	std::int32_t remainSecond = (m_vlp_timer->GetRemainFrame() / 60.0f) + 1;
+	std::int32_t maxSecond = m_vlp_timer->GetMaxCountFrame() * 60.0f;
+
+	return min(maxSecond, remainSecond);
 }
 
 void ButiEngine::GameTimer::StartTimer()
