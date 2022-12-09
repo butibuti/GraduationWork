@@ -107,8 +107,15 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
 
 void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 {
-	arg_vwp_head.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
-	arg_vwp_head.lock()->transform->SetLocalPosition(Vector3Const::Zero);
+	m_vwp_head = arg_vwp_head;
+
+	m_vwp_head.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
+
+	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
+	Vector3 headPos = m_vwp_head.lock()->transform->GetWorldPosition();
+	headPos += headCenter.lock()->transform->GetLocalPosition() - headCenter.lock()->transform->GetWorldPosition();
+
+	m_vwp_head.lock()->transform->SetLocalPosition(headPos);
 
 	m_isMoveHorizontal = false;
 
@@ -164,7 +171,7 @@ void ButiEngine::FriendBody::Rotate()
 
 	if (m_isStopRotate)
 	{
-		if (IsFront())
+		if (IsFrontHead())
 		{
 			m_isRotate = false;
 		}
@@ -232,6 +239,26 @@ void ButiEngine::FriendBody::SpawnNewHead()
 void ButiEngine::FriendBody::SpawnNewBody()
 {
 	GetManager().lock()->AddObjectFromCereal("FriendBody");
+}
+
+bool ButiEngine::FriendBody::IsFrontHead()
+{
+	if (!m_vwp_head.lock())
+	{
+		return false;
+	}
+
+	Vector3 front = m_vwp_head.lock()->transform->GetFront();
+	front.y = 0.0f;
+	if (front == Vector3Const::Zero)
+	{
+		front.z = 1.0f;
+	}
+	front.Normalize();
+
+	float angle = abs(MathHelper::ToDegree(std::acos(front.Dot(Vector3Const::ZAxis))));
+
+	return angle <= m_frontBorder;
 }
 
 void ButiEngine::FriendBody::ResizeLevelParameter()

@@ -41,12 +41,15 @@ namespace ButiEngine {
 		void SpawnNewHead();
 		void SpawnNewBody();
 
+		bool IsFrontHead();
+
 		void ResizeLevelParameter();
 
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
+		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_neck;
 
 		std::vector<float> m_vec_rotateSpeeds;

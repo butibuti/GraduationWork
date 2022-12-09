@@ -2,6 +2,15 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	struct FriendData
+	{
+		Value_ptr<Transform> vlp_headTransform;
+		Value_ptr<Transform> vlp_eyeTransform;
+		Value_ptr<Transform> vlp_noseTransform;
+		Value_ptr<Transform> vlp_mouthTransform;
+		Value_ptr<Transform> vlp_bodyTransform;
+	};
+
 	class GameLevelManager;
 
 	class FriendManager :public GameComponent
@@ -29,6 +38,8 @@ namespace ButiEngine {
 		void AddFriendCount();
 	private:
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
+
+		static std::vector<FriendData> g_vec_friendDatas;
 
 		std::int32_t m_friendCount;
 		std::int32_t m_currentLevelFriendCount;

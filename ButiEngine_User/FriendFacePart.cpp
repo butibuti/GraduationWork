@@ -15,6 +15,11 @@
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
+	if (!CanUpdate())
+	{
+		return;
+	}
+
 	if (m_vlp_deadTimer->Update())
 	{
 		m_vlp_deadTimer->Stop();
@@ -31,19 +36,6 @@ void ButiEngine::FriendFacePart::OnUpdate()
 	{
 		m_vlp_changeGroupMaskTimer->Stop();
 		ChangeGroupMask();
-	}
-
-	if (!CanUpdate())
-	{
-		if (m_vwp_pauseManager.lock()->IsPause())
-		{
-			if (m_vwp_rigidBodyComponent.lock())
-			{
-				m_vwp_rigidBodyComponent.lock()->SetIsAffectedGravity(false);
-				m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(Vector3Const::Zero);
-			}
-		}
-		return;
 	}
 
 	switch (m_state)

@@ -126,13 +126,13 @@ void ButiEngine::FriendCompleteDirecting::SetGameCameraParameter()
 {
 	m_waitZoomInFrame = 10;
 	m_waitZoomOutFrame = 30;
-	m_zoomFrame = 15;
+	m_zoomFrame = 10;
 
 	if (m_isSpecialDirecting)
 	{
 		m_waitZoomInFrame = 30;
 		m_waitZoomOutFrame = 60;
-		m_zoomFrame = 10;
+		m_zoomFrame = 8;
 	}
 
 	m_vlp_waitZoomInTimer = ObjectFactory::Create<RelativeTimer>(m_waitZoomInFrame);

@@ -41,11 +41,20 @@ void ButiEngine::GameCamera::NormalZoom(const std::int32_t arg_zoomInFrame)
 {
 	StopShake();
 
+	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
+
 	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
 	m_vwp_lookAt.lock()->SetLookTarget(headCenter.lock()->transform);
 
-	Vector3 dir = (headCenter.lock()->transform->GetLocalPosition() - m_startPos).Normalize();
-	Vector3 targetPos = m_startPos + dir * 10.0f;
+	Vector3 centerPos = headCenter.lock()->transform->GetWorldPosition();
+	Vector3 headFront = head.lock()->transform->GetFront();
+	headFront.y = 0.0f;
+	if (headFront == Vector3Const::Zero)
+	{
+		headFront.z = 1.0f;
+	}
+	headFront.Normalize();
+	Vector3 targetPos = centerPos + headFront * 55.0f;
 
 	AddPositionAnimation(targetPos, arg_zoomInFrame);
 }
@@ -54,11 +63,21 @@ void ButiEngine::GameCamera::SpecialZoom(const std::int32_t arg_zoomInFrame)
 {
 	StopShake();
 
+	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
+
 	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
 	m_vwp_lookAt.lock()->SetLookTarget(headCenter.lock()->transform);
 
-	Vector3 dir = (headCenter.lock()->transform->GetLocalPosition() - m_startPos).Normalize();
-	Vector3 targetPos = m_startPos + dir * 50.0f;
+	Vector3 centerPos = headCenter.lock()->transform->GetWorldPosition();
+	Vector3 headFront = head.lock()->transform->GetFront();
+	headFront.y = 0.0f;
+	if (headFront == Vector3Const::Zero)
+	{
+		headFront.z = 1.0f;
+	}
+	headFront.Normalize();
+	Vector3 targetPos = centerPos + headFront * 15.0f;
+
 	Vector3 scattering;
 	float radius = 3.0f;
 	scattering.x = ButiRandom::GetRandom(-radius, radius, 10);

@@ -21,7 +21,7 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 		}
 
-		void SetIsPause(const bool arg_isPause) { m_isPause = arg_isPause; }
+		void SetIsPause(const bool arg_isPause);
 		bool IsPause() { return m_isPause; }
 
 		void SetIsAllPause(const bool arg_isAllPause)
