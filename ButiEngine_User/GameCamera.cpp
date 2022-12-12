@@ -55,6 +55,9 @@ void ButiEngine::GameCamera::NormalZoom(const std::int32_t arg_zoomInFrame)
 	}
 	headFront.Normalize();
 	Vector3 targetPos = centerPos + headFront * 55.0f;
+	targetPos.x = min(targetPos.x, 5.0f);
+	targetPos.x = max(targetPos.x, -5.0f);
+	targetPos.z = max(targetPos.z, 50.0f);
 
 	AddPositionAnimation(targetPos, arg_zoomInFrame);
 }

@@ -65,7 +65,7 @@ void ButiEngine::Result_CompleteFriend::CreateParts(Value_weak_ptr<FriendData> a
 
 void ButiEngine::Result_CompleteFriend::Fall()
 {
-	constexpr float gravity = 0.01f;
+	constexpr float gravity = 0.05f;
 
 	m_velocity.y -= gravity;
 

@@ -8,17 +8,19 @@ void ButiEngine::Result_FriendFallPoint::OnUpdate()
 		return;
 	}
 
-	float progress = m_vlp_animTimer->GetPercent();
-	Vector3 pos = MathHelper::LerpPosition(m_startPos, m_vec_checkPoints[0]->pos, Easing::GetEase(progress, m_vec_checkPoints[0]->easeType));
-	gameObject.lock()->transform->SetLocalPosition(pos);
-
 	if (m_vlp_animTimer->Update())
 	{
 		gameObject.lock()->transform->SetLocalPosition(m_vec_checkPoints[0]->pos);
 
 		m_vec_checkPoints.erase(m_vec_checkPoints.begin());
 		SetNewCheckPoint();
+
+		return;
 	}
+
+	float progress = m_vlp_animTimer->GetPercent();
+	Vector3 pos = MathHelper::LerpPosition(m_startPos, m_vec_checkPoints[0]->pos, Easing::GetEase(progress, m_vec_checkPoints[0]->easeType));
+	gameObject.lock()->transform->SetLocalPosition(pos);
 }
 
 void ButiEngine::Result_FriendFallPoint::OnSet()
