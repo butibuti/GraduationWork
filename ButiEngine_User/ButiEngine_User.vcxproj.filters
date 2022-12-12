@@ -46,6 +46,8 @@
     <ClCompile Include="FriendHead_Center.cpp" />
     <ClCompile Include="FriendBody_Neck.cpp" />
     <ClCompile Include="Effect_Belt.cpp" />
+    <ClCompile Include="Result_FriendFallPoint.cpp" />
+    <ClCompile Include="Result_CompleteFriend.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConcentratedLine.h" />
@@ -91,6 +93,8 @@
     <ClInclude Include="FriendHead_Center.h" />
     <ClInclude Include="FriendBody_Neck.h" />
     <ClInclude Include="Effect_Belt.h" />
+    <ClInclude Include="Result_FriendFallPoint.h" />
+    <ClInclude Include="Result_CompleteFriend.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

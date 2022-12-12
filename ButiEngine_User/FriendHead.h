@@ -34,6 +34,11 @@ namespace ButiEngine {
 
 		bool IsHighSpeed() { return m_velocity.z >= 0.075f; }
 
+		Value_weak_ptr<GameObject> GetEye();
+		Value_weak_ptr<GameObject> GetNose();
+		Value_weak_ptr<GameObject> GetMouth();
+		std::vector<Value_weak_ptr<GameObject>> GetDummies();
+
 		std::int32_t GetEyeScore();
 		std::int32_t GetNoseScore();
 		std::int32_t GetMouthScore();

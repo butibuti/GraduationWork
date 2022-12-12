@@ -90,6 +90,36 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
 	return clone;
 }
 
+ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::FriendHead::GetEye()
+{
+	return m_vwp_eyesHitAreaComponent.lock()->GetPart();
+}
+
+ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::FriendHead::GetNose()
+{
+	return m_vwp_noseHitAreaComponent.lock()->GetPart();
+}
+
+ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::FriendHead::GetMouth()
+{
+	return m_vwp_mouthHitAreaComponent.lock()->GetPart();
+}
+
+std::vector<ButiEngine::Value_weak_ptr<ButiEngine::GameObject>> ButiEngine::FriendHead::GetDummies()
+{
+	std::vector<ButiEngine::Value_weak_ptr<ButiEngine::GameObject>> vec_dummies;
+	
+	auto eyesHitAreaDummyParts = m_vwp_eyesHitAreaComponent.lock()->GetStickDummyParts();
+	auto noseHitAreaDummyParts = m_vwp_noseHitAreaComponent.lock()->GetStickDummyParts();
+	auto mouthHitAreaDummyParts = m_vwp_mouthHitAreaComponent.lock()->GetStickDummyParts();
+
+	vec_dummies.insert(vec_dummies.end(), eyesHitAreaDummyParts.begin(), eyesHitAreaDummyParts.end());
+	vec_dummies.insert(vec_dummies.end(), noseHitAreaDummyParts.begin(), noseHitAreaDummyParts.end());
+	vec_dummies.insert(vec_dummies.end(), mouthHitAreaDummyParts.begin(), mouthHitAreaDummyParts.end());
+
+	return vec_dummies;
+}
+
 std::int32_t ButiEngine::FriendHead::GetEyeScore()
 {
 	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();

@@ -8,6 +8,7 @@ namespace ButiEngine {
 		Value_ptr<Transform> vlp_eyeTransform;
 		Value_ptr<Transform> vlp_noseTransform;
 		Value_ptr<Transform> vlp_mouthTransform;
+		std::vector<Value_ptr<Transform>> vec_vlp_dummyTransforms;
 		Value_ptr<Transform> vlp_bodyTransform;
 	};
 
@@ -36,10 +37,15 @@ namespace ButiEngine {
 
 		void ResetCurrentLevelFriendCount() { m_currentLevelFriendCount = 0; }
 		void AddFriendCount();
+
+		static void ClearFriendData() { g_vec_friendDatas.clear(); }
+		static void AddFriendData(Value_ptr<FriendData> arg_data) { g_vec_friendDatas.push_back(arg_data); }
 	private:
+		void SpawnFriends();
+
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
-		static std::vector<FriendData> g_vec_friendDatas;
+		static std::vector<Value_ptr<FriendData>> g_vec_friendDatas;
 
 		std::int32_t m_friendCount;
 		std::int32_t m_currentLevelFriendCount;

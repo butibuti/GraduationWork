@@ -5,6 +5,7 @@ namespace ButiEngine {
 	class GameSettings;
 	class PauseManager;
 	class GameLevelManager;
+	struct FriendData;
 
 	class FriendBody :public GameComponent
 	{
@@ -42,6 +43,11 @@ namespace ButiEngine {
 		void SpawnNewBody();
 
 		bool IsFrontHead();
+		float GetDifferenceFromHeadFront();
+		float GetLookForwardHeadAngle();
+		void SaveFriendData();
+
+		Vector3 GetFrontXZ(const Vector3& arg_front);
 
 		void ResizeLevelParameter();
 
@@ -51,6 +57,8 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_neck;
+
+		Value_ptr<FriendData> m_vlp_friendData;
 
 		std::vector<float> m_vec_rotateSpeeds;
 

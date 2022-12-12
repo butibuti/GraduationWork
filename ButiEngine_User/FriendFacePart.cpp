@@ -412,6 +412,7 @@ void ButiEngine::FriendFacePart::StickToHead()
 	m_vwp_chaseTarget = Value_weak_ptr<GameObject>();
 
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
+	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart_Dummy"));
 
 	StickEffect();
 

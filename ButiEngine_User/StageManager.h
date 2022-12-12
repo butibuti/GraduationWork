@@ -30,6 +30,7 @@ namespace ButiEngine {
 	private:
 		void StartGame();
 		void ResetGame();
+		void ChangeResultScene();
 
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_weak_ptr<GameTimer> m_vwp_gameTimer;

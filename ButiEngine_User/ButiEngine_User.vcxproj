@@ -384,6 +384,8 @@
     <ClCompile Include="PartStickAnimation.cpp" />
     <ClCompile Include="PauseManager.cpp" />
     <ClCompile Include="RemoveMeshDraw.cpp" />
+    <ClCompile Include="Result_CompleteFriend.cpp" />
+    <ClCompile Include="Result_FriendFallPoint.cpp" />
     <ClCompile Include="ScoreManager.cpp" />
     <ClCompile Include="ScoreNumber.cpp" />
     <ClCompile Include="SeparateDrawObject.cpp" />
@@ -434,6 +436,8 @@
     <ClInclude Include="PartStickAnimation.h" />
     <ClInclude Include="PauseManager.h" />
     <ClInclude Include="RemoveMeshDraw.h" />
+    <ClInclude Include="Result_CompleteFriend.h" />
+    <ClInclude Include="Result_FriendFallPoint.h" />
     <ClInclude Include="ScoreManager.h" />
     <ClInclude Include="ScoreNumber.h" />
     <ClInclude Include="SeparateDrawObject.h" />

@@ -3,9 +3,15 @@
 #include "PauseManager.h"
 #include "GameTimer.h"
 #include "GameLevelManager.h"
+#include "FriendManager.h"
 
 void ButiEngine::StageManager::OnUpdate()
 {
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::J))
+	{
+		ChangeResultScene();
+	}
+
 	if (!m_isGameStart)
 	{
 		if (m_vwp_gameLevelManager.lock()->GetGameLevel() == 2)
@@ -61,6 +67,8 @@ void ButiEngine::StageManager::Start()
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 
 	m_vlp_waitPlayBGMTimer = ObjectFactory::Create<RelativeTimer>(30);
+
+	GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->ClearFriendData();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::StageManager::Clone()
@@ -79,6 +87,15 @@ void ButiEngine::StageManager::ResetGame()
 {
 	auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
 	std::string sceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
+	sceneManager->RemoveScene(sceneName);
+	sceneManager->LoadScene(sceneName);
+	sceneManager->ChangeScene(sceneName);
+}
+
+void ButiEngine::StageManager::ChangeResultScene()
+{
+	auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
+	std::string sceneName = "Result";
 	sceneManager->RemoveScene(sceneName);
 	sceneManager->LoadScene(sceneName);
 	sceneManager->ChangeScene(sceneName);

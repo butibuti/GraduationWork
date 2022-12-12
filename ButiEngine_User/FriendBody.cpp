@@ -5,6 +5,8 @@
 #include "FriendCompleteDirecting.h"
 #include "GameLevelManager.h"
 #include "FriendBody_Neck.h"
+#include "FriendManager.h"
+#include "FriendHead.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -78,6 +80,8 @@ void ButiEngine::FriendBody::Start()
 	m_vwp_neck.lock()->SetObjectName(gameObject.lock()->GetGameObjectName() + "_Neck");
 	m_vwp_neck.lock()->GetGameComponent<FriendBody_Neck>()->SetParent(gameObject);
 
+	m_vlp_friendData = ObjectFactory::Create<FriendData>();
+
 	m_isRotate = true;
 	m_isStopRotate = false;
 
@@ -112,10 +116,12 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	m_vwp_head.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
 
 	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
+	Vector3 bodyPos = gameObject.lock()->transform->GetLocalPosition();
 	Vector3 headPos = m_vwp_head.lock()->transform->GetWorldPosition();
-	headPos += headCenter.lock()->transform->GetLocalPosition() - headCenter.lock()->transform->GetWorldPosition();
+	headPos += bodyPos + headCenter.lock()->transform->GetLocalPosition() - headCenter.lock()->transform->GetWorldPosition();
+	m_vwp_head.lock()->transform->SetWorldPosition(headPos);
 
-	m_vwp_head.lock()->transform->SetLocalPosition(headPos);
+	SaveFriendData();
 
 	m_isMoveHorizontal = false;
 
@@ -173,7 +179,10 @@ void ButiEngine::FriendBody::Rotate()
 	{
 		if (IsFrontHead())
 		{
-			m_isRotate = false;
+			float rollAngle = GetLookForwardHeadAngle();
+			gameObject.lock()->transform->RollLocalRotationY_Degrees(rollAngle);
+
+			SetIsRemove(true);
 		}
 	}
 }
@@ -248,7 +257,65 @@ bool ButiEngine::FriendBody::IsFrontHead()
 		return false;
 	}
 
-	Vector3 front = m_vwp_head.lock()->transform->GetFront();
+	Vector3 front = GetFrontXZ(m_vwp_head.lock()->transform->GetFront());
+
+	float angle = abs(MathHelper::ToDegree(std::acos(front.Dot(Vector3Const::ZAxis))));
+
+	return angle <= m_frontBorder;
+}
+
+float ButiEngine::FriendBody::GetDifferenceFromHeadFront()
+{
+	Vector3 headFront = GetFrontXZ(m_vwp_head.lock()->transform->GetFront());
+	Vector3 bodyFront = gameObject.lock()->transform->GetFront();
+
+	float angle = abs(MathHelper::ToDegree(std::acos(bodyFront.Dot(headFront))));
+	return angle;
+}
+
+float ButiEngine::FriendBody::GetLookForwardHeadAngle()
+{
+	Vector3 headFront = GetFrontXZ(m_vwp_head.lock()->transform->GetFront());
+	float rollAngle = abs(MathHelper::ToDegree(std::acos(headFront.Dot(Vector3Const::ZAxis))));
+	bool isClockwise = headFront.x >= 0.0f;
+	if (isClockwise)
+	{
+		rollAngle *= -1.0f;
+	}
+
+	return rollAngle;
+}
+
+void ButiEngine::FriendBody::SaveFriendData()
+{
+	auto bodyTransform = gameObject.lock()->transform->Clone();
+	auto headTransform = m_vwp_head.lock()->transform->Clone();
+	headTransform->SetBaseTransform(bodyTransform);
+
+	float rollAngle = GetLookForwardHeadAngle();
+	bodyTransform->RollLocalRotationY_Degrees(rollAngle);
+
+	m_vlp_friendData->vlp_headTransform = headTransform;
+	m_vlp_friendData->vlp_bodyTransform = bodyTransform;
+
+	auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
+	m_vlp_friendData->vlp_eyeTransform = headComponent->GetEye().lock()->transform->Clone();
+	m_vlp_friendData->vlp_noseTransform = headComponent->GetNose().lock()->transform->Clone();
+	m_vlp_friendData->vlp_mouthTransform = headComponent->GetMouth().lock()->transform->Clone();
+
+	auto vec_dummies = headComponent->GetDummies();
+	auto end = vec_dummies.end();
+	for (auto itr = vec_dummies.begin(); itr != end; ++itr)
+	{
+		m_vlp_friendData->vec_vlp_dummyTransforms.push_back((*itr).lock()->transform->Clone());
+	}
+
+	GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
+}
+
+ButiEngine::Vector3 ButiEngine::FriendBody::GetFrontXZ(const Vector3& arg_front)
+{
+	Vector3 front = arg_front;
 	front.y = 0.0f;
 	if (front == Vector3Const::Zero)
 	{
@@ -256,9 +323,7 @@ bool ButiEngine::FriendBody::IsFrontHead()
 	}
 	front.Normalize();
 
-	float angle = abs(MathHelper::ToDegree(std::acos(front.Dot(Vector3Const::ZAxis))));
-
-	return angle <= m_frontBorder;
+	return front;
 }
 
 void ButiEngine::FriendBody::ResizeLevelParameter()
