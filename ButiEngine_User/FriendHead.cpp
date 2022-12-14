@@ -18,6 +18,13 @@ void ButiEngine::FriendHead::OnUpdate()
 		return;
 	}
 
+	Appear();
+
+	if (m_vlp_appearTimer->IsOn())
+	{
+		return;
+	}
+
 	Control();
 	CalcVelocity();
 	CheckPut();
@@ -71,16 +78,10 @@ void ButiEngine::FriendHead::Start()
 	m_crntPos = Vector3Const::Zero;
 	m_velocity = Vector3Const::Zero;
 
-	SetPartHitAreaParameter();
-
-	m_vlp_putTimer = ObjectFactory::Create<RelativeTimer>(1);
+	m_vlp_appearTimer = ObjectFactory::Create<RelativeTimer>(10);
+	m_vlp_appearTimer->Start();
 
 	m_isPut = false;
-
-#ifdef DEBUG
-	gameObject.lock()->transform->SetLocalPosition(Vector3Const::Zero);
-	m_vwp_rigidBodyComponent.lock()->TransformApply();
-#endif // DEBUG
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
@@ -228,18 +229,8 @@ void ButiEngine::FriendHead::ControlByGamePad()
 
 void ButiEngine::FriendHead::ControlByVRTracker()
 {
-	Matrix4x4 deviceMatrix;
-	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
-	Vector3 pos = deviceMatrix.GetPosition();
-	pos *= m_vwp_gameSettings.lock()->GetCorrection();
-	pos.x *= -1; 
-	auto rotation = deviceMatrix.GetRemovePosition();
-	rotation._13 *= -1;
-	rotation._31 *= -1;
-	rotation._12 *= -1;
-	rotation._21 *= -1;
-	gameObject.lock()->transform->SetLocalPosition(pos);
-	gameObject.lock()->transform->SetLocalRotation(rotation);
+	gameObject.lock()->transform->SetLocalPosition(GetTrackerPos());
+	gameObject.lock()->transform->SetLocalRotation(GetTrackerRotation());
 }
 
 void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
@@ -255,6 +246,37 @@ void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
 	m_isPut = true;
 }
 
+void ButiEngine::FriendHead::Appear()
+{
+	if (!m_vlp_appearTimer->IsOn())
+	{
+		return;
+	}
+
+	Vector3 targetPos = GetTrackerPos();
+	float progress = m_vlp_appearTimer->GetPercent();
+	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
+	Vector3 newPos = MathHelper::LerpPosition(pos, targetPos, progress);
+	gameObject.lock()->transform->SetLocalPosition(newPos);
+
+	Quat targetRotation = GetTrackerRotation().ToQuat();
+	Quat rotation = gameObject.lock()->transform->GetLocalRotation().ToQuat();
+	Quat newRotation = MathHelper::LearpQuat(rotation, targetRotation, progress);
+	gameObject.lock()->transform->SetLocalRotation(newRotation);
+
+	if (m_vlp_appearTimer->Update())
+	{
+		m_vlp_appearTimer->Stop();
+
+		gameObject.lock()->transform->SetLocalPosition(GetTrackerPos());
+		gameObject.lock()->transform->SetLocalRotation(GetTrackerRotation());
+
+		CreatePartHitArea();
+	}
+
+	m_vwp_rigidBodyComponent.lock()->TransformApply();
+}
+
 void ButiEngine::FriendHead::CalcVelocity()
 {
 	m_prevPos = m_crntPos;
@@ -263,59 +285,46 @@ void ButiEngine::FriendHead::CalcVelocity()
 	m_velocity = m_crntPos - m_prevPos;
 }
 
+ButiEngine::Vector3 ButiEngine::FriendHead::GetTrackerPos()
+{
+	if (!(GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_trackerIndex))
+	{
+		return Vector3Const::Zero;
+	}
+
+	Matrix4x4 deviceMatrix;
+	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
+	Vector3 pos = deviceMatrix.GetPosition();
+	pos *= m_vwp_gameSettings.lock()->GetCorrection();
+	pos.x *= -1;
+	
+	return pos;
+}
+
+ButiEngine::Matrix4x4 ButiEngine::FriendHead::GetTrackerRotation()
+{
+	if (!(GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_trackerIndex))
+	{
+		return Matrix4x4().Identity();
+	}
+
+	Matrix4x4 deviceMatrix;
+	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
+	auto rotation = deviceMatrix.GetRemovePosition();
+	rotation._13 *= -1;
+	rotation._31 *= -1;
+	rotation._12 *= -1;
+	rotation._21 *= -1;
+
+	return rotation;
+}
+
 void ButiEngine::FriendHead::CheckPut()
 {
 	if (!CanPut())
 	{
 		return;
 	}
-
-	//if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_A))
-	//{
-	//	OnPut();
-	//}
-
-	//if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() <= m_trackerIndex)
-	//{
-	//	return;
-	//}
-
-	////‘ä‚É‹ß‚­‚ÄˆÚ“®‘¬“x‚ª’x‚©‚Á‚½‚ç’u‚¢‚½‚Æ”»’è‚·‚é
-	//Matrix4x4 deviceMatrix;
-	//GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
-	//Vector3 pos = deviceMatrix.GetPosition();
-	//Vector3 tablePos = m_vwp_gameSettings.lock()->GetTablePos();
-
-	//constexpr float putTeleranceY = 0.05f;
-	//constexpr float putTeleranceXZ = 0.75f;
-	//constexpr float putMoveSpeedBorder = 0.01f;
-
-	//float distanceY = abs(pos.y - tablePos.y);
-	//float distanceYSqr = distanceY * distanceY;
-	//float putTleranceYSqr = putTeleranceY * putTeleranceY;
-	//float distanceXZSqr = (Vector2(pos.x, pos.z) - Vector2(tablePos.x, tablePos.z)).GetLengthSqr();
-
-	//float moveSpeedSqr = abs(m_velocity.GetLengthSqr());
-	//float putMoveSpeedBorderSqr = putMoveSpeedBorder * putMoveSpeedBorder;
-
-	//if (distanceYSqr <= putTleranceYSqr && 
-	//	distanceXZSqr <= putTeleranceXZ && 
-	//	moveSpeedSqr <= putMoveSpeedBorderSqr)
-	//{
-	//	if (!m_vlp_putTimer->IsOn())
-	//	{
-	//		m_vlp_putTimer->Start();
-	//	}
-
-	//	if (m_vlp_putTimer->Update())
-	//	{
-	//		OnPut();
-	//	}
-	//}
-	//else
-	//{
-	//	m_vlp_putTimer->Reset();
-	//}
 
 	auto collisionBody = m_vwp_headCenterComponent.lock()->GetCollisionFriendBody();
 	if (collisionBody.lock())
@@ -357,7 +366,7 @@ bool ButiEngine::FriendHead::CanUpdate()
 	return true;
 }
 
-void ButiEngine::FriendHead::SetPartHitAreaParameter()
+void ButiEngine::FriendHead::CreatePartHitArea()
 {
 	m_vwp_eyesHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Eyes");
 	m_vwp_noseHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Nose");

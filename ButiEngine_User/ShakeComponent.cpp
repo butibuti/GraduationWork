@@ -28,12 +28,6 @@ void ButiEngine::ShakeComponent::OnUpdate()
 
 void ButiEngine::ShakeComponent::OnSet()
 {
-	auto lookAt = gameObject.lock()->GetGameComponent<LookAtComponent>();
-	if (lookAt)
-	{
-		lookAt->SetIsActive(false);
-	}
-
 	m_vlp_shakeTimer = ObjectFactory::Create<RelativeTimer>(60);
 
 	m_startRotation = gameObject.lock()->transform->GetLocalRotation();
@@ -69,9 +63,4 @@ void ButiEngine::ShakeComponent::Dead()
 void ButiEngine::ShakeComponent::ResetRotation()
 {
 	gameObject.lock()->transform->SetLocalRotation(m_startRotation);
-	auto lookAt = gameObject.lock()->GetGameComponent<LookAtComponent>();
-	if (lookAt)
-	{
-		lookAt->SetIsActive(true);
-	}
 }

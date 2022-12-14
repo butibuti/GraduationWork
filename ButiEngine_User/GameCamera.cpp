@@ -5,6 +5,8 @@
 
 void ButiEngine::GameCamera::OnUpdate()
 {
+	LookAtTarget();
+
 	if (m_vlp_waitShakeTimer->Update())
 	{
 		m_vlp_waitShakeTimer->Stop();
@@ -26,10 +28,15 @@ void ButiEngine::GameCamera::OnShowUI()
 
 void ButiEngine::GameCamera::Start()
 {
-	m_vwp_lookAt = gameObject.lock()->GetGameComponent<LookAtComponent>();
+	m_vwp_cameraMan = GetManager().lock()->GetGameObject("CameraMan");
 	m_startPos = gameObject.lock()->transform->GetLocalPosition();
 
 	m_vlp_waitShakeTimer = ObjectFactory::Create<RelativeTimer>(60);
+
+	m_lookTargetPos = Vector3(0.0f, 0.0f, -100.0f);
+	m_zoomStartRotation = Matrix4x4().Identity();
+	m_vlp_lookTimer = ObjectFactory::Create<RelativeTimer>(60);
+
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameCamera::Clone()
@@ -39,12 +46,8 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameCamera::Clone()
 
 void ButiEngine::GameCamera::NormalZoom(const std::int32_t arg_zoomInFrame)
 {
-	StopShake();
-
 	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
-
 	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
-	m_vwp_lookAt.lock()->SetLookTarget(headCenter.lock()->transform);
 
 	Vector3 centerPos = headCenter.lock()->transform->GetWorldPosition();
 	Vector3 headFront = head.lock()->transform->GetFront();
@@ -59,17 +62,16 @@ void ButiEngine::GameCamera::NormalZoom(const std::int32_t arg_zoomInFrame)
 	targetPos.x = max(targetPos.x, -5.0f);
 	targetPos.z = max(targetPos.z, 50.0f);
 
+	Vector3 lookTargetPos = headCenter.lock()->transform->GetWorldPosition();
+
 	AddPositionAnimation(targetPos, arg_zoomInFrame);
+	StartLookAtTarget(lookTargetPos, arg_zoomInFrame);
 }
 
 void ButiEngine::GameCamera::SpecialZoom(const std::int32_t arg_zoomInFrame)
 {
-	StopShake();
-
 	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
-
 	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
-	m_vwp_lookAt.lock()->SetLookTarget(headCenter.lock()->transform);
 
 	Vector3 centerPos = headCenter.lock()->transform->GetWorldPosition();
 	Vector3 headFront = head.lock()->transform->GetFront();
@@ -88,25 +90,26 @@ void ButiEngine::GameCamera::SpecialZoom(const std::int32_t arg_zoomInFrame)
 	scattering.z = 0.0f;
 	targetPos += scattering;
 
-	AddPositionAnimation(targetPos, arg_zoomInFrame);
+	Vector3 lookTargetPos = headCenter.lock()->transform->GetWorldPosition();
 
-	m_vlp_waitShakeTimer->ChangeCountFrame(arg_zoomInFrame + 5);
+	AddPositionAnimation(targetPos, arg_zoomInFrame);
+	StartLookAtTarget(lookTargetPos, arg_zoomInFrame * 0.25f);
+
+	m_vlp_waitShakeTimer->ChangeCountFrame(arg_zoomInFrame + 1);
 	m_vlp_waitShakeTimer->Start();
 }
 
 void ButiEngine::GameCamera::ZoomOut(const std::int32_t arg_zoomOutFrame)
 {
-	StopShake();
-
-	auto defaultLookObject = GetManager().lock()->GetGameObject(GameObjectTag("DefaultLookObject"));
-	m_vwp_lookAt.lock()->SetLookTarget(defaultLookObject.lock()->transform);
+	Vector3 lookTargetPos = Vector3(0.0f, 0.0f, -100.0f);
 
 	AddPositionAnimation(m_startPos, arg_zoomOutFrame);
+	StartLookAtTarget(lookTargetPos, arg_zoomOutFrame * 0.5f);
 }
 
 void ButiEngine::GameCamera::StartShake(const std::int32_t arg_shakeFrame)
 {
-	auto shake = gameObject.lock()->AddGameComponent<ShakeComponent>();
+	auto shake = m_vwp_cameraMan.lock()->AddGameComponent<ShakeComponent>();
 	shake->SetShakeFrame(arg_shakeFrame);
 	shake->SetShakeSpeed(90.0f);
 	Vector3 amplitude;
@@ -118,11 +121,21 @@ void ButiEngine::GameCamera::StartShake(const std::int32_t arg_shakeFrame)
 
 void ButiEngine::GameCamera::StopShake()
 {
-	auto shake = gameObject.lock()->GetGameComponent<ShakeComponent>();
+	auto shake = m_vwp_cameraMan.lock()->GetGameComponent<ShakeComponent>();
 	if (shake)
 	{
 		shake->Dead();
 	}
+}
+
+void ButiEngine::GameCamera::StartLookAtTarget(const Vector3& arg_lookTargetPos, const std::int32_t arg_lookFrame)
+{
+	m_lookTargetPos = arg_lookTargetPos;
+	m_zoomStartRotation = gameObject.lock()->transform->GetLocalRotation();
+
+	m_vlp_lookTimer->ChangeCountFrame(arg_lookFrame);
+	m_vlp_lookTimer->Reset();
+	m_vlp_lookTimer->Start();
 }
 
 void ButiEngine::GameCamera::AddPositionAnimation(const Vector3& arg_targetPos, const std::int32_t arg_animFrame)
@@ -138,4 +151,31 @@ void ButiEngine::GameCamera::AddPositionAnimation(const Vector3& arg_targetPos, 
 	anim->SetTargetPosition(arg_targetPos);
 	anim->SetSpeed(1.0f / arg_animFrame);
 	anim->SetEaseType(Easing::EasingType::Liner);
+
+	//m_targetPos = arg_animFrame;
+	//
+	//m_vlp_zoomTimer->ChangeCountFrame(arg_animFrame);
+	//m_vlp_zoomTimer->Reset();
+	//m_vlp_zoomTimer->Start();
+}
+
+void ButiEngine::GameCamera::LookAtTarget()
+{
+	if (!m_vlp_lookTimer->IsOn())
+	{
+		gameObject.lock()->transform->SetLookAtRotation(m_lookTargetPos);
+		return;
+	}
+
+	float progress = m_vlp_lookTimer->GetPercent();
+	Quat targetRotation = gameObject.lock()->transform->GetLookAtRotation(m_lookTargetPos, Vector3Const::YAxis).ToQuat();
+	Quat newRotation = MathHelper::LearpQuat(m_zoomStartRotation.ToQuat(), targetRotation, progress);
+	gameObject.lock()->transform->SetWorldRotation(newRotation.ToMatrix());
+
+	if (m_vlp_lookTimer->Update())
+	{
+		m_vlp_lookTimer->Stop();
+
+		gameObject.lock()->transform->SetLookAtRotation(m_lookTargetPos);
+	}
 }

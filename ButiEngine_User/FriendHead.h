@@ -50,12 +50,15 @@ namespace ButiEngine {
 		void ControlByVRTracker();
 		void OnPut(Value_weak_ptr<GameObject> arg_vwp_body);
 
+		void Appear();
 		void CalcVelocity();
+		Vector3 GetTrackerPos();
+		Matrix4x4 GetTrackerRotation();
 		void CheckPut();
 		bool CanPut();
 		bool CanUpdate();
 
-		void SetPartHitAreaParameter();
+		void CreatePartHitArea();
 
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
@@ -83,8 +86,7 @@ namespace ButiEngine {
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_noseHitAreaComponent;
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_mouthHitAreaComponent;
 
-		//台に置いたか確認する用
-		Value_ptr<RelativeTimer> m_vlp_putTimer;
+		Value_ptr<RelativeTimer> m_vlp_appearTimer;
 
 		bool m_isPut;
 	};

@@ -124,7 +124,6 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	SaveFriendData();
 
 	m_isMoveHorizontal = false;
-
 	gameObject.lock()->AddGameComponent<FriendCompleteDirecting>();
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendBody"));
 	
@@ -242,12 +241,14 @@ void ButiEngine::FriendBody::MoveHorizontal()
 
 void ButiEngine::FriendBody::SpawnNewHead()
 {
-	GetManager().lock()->AddObjectFromCereal("FriendHead");
+	auto head = GetManager().lock()->AddObjectFromCereal("FriendHead");
+	head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
 }
 
 void ButiEngine::FriendBody::SpawnNewBody()
 {
-	GetManager().lock()->AddObjectFromCereal("FriendBody");
+	auto body = GetManager().lock()->AddObjectFromCereal("FriendBody");
+	body.lock()->transform->SetLocalPosition(m_moveHorizontalStartPos);
 }
 
 bool ButiEngine::FriendBody::IsFrontHead()

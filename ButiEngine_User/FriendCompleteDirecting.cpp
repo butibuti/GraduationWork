@@ -58,13 +58,10 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 void ButiEngine::FriendCompleteDirecting::OnSet()
 {
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
-	m_vwp_cameraMan = GetManager().lock()->GetGameObject("CameraMan");
+	m_vwp_cameraMan = GetManager().lock()->GetGameObject("CameraParent");
 	m_vwp_gameCamera = m_vwp_cameraMan.lock()->GetGameComponent<GameCamera>();
 
 	m_vwp_pauseManager.lock()->SetIsPause(true);
-
-	std::int32_t shakeFrame = 30;
-	m_vwp_gameCamera.lock()->StartShake(shakeFrame);
 
 	m_isSpecialDirecting = false;
 	
@@ -124,16 +121,24 @@ void ButiEngine::FriendCompleteDirecting::SpawnHukidashi()
 
 void ButiEngine::FriendCompleteDirecting::SetGameCameraParameter()
 {
+	//auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
+	//Vector3 lookTargetPos = headCenter.lock()->transform->GetWorldPosition();
+	//m_vwp_gameCamera.lock()->StartLookAtTarget(lookTargetPos, 5);
+
+	std::int32_t shakeFrame = 15;
 	m_waitZoomInFrame = 10;
 	m_waitZoomOutFrame = 30;
 	m_zoomFrame = 10;
 
 	if (m_isSpecialDirecting)
 	{
+		shakeFrame = 20;
 		m_waitZoomInFrame = 30;
 		m_waitZoomOutFrame = 60;
 		m_zoomFrame = 8;
 	}
+
+	m_vwp_gameCamera.lock()->StartShake(shakeFrame);
 
 	m_vlp_waitZoomInTimer = ObjectFactory::Create<RelativeTimer>(m_waitZoomInFrame);
 	m_vlp_waitZoomInTimer->Start();

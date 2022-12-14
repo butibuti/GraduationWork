@@ -6,6 +6,9 @@
 
 void ButiEngine::FriendHead_Center::OnUpdate()
 {
+	Vector3 lookTargetPos = gameObject.lock()->transform->GetWorldPosition();
+	lookTargetPos.z += 100.0f;
+	gameObject.lock()->transform->SetLookAtRotation(lookTargetPos);
 }
 
 void ButiEngine::FriendHead_Center::OnSet()

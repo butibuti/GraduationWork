@@ -26,14 +26,20 @@ namespace ButiEngine {
 		void ZoomOut(const std::int32_t arg_zoomOutFrame);
 		void StartShake(const std::int32_t arg_shakeFrame);
 		void StopShake();
+		void StartLookAtTarget(const Vector3& arg_lookTargetPos, const std::int32_t arg_lookFrame);
 	private:
 		void AddPositionAnimation(const Vector3& arg_targetPos, const std::int32_t arg_animFrame);
+		void LookAtTarget();
 
-		Value_weak_ptr<LookAtComponent> m_vwp_lookAt;
+		Value_weak_ptr<GameObject> m_vwp_cameraMan;
 
 		Vector3 m_startPos;
 
 		Value_ptr<RelativeTimer> m_vlp_waitShakeTimer;
+
+		Vector3 m_lookTargetPos;
+		Matrix4x4 m_zoomStartRotation;
+		Value_ptr<RelativeTimer> m_vlp_lookTimer;
 	};
 
 }
