@@ -26,10 +26,11 @@ namespace ButiEngine {
 		void ZoomOut(const std::int32_t arg_zoomOutFrame);
 		void StartShake(const std::int32_t arg_shakeFrame);
 		void StopShake();
-		void StartLookAtTarget(const Vector3& arg_lookTargetPos, const std::int32_t arg_lookFrame);
 	private:
 		void AddPositionAnimation(const Vector3& arg_targetPos, const std::int32_t arg_animFrame);
 		void LookAtTarget();
+
+		void StartLookAtTarget(const Vector3& arg_lookTargetPos, const std::int32_t arg_lookFrame);
 
 		Value_weak_ptr<GameObject> m_vwp_cameraMan;
 

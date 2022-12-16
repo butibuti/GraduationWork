@@ -34,16 +34,21 @@ void ButiEngine::Effect_CompleteFriend::OnShowUI()
 
 void ButiEngine::Effect_CompleteFriend::Start()
 {
-	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
-	Vector3 headPos = head.lock()->transform->GetWorldPosition();
-	Vector3 neckPos = headPos;
-	neckPos.y -= 1.2f;
-	gameObject.lock()->transform->SetLocalPosition(neckPos);
-
 	CreateBeams();
 
 	m_vlp_animationTimer = ObjectFactory::Create<RelativeTimer>(m_animationFrame);
 	m_vlp_animationTimer->Start();
+
+	m_vwp_parent = GetManager().lock()->AddObject(gameObject.lock()->transform->Clone(), "Effect_Parent_CompleteFriend");
+	m_vwp_parent.lock()->transform->SetBaseTransform(m_vwp_body.lock()->transform);
+	gameObject.lock()->transform->SetBaseTransform(m_vwp_parent.lock()->transform);
+	gameObject.lock()->transform->SetLocalPosition(Vector3Const::Zero);
+
+	auto lookAt = m_vwp_parent.lock()->AddGameComponent<LookAtComponent>();
+	auto cameraMan = GetManager().lock()->GetGameObject("CameraMan");
+	lookAt->SetLookTarget(cameraMan.lock()->transform);
+	lookAt->SetSpeed(1.0f);
+
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Effect_CompleteFriend::Clone()
@@ -78,5 +83,6 @@ void ButiEngine::Effect_CompleteFriend::Dead()
 		(*itr).lock()->SetIsRemove(true);
 	}
 
+	m_vwp_parent.lock()->SetIsRemove(true);
 	gameObject.lock()->SetIsRemove(true);
 }

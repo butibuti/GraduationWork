@@ -21,6 +21,8 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_animationFrame);
 		}
+
+		void SetBody(Value_weak_ptr<GameObject> arg_vwp_body) { m_vwp_body = arg_vwp_body; }
 	private:
 		void CreateBeams();
 		void Dead();
@@ -28,6 +30,9 @@ namespace ButiEngine {
 
 		std::int32_t m_animationFrame;
 		Value_ptr<RelativeTimer> m_vlp_animationTimer;
+
+		Value_weak_ptr<GameObject> m_vwp_body;
+		Value_weak_ptr<GameObject> m_vwp_parent;
 	};
 
 }

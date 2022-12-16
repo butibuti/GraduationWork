@@ -48,6 +48,7 @@
     <ClCompile Include="Effect_Belt.cpp" />
     <ClCompile Include="Result_FriendFallPoint.cpp" />
     <ClCompile Include="Result_CompleteFriend.cpp" />
+    <ClCompile Include="FriendBodySpawner.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConcentratedLine.h" />
@@ -95,6 +96,7 @@
     <ClInclude Include="Effect_Belt.h" />
     <ClInclude Include="Result_FriendFallPoint.h" />
     <ClInclude Include="Result_CompleteFriend.h" />
+    <ClInclude Include="FriendBodySpawner.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

@@ -29,6 +29,8 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_vec_moveHorizontalFrame);
 		}
 
+		Value_weak_ptr<GameObject> GetNeck() { return m_vwp_neck; }
+
 		void SetHead(Value_weak_ptr<GameObject> arg_vwp_head);
 		
 		bool IsFront();

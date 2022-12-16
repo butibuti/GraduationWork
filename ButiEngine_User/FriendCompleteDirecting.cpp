@@ -6,6 +6,7 @@
 #include "FriendHead.h"
 #include "ConcentratedLine.h"
 #include "Effect_Belt.h"
+#include "Effect_CompleteFriend.h"
 
 void ButiEngine::FriendCompleteDirecting::OnUpdate()
 {
@@ -79,7 +80,12 @@ void ButiEngine::FriendCompleteDirecting::OnSet()
 	m_vlp_directingTimer = ObjectFactory::Create<RelativeTimer>(m_waitZoomInFrame + m_waitZoomOutFrame);
 	m_vlp_directingTimer->Start();
 
-	GetManager().lock()->AddObjectFromCereal("Effect_CompleteFriend");
+	auto completeFriendEffect = GetManager().lock()->AddObjectFromCereal("Effect_CompleteFriend");
+	auto neck = bodyComponent->GetNeck();
+	completeFriendEffect.lock()->transform->SetLocalPosition(neck.lock()->transform->GetWorldPosition());
+
+	auto effectComponent = completeFriendEffect.lock()->GetGameComponent<Effect_CompleteFriend>();
+	effectComponent->SetBody(gameObject);
 
 	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/CompleteFriend.wav"));
 	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);

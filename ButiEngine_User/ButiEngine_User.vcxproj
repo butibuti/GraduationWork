@@ -362,6 +362,7 @@
     <ClCompile Include="Effect_PartHitFlash.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="FriendBody.cpp" />
+    <ClCompile Include="FriendBodySpawner.cpp" />
     <ClCompile Include="FriendBody_Neck.cpp" />
     <ClCompile Include="FriendCompleteDirecting.cpp" />
     <ClCompile Include="FriendFacePart.cpp" />
@@ -417,6 +418,7 @@
     <ClInclude Include="Effect_PartHitFlash.h" />
     <ClInclude Include="EnemySpawner.h" />
     <ClInclude Include="FriendBody.h" />
+    <ClInclude Include="FriendBodySpawner.h" />
     <ClInclude Include="FriendBody_Neck.h" />
     <ClInclude Include="FriendCompleteDirecting.h" />
     <ClInclude Include="FriendFacePart.h" />

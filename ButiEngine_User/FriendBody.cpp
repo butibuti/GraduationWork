@@ -202,7 +202,7 @@ void ButiEngine::FriendBody::MoveBack()
 		gameObject.lock()->transform->SetLocalPosition(m_moveBackTargetPos);
 
 		SpawnNewHead();
-		SpawnNewBody();
+		//SpawnNewBody();
 	}
 }
 
@@ -235,7 +235,13 @@ void ButiEngine::FriendBody::MoveHorizontal()
 
 	if (m_vlp_moveHorizontalTimer->Update())
 	{
-		m_isTurned = true;
+		if (m_vwp_neck.lock())
+		{
+			m_vwp_neck.lock()->SetIsRemove(true);
+		}
+		gameObject.lock()->SetIsRemove(true);
+
+		//m_isTurned = true;
 	}
 }
 
