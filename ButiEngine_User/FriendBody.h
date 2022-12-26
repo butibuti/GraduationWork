@@ -39,10 +39,12 @@ namespace ButiEngine {
 		void Rotate();
 		void MoveBack();
 		void StartMoveBack();
+		void StartDance();
 		void MoveHorizontal();
 
 		void SpawnNewHead();
-		void SpawnNewBody();
+
+		void StopRotate();
 
 		bool IsFrontHead();
 		float GetDifferenceFromHeadFront();
@@ -52,6 +54,8 @@ namespace ButiEngine {
 		Vector3 GetFrontXZ(const Vector3& arg_front);
 
 		void ResizeLevelParameter();
+
+		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
 
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
@@ -73,7 +77,6 @@ namespace ButiEngine {
 		Vector3 m_moveBackStartPos;
 		Vector3 m_moveBackTargetPos;
 
-		bool m_isTurned;
 		std::vector<std::int32_t> m_vec_moveHorizontalFrame;
 		bool m_isMoveHorizontal;
 		Value_ptr<RelativeTimer> m_vlp_moveHorizontalTimer;

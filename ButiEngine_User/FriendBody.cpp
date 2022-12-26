@@ -7,6 +7,8 @@
 #include "FriendBody_Neck.h"
 #include "FriendManager.h"
 #include "FriendHead.h"
+#include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
+#include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -14,6 +16,8 @@ void ButiEngine::FriendBody::OnUpdate()
 	{
 		return;
 	}
+
+	m_vlp_animationController->Update();
 
 	if (m_isRotate)
 	{
@@ -76,6 +80,8 @@ void ButiEngine::FriendBody::Start()
 
 	ResizeLevelParameter();
 
+	m_vlp_animationController = ButiRendering::CreateAnimationController(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
+
 	m_vwp_neck = GetManager().lock()->AddObjectFromCereal("FriendBody_Neck");
 	m_vwp_neck.lock()->SetObjectName(gameObject.lock()->GetGameObjectName() + "_Neck");
 	m_vwp_neck.lock()->GetGameComponent<FriendBody_Neck>()->SetParent(gameObject);
@@ -90,7 +96,6 @@ void ButiEngine::FriendBody::Start()
 	m_moveBackStartPos = Vector3Const::Zero;
 	m_moveBackTargetPos = Vector3Const::Zero;
 
-	m_isTurned = false;
 	m_isMoveHorizontal = true;
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
 	m_vlp_moveHorizontalTimer = ObjectFactory::Create<RelativeTimer>(m_vec_moveHorizontalFrame[gameLevel]);
@@ -113,7 +118,9 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 {
 	m_vwp_head = arg_vwp_head;
 
-	m_vwp_head.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
+	auto bone = gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetBone()->searchBoneByName("head");
+
+	m_vwp_head.lock()->transform->SetBaseTransform(bone->transform);
 
 	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
 	Vector3 bodyPos = gameObject.lock()->transform->GetLocalPosition();
@@ -133,6 +140,7 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	}
 
 	StartMoveBack();
+	StartDance();
 }
 
 bool ButiEngine::FriendBody::IsFront()
@@ -156,11 +164,6 @@ bool ButiEngine::FriendBody::IsFast()
 		return false;
 	}
 
-	if (m_isTurned)
-	{
-		return false;
-	}
-
 	return gameObject.lock()->transform->GetLocalPosition().x > 0.0f;
 }
 
@@ -178,8 +181,7 @@ void ButiEngine::FriendBody::Rotate()
 	{
 		if (IsFrontHead())
 		{
-			float rollAngle = GetLookForwardHeadAngle();
-			gameObject.lock()->transform->RollLocalRotationY_Degrees(rollAngle);
+			StopRotate();
 
 			SetIsRemove(true);
 		}
@@ -202,7 +204,6 @@ void ButiEngine::FriendBody::MoveBack()
 		gameObject.lock()->transform->SetLocalPosition(m_moveBackTargetPos);
 
 		SpawnNewHead();
-		//SpawnNewBody();
 	}
 }
 
@@ -220,6 +221,14 @@ void ButiEngine::FriendBody::StartMoveBack()
 	m_vlp_moveBackTimer->Start();
 }
 
+void ButiEngine::FriendBody::StartDance()
+{
+	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
+		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
+
+	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
+}
+
 void ButiEngine::FriendBody::MoveHorizontal()
 {
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
@@ -235,13 +244,13 @@ void ButiEngine::FriendBody::MoveHorizontal()
 
 	if (m_vlp_moveHorizontalTimer->Update())
 	{
+		m_vlp_moveHorizontalTimer->Stop();
+
 		if (m_vwp_neck.lock())
 		{
 			m_vwp_neck.lock()->SetIsRemove(true);
 		}
 		gameObject.lock()->SetIsRemove(true);
-
-		//m_isTurned = true;
 	}
 }
 
@@ -251,10 +260,17 @@ void ButiEngine::FriendBody::SpawnNewHead()
 	head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
 }
 
-void ButiEngine::FriendBody::SpawnNewBody()
+void ButiEngine::FriendBody::StopRotate()
 {
-	auto body = GetManager().lock()->AddObjectFromCereal("FriendBody");
-	body.lock()->transform->SetLocalPosition(m_moveHorizontalStartPos);
+	auto target = gameObject.lock()->transform->Clone();
+	float rollAngle = GetLookForwardHeadAngle();
+	target->RollLocalRotationY_Degrees(rollAngle);
+
+	auto anim = gameObject.lock()->AddGameComponent<RotationAnimation>();
+	anim->SetInitRotate(gameObject.lock()->transform->GetLocalRotation());
+	anim->SetTargetRotate(target->GetLocalRotation());
+	anim->SetSpeed(1.0f / 10);
+	anim->SetEaseType(Easing::EasingType::EaseOutQuad);
 }
 
 bool ButiEngine::FriendBody::IsFrontHead()
