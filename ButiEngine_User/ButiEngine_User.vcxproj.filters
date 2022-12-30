@@ -50,6 +50,7 @@
     <ClCompile Include="Result_CompleteFriend.cpp" />
     <ClCompile Include="FriendBodySpawner.cpp" />
     <ClCompile Include="ResultManager.cpp" />
+    <ClCompile Include="Result_Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -99,6 +100,7 @@
     <ClInclude Include="Result_CompleteFriend.h" />
     <ClInclude Include="FriendBodySpawner.h" />
     <ClInclude Include="ResultManager.h" />
+    <ClInclude Include="Result_Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />
