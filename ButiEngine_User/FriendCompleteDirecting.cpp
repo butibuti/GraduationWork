@@ -4,7 +4,6 @@
 #include "GameCamera.h"
 #include "FriendBody.h"
 #include "FriendHead.h"
-#include "ConcentratedLine.h"
 #include "Effect_Belt.h"
 #include "Effect_CompleteFriend.h"
 
@@ -36,8 +35,7 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 		m_vlp_spawnHukidashiIntervalTimer->Start();
 		SpawnHukidashi();
 
-		auto concentratedLine = GetManager().lock()->AddObjectFromCereal("ConcentratedLine");
-		concentratedLine.lock()->GetGameComponent<ConcentratedLine>()->SetLifeTime(60);
+		auto concentratedLine = GetManager().lock()->AddObjectFromCereal("Effect_ConcentratedLine");
 
 		GetManager().lock()->GetGameObject(GameObjectTag("FriendHead")).lock()->GetGameComponent<FriendHead>()->SetIsRemove(true);
 	}

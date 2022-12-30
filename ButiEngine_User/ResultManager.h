@@ -2,12 +2,12 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class ConcentratedLine :public GameComponent
+	class ResultManager :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "ConcentratedLine";
+			return "ResultManager";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -20,14 +20,9 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 		}
-
-		void SetLifeTime(const std::int32_t arg_lifeTime) { m_lifeTime = arg_lifeTime; }
 	private:
-		Value_weak_ptr<GameObject> m_vwp_parent;
-		std::int32_t m_lifeTime;
-		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(ConcentratedLine, true);
+BUTI_REGIST_GAMECOMPONENT(ResultManager, true);

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="ConcentratedLine.cpp" />
+    <ClCompile Include="Effect_ConcentratedLine.cpp" />
     <ClCompile Include="Debug_Camera.cpp" />
     <ClCompile Include="DefaultGameComponent.cpp" />
     <ClCompile Include="Effect_Box.cpp" />
@@ -49,9 +49,10 @@
     <ClCompile Include="Result_FriendFallPoint.cpp" />
     <ClCompile Include="Result_CompleteFriend.cpp" />
     <ClCompile Include="FriendBodySpawner.cpp" />
+    <ClCompile Include="ResultManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ConcentratedLine.h" />
+    <ClInclude Include="Effect_ConcentratedLine.h" />
     <ClInclude Include="Debug_Camera.h" />
     <ClInclude Include="Effect_Box.h" />
     <ClInclude Include="Effect_CompleteFriend.h" />
@@ -97,6 +98,7 @@
     <ClInclude Include="Result_FriendFallPoint.h" />
     <ClInclude Include="Result_CompleteFriend.h" />
     <ClInclude Include="FriendBodySpawner.h" />
+    <ClInclude Include="ResultManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

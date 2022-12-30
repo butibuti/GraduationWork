@@ -28,6 +28,9 @@ namespace ButiEngine {
 		void Fall();
 		void CheckFall();
 
+		Value_weak_ptr<GameObject> m_vwp_body;
+		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
+
 		Value_weak_ptr<GameObject> m_vwp_fallPoint;
 
 		bool m_isFall;

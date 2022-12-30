@@ -1,6 +1,7 @@
 #include "stdafx_u.h"
 #include "Result_CompleteFriend.h"
 #include "FriendManager.h"
+#include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 
 void ButiEngine::Result_CompleteFriend::OnUpdate()
 {
@@ -8,6 +9,11 @@ void ButiEngine::Result_CompleteFriend::OnUpdate()
 	if (m_isFall)
 	{
 		Fall();
+	}
+
+	if (m_vlp_animationController)
+	{
+		m_vlp_animationController->Update();
 	}
 }
 
@@ -38,12 +44,15 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Result_CompleteFrie
 
 void ButiEngine::Result_CompleteFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_friendData)
 {
-	auto body = GetManager().lock()->AddObjectFromCereal("Result_FriendBody", arg_vwp_friendData.lock()->vlp_bodyTransform);
-	body.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
-	body.lock()->transform->SetLocalPosition(Vector3Const::Zero);
+	m_vwp_body = GetManager().lock()->AddObjectFromCereal("Result_FriendBody", arg_vwp_friendData.lock()->vlp_bodyTransform);
+	m_vwp_body.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
+	m_vwp_body.lock()->transform->SetLocalPosition(Vector3Const::Zero);
+
+	//m_vlp_animationController = ButiRendering::CreateAnimationController(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
 
 	auto head = GetManager().lock()->AddObjectFromCereal("Result_FriendHead", arg_vwp_friendData.lock()->vlp_headTransform);
-	head.lock()->transform->SetBaseTransform(body.lock()->transform, true);
+	auto bone = m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone()->searchBoneByName("head");
+	//head.lock()->transform->SetBaseTransform(bone->transform, true);
 
 	auto eye = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Eyes", arg_vwp_friendData.lock()->vlp_eyeTransform);
 	eye.lock()->transform->SetBaseTransform(head.lock()->transform, true);
@@ -91,6 +100,12 @@ void ButiEngine::Result_CompleteFriend::CheckFall()
 
 	if (pos.x >= fallPointPos.x)
 	{
+		m_vlp_animationController = ButiRendering::CreateAnimationController(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
+		m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
+			GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
+
+		m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
+
 		m_isFall = true;
 	}
 }

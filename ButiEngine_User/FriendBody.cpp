@@ -182,8 +182,6 @@ void ButiEngine::FriendBody::Rotate()
 		if (IsFrontHead())
 		{
 			StopRotate();
-
-			SetIsRemove(true);
 		}
 	}
 }
@@ -224,7 +222,7 @@ void ButiEngine::FriendBody::StartMoveBack()
 void ButiEngine::FriendBody::StartDance()
 {
 	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
+		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
 
 	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
 }
