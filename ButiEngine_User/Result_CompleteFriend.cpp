@@ -84,7 +84,6 @@ void ButiEngine::Result_CompleteFriend::Fall()
 	{
 		gameObject.lock()->transform->SetLocalPositionY(0.0f);
 		m_isFall = false;
-		isActive = false;
 	}
 }
 

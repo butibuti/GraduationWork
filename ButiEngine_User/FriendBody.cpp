@@ -260,6 +260,8 @@ void ButiEngine::FriendBody::SpawnNewHead()
 
 void ButiEngine::FriendBody::StopRotate()
 {
+	m_isRotate = false;
+
 	auto target = gameObject.lock()->transform->Clone();
 	float rollAngle = GetLookForwardHeadAngle();
 	target->RollLocalRotationY_Degrees(rollAngle);
