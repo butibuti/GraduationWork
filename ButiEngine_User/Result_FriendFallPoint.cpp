@@ -10,6 +10,7 @@ void ButiEngine::Result_FriendFallPoint::OnUpdate()
 
 	if (m_vlp_animTimer->Update())
 	{
+		m_passedPointCount++;
 		gameObject.lock()->transform->SetLocalPosition(m_vec_checkPoints[0]->pos);
 
 		m_vec_checkPoints.erase(m_vec_checkPoints.begin());
@@ -54,8 +55,16 @@ void ButiEngine::Result_FriendFallPoint::OnShowUI()
 		if (GUI::Button("RemoveCheckPoint"))
 		{
 			m_vec_checkPoints.pop_back();
+
+			if (m_startZoomPointNum > m_vec_checkPoints.size() - 1)
+			{
+				m_startZoomPointNum = m_vec_checkPoints.size() - 1;
+			}
 		}
 	}
+
+	GUI::BulletText("StartZoomPointNum");
+	GUI::DragInt("##StartZoomPointNum", m_startZoomPointNum, 1.0f, 0, m_vec_checkPoints.size() - 1);
 
 	std::int32_t index = 0;
 	auto end = m_vec_checkPoints.end();
@@ -100,6 +109,8 @@ void ButiEngine::Result_FriendFallPoint::Start()
 
 	m_vlp_animTimer = ObjectFactory::Create<RelativeTimer>(60);
 
+	m_passedPointCount = 0;
+
 	SetNewCheckPoint();
 }
 
@@ -107,6 +118,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Result_FriendFallPo
 {
 	auto clone = ObjectFactory::Create<Result_FriendFallPoint>();
 	clone->m_vec_checkPoints = m_vec_checkPoints;
+	clone->m_startZoomPointNum = m_startZoomPointNum;
 	return clone;
 }
 

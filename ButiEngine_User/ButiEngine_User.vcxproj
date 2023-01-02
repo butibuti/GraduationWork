@@ -386,6 +386,7 @@
     <ClCompile Include="PauseManager.cpp" />
     <ClCompile Include="RemoveMeshDraw.cpp" />
     <ClCompile Include="ResultManager.cpp" />
+    <ClCompile Include="Result_BackHuman.cpp" />
     <ClCompile Include="Result_Camera.cpp" />
     <ClCompile Include="Result_CompleteFriend.cpp" />
     <ClCompile Include="Result_FriendFallPoint.cpp" />
@@ -441,6 +442,7 @@
     <ClInclude Include="PauseManager.h" />
     <ClInclude Include="RemoveMeshDraw.h" />
     <ClInclude Include="ResultManager.h" />
+    <ClInclude Include="Result_BackHuman.h" />
     <ClInclude Include="Result_Camera.h" />
     <ClInclude Include="Result_CompleteFriend.h" />
     <ClInclude Include="Result_FriendFallPoint.h" />

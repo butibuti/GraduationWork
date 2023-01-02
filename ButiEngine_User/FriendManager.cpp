@@ -132,9 +132,9 @@ void ButiEngine::FriendManager::SpawnFriends()
 	for (auto friendDataItr = g_vec_friendDatas.begin(); friendDataItr != friendDataEnd; ++friendDataItr)
 	{
 		float spawnAreaLength = abs(m_vec_friendSpawnAreas[spawnAreaIndex]->rightPos - m_vec_friendSpawnAreas[spawnAreaIndex]->leftPos) - friendScaleX;
-		std::int32_t maxFriendCount = max(m_vec_friendSpawnAreas[spawnAreaIndex]->maxFriendCount - 1, 1);
+		std::int32_t maxFriendCount = max(m_vec_friendSpawnAreas[spawnAreaIndex]->maxFriendCount - 2, 1);
 		float space = spawnAreaLength / maxFriendCount;
-		float spawnStartPos = m_vec_friendSpawnAreas[spawnAreaIndex]->leftPos - friendScaleX * 0.5f;
+		float spawnStartPos = m_vec_friendSpawnAreas[spawnAreaIndex]->leftPos;
 		Vector3 spawnPos = Vector3(spawnStartPos, 30.0f, 0.0f);
 		spawnPos.x -= space * friendDataIndex;
 

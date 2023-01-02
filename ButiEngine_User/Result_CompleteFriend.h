@@ -33,6 +33,7 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> m_vwp_fallPoint;
 
+		bool m_isFallStarted;
 		bool m_isFall;
 		Vector3 m_velocity;
 	};

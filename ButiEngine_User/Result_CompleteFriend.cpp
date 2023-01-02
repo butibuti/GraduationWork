@@ -33,6 +33,7 @@ void ButiEngine::Result_CompleteFriend::Start()
 {
 	m_vwp_fallPoint = GetManager().lock()->GetGameObject("FallPoint");
 
+	m_isFallStarted = false;
 	m_isFall = false;
 	m_velocity = Vector3Const::Zero;
 }
@@ -48,11 +49,11 @@ void ButiEngine::Result_CompleteFriend::CreateParts(Value_weak_ptr<FriendData> a
 	m_vwp_body.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
 	m_vwp_body.lock()->transform->SetLocalPosition(Vector3Const::Zero);
 
-	//m_vlp_animationController = ButiRendering::CreateAnimationController(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
+	m_vlp_animationController = ButiRendering::CreateAnimationController(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
 
 	auto head = GetManager().lock()->AddObjectFromCereal("Result_FriendHead", arg_vwp_friendData.lock()->vlp_headTransform);
 	auto bone = m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone()->searchBoneByName("head");
-	//head.lock()->transform->SetBaseTransform(bone->transform, true);
+	head.lock()->transform->SetBaseTransform(bone->transform);
 
 	auto eye = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Eyes", arg_vwp_friendData.lock()->vlp_eyeTransform);
 	eye.lock()->transform->SetBaseTransform(head.lock()->transform, true);
@@ -89,7 +90,7 @@ void ButiEngine::Result_CompleteFriend::Fall()
 
 void ButiEngine::Result_CompleteFriend::CheckFall()
 {
-	if (m_isFall)
+	if (m_isFallStarted)
 	{
 		return;
 	}
@@ -99,12 +100,12 @@ void ButiEngine::Result_CompleteFriend::CheckFall()
 
 	if (pos.x >= fallPointPos.x)
 	{
-		m_vlp_animationController = ButiRendering::CreateAnimationController(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
 		m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
 			GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
 
 		m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
 
+		m_isFallStarted = true;
 		m_isFall = true;
 	}
 }

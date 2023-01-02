@@ -35,7 +35,11 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_vec_checkPoints);
+			ARCHIVE_BUTI(m_startZoomPointNum);
 		}
+
+		bool IsStartZoomIn() { return m_passedPointCount >= m_startZoomPointNum; }
+		bool IsStartZoomOut() { return m_vec_checkPoints.size() == 1; }
 
 		void StartMove();
 	private:
@@ -45,6 +49,8 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_animTimer;
 		std::vector<Value_ptr<CheckPoint>> m_vec_checkPoints;
 		Vector3 m_startPos;
+		std::int32_t m_startZoomPointNum;
+		std::int32_t m_passedPointCount;
 	};
 
 }

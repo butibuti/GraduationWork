@@ -5,7 +5,7 @@ void ButiEngine::Effect_ConcentratedLine::OnUpdate()
 {
 	gameObject.lock()->transform->RollLocalRotationZ_Degrees(m_rotateSpeed);
 
-	if (m_vlp_lifeTimer->Update())
+	if (m_vlp_lifeTimer && m_vlp_lifeTimer->Update())
 	{
 		m_vwp_parent.lock()->SetIsRemove(true);
 		gameObject.lock()->SetIsRemove(true);
@@ -35,8 +35,11 @@ void ButiEngine::Effect_ConcentratedLine::Start()
 	gameObject.lock()->transform->SetBaseTransform(m_vwp_parent.lock()->transform);
 	gameObject.lock()->transform->SetLocalPosition(Vector3Const::Zero);
 
-	m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(m_lifeTime);
-	m_vlp_lifeTimer->Start();
+	if (m_lifeTime >= 1000)
+	{
+		m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(m_lifeTime);
+		m_vlp_lifeTimer->Start();
+	}
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Effect_ConcentratedLine::Clone()
