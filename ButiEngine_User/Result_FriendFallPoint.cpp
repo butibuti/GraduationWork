@@ -48,21 +48,6 @@ void ButiEngine::Result_FriendFallPoint::OnShowUI()
 		m_vec_checkPoints.push_back(ObjectFactory::Create<CheckPoint>());
 	}
 
-	if (m_vec_checkPoints.size() >= 2)
-	{
-		GUI::SameLine();
-
-		if (GUI::Button("RemoveCheckPoint"))
-		{
-			m_vec_checkPoints.pop_back();
-
-			if (m_startZoomPointNum > m_vec_checkPoints.size() - 1)
-			{
-				m_startZoomPointNum = m_vec_checkPoints.size() - 1;
-			}
-		}
-	}
-
 	GUI::BulletText("StartZoomPointNum");
 	GUI::DragInt("##StartZoomPointNum", m_startZoomPointNum, 1.0f, 0, m_vec_checkPoints.size() - 1);
 
@@ -72,8 +57,25 @@ void ButiEngine::Result_FriendFallPoint::OnShowUI()
 	{
 		if (GUI::TreeNode("CheckPoint" + std::to_string(index)))
 		{
+			if (m_vec_checkPoints.size() >= 2)
+			{
+				if (GUI::Button("Insert"))
+				{
+					m_vec_checkPoints.insert(itr, ObjectFactory::Create<CheckPoint>());
+					GUI::TreePop();
+					break;
+				}
+				GUI::SameLine();
+				if (GUI::Button("Remove"))
+				{
+					m_vec_checkPoints.erase(itr);
+					GUI::TreePop();
+					break;
+				}
+			}
+
 			GUI::BulletText("Pos");
-			GUI::DragFloat3("##Pos" + std::to_string(index), &(*itr)->pos.x, 0.1f, -100.0f, 100.0f);
+			GUI::DragFloat("##Pos" + std::to_string(index), (*itr)->pos.x, 0.1f, -100.0f, 100.0f);
 
 			GUI::BulletText("AnimFrame");
 			GUI::DragInt("##AnimFrame" + std::to_string(index), (*itr)->animFrame, 1.0f, 1, 3000);
@@ -125,6 +127,11 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Result_FriendFallPo
 void ButiEngine::Result_FriendFallPoint::StartMove()
 {
 	m_isStart = true;
+}
+
+void ButiEngine::Result_FriendFallPoint::StopMove()
+{
+	m_isStart = false;
 }
 
 void ButiEngine::Result_FriendFallPoint::SetNewCheckPoint()

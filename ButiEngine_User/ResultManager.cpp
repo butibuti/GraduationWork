@@ -9,6 +9,12 @@ void ButiEngine::ResultManager::OnUpdate()
 {
 	CheckStartZoomIn();
 	CheckStartZoomOut();
+
+	if (m_vlp_failedTimer->Update())
+	{
+		m_vlp_failedTimer->Stop();
+		StartFailed();
+	}
 }
 
 void ButiEngine::ResultManager::OnSet()
@@ -21,6 +27,8 @@ void ButiEngine::ResultManager::OnRemove()
 
 void ButiEngine::ResultManager::OnShowUI()
 {
+	GUI::BulletText("SuccessBorder");
+	GUI::DragInt("##SuccessBorder", m_successBorder, 1.0f, 0, 100);
 }
 
 void ButiEngine::ResultManager::Start()
@@ -33,12 +41,29 @@ void ButiEngine::ResultManager::Start()
 	m_isStartedZoomIn = false;
 	m_isStartedZoomOut = false;
 
-	m_vwp_fallPoint.lock()->StartMove();
+	m_vlp_failedTimer = ObjectFactory::Create<RelativeTimer>(60);
+
+	//m_vwp_fallPoint.lock()->StartMove();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::ResultManager::Clone()
 {
-	return ObjectFactory::Create<ResultManager>();
+	auto clone = ObjectFactory::Create<ResultManager>();
+	clone->m_successBorder = m_successBorder;
+	return clone;
+}
+
+void ButiEngine::ResultManager::StartFailedTimer()
+{
+	std::int32_t friendCount = GetManager().lock()->GetGameObjects(GameObjectTag("CompleteFriend")).GetSize();
+	if (m_successBorder <= friendCount)
+	{
+		return;
+	}
+
+	m_vlp_failedTimer->Start();
+	m_isStartedZoomIn = true;
+	m_isStartedZoomOut = true;
 }
 
 void ButiEngine::ResultManager::CheckStartZoomIn()
@@ -69,16 +94,30 @@ void ButiEngine::ResultManager::CheckStartZoomOut()
 	{
 		m_vwp_camera.lock()->ZoomOut();
 
-		if (m_successBorder >= m_vwp_friendManager.lock()->GetFriendCount())
+		std::int32_t friendCount = GetManager().lock()->GetGameObjects(GameObjectTag("CompleteFriend")).GetSize();
+		if (m_successBorder <= friendCount)
 		{
-			m_vwp_backHuman.lock()->StartTurnSuccessAnimation();
-			GetManager().lock()->AddObjectFromCereal("Effect_ConcentratedLine_RedNYellow");
+			StartSuccess();
 		}
 		else
 		{
-			m_vwp_backHuman.lock()->StartTurnFailedAnimation();
+			StartFailed();
 		}
 
 		m_isStartedZoomOut = true;
 	}
+}
+
+void ButiEngine::ResultManager::StartSuccess()
+{
+	m_vwp_backHuman.lock()->StartTurnSuccessAnimation();
+	GetManager().lock()->AddObjectFromCereal("Effect_ConcentratedLine_RedNYellow");
+	GetManager().lock()->AddObjectFromCereal("Text_Success");
+}
+
+void ButiEngine::ResultManager::StartFailed()
+{
+	m_vwp_backHuman.lock()->StartTurnFailedAnimation();
+	GetManager().lock()->AddObjectFromCereal("Background_Gray");
+	GetManager().lock()->AddObjectFromCereal("Text_Failed");
 }

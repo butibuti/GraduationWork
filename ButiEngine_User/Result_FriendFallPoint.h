@@ -42,6 +42,7 @@ namespace ButiEngine {
 		bool IsStartZoomOut() { return m_vec_checkPoints.size() == 1; }
 
 		void StartMove();
+		void StopMove();
 	private:
 		void SetNewCheckPoint();
 

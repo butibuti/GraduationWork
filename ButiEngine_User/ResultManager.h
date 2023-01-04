@@ -26,9 +26,15 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_successBorder);
 		}
+
+		std::int32_t GetSuccessBorder() { return m_successBorder; }
+
+		void StartFailedTimer();
 	private:
 		void CheckStartZoomIn();
 		void CheckStartZoomOut();
+		void StartSuccess();
+		void StartFailed();
 
 		Value_weak_ptr<FriendManager> m_vwp_friendManager;
 		Value_weak_ptr<Result_Camera> m_vwp_camera;
@@ -39,6 +45,8 @@ namespace ButiEngine {
 
 		bool m_isStartedZoomIn;
 		bool m_isStartedZoomOut;
+
+		Value_ptr<RelativeTimer> m_vlp_failedTimer;
 	};
 
 }

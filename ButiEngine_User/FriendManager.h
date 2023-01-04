@@ -49,7 +49,7 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_vec_friendSpawnAreas);
 		}
 
-		std::int32_t GetFriendCount() { return m_friendCount; }
+		std::int32_t GetFriendDataSize() { return m_vec_friendSpawnAreas.size(); }
 
 		void ResetCurrentLevelFriendCount() { m_currentLevelFriendCount = 0; }
 		void AddFriendCount();

@@ -1,6 +1,8 @@
 #include "stdafx_u.h"
 #include "Result_CompleteFriend.h"
 #include "FriendManager.h"
+#include "Result_FriendFallPoint.h"
+#include "ResultManager.h"
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 
 void ButiEngine::Result_CompleteFriend::OnUpdate()
@@ -100,6 +102,14 @@ void ButiEngine::Result_CompleteFriend::CheckFall()
 
 	if (pos.x >= fallPointPos.x)
 	{
+		gameObject.lock()->RemoveGameObjectTag(GameObjectTag("NotFalling"));
+		auto notFallingFriends = GetManager().lock()->GetGameObjects(GameObjectTag("NotFalling"));
+		if (notFallingFriends.GetSize() == 0)
+		{
+			m_vwp_fallPoint.lock()->GetGameComponent<Result_FriendFallPoint>()->StopMove();
+			GetManager().lock()->GetGameObject("ResultManager").lock()->GetGameComponent<ResultManager>()->StartFailedTimer();
+		}
+
 		m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
 			GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
 

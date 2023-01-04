@@ -25,11 +25,14 @@ namespace ButiEngine {
 		void StartTurnAnimation();
 		void StartTurnSuccessAnimation();
 		void StartTurnFailedAnimation();
+		void ResetPartAnimation();
 	private:
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_bodyAnimationController;
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_rightEyeAnimationController;
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_leftEyeAnimationController;
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_mouthAnimationController;
+
+		float m_partAnimSpeed;
 	};
 
 }
