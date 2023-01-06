@@ -32,6 +32,7 @@ namespace ButiEngine {
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_leftEyeAnimationController;
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_mouthAnimationController;
 
+		float m_bodyAnimSpeed;
 		float m_partAnimSpeed;
 	};
 

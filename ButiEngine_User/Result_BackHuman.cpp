@@ -5,7 +5,7 @@
 
 void ButiEngine::Result_BackHuman::OnUpdate()
 {
-	m_vlp_bodyAnimationController->Update();
+	m_vlp_bodyAnimationController->Update(m_bodyAnimSpeed);
 }
 
 void ButiEngine::Result_BackHuman::OnSet()
@@ -49,6 +49,8 @@ void ButiEngine::Result_BackHuman::Start()
 	m_vlp_mouthAnimationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
 		GetModel(mouth.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
 
+	m_bodyAnimSpeed = 1.0f;
+
 	std::int32_t successBorder = GetManager().lock()->GetGameObject("ResultManager").lock()->GetGameComponent<ResultManager>()->GetSuccessBorder();
 	float animFrame = 10.0f;
 	m_partAnimSpeed = animFrame / successBorder;
@@ -74,6 +76,7 @@ void ButiEngine::Result_BackHuman::StartTurnAnimation()
 
 void ButiEngine::Result_BackHuman::StartTurnSuccessAnimation()
 {
+	m_bodyAnimSpeed = 3.0f;
 	m_vlp_bodyAnimationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
 		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
 }
@@ -83,7 +86,8 @@ void ButiEngine::Result_BackHuman::StartTurnFailedAnimation()
 	auto currentAnim = m_vlp_bodyAnimationController->GetCurrentModelAnimation();
 	if (currentAnim->GetResource()->GetName() == "02_Turn")
 	{
-		m_vlp_bodyAnimationController->ChangeAnimation(10.0f, gameObject.lock()->GetResourceContainer()->
+		m_bodyAnimSpeed = 3.0f;
+		m_vlp_bodyAnimationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
 			GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[2]->GetAnimation());
 	}
 }

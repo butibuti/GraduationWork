@@ -35,7 +35,7 @@ void ButiEngine::Effect_ConcentratedLine::Start()
 	gameObject.lock()->transform->SetBaseTransform(m_vwp_parent.lock()->transform);
 	gameObject.lock()->transform->SetLocalPosition(Vector3Const::Zero);
 
-	if (m_lifeTime >= 1000)
+	if (m_lifeTime < 1000)
 	{
 		m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(m_lifeTime);
 		m_vlp_lifeTimer->Start();
