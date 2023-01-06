@@ -12,21 +12,6 @@ namespace ButiEngine {
 		Value_ptr<Transform> vlp_bodyTransform;
 	};
 
-	struct FriendSpawnArea
-	{
-		float leftPos;
-		float rightPos;
-		std::int32_t maxFriendCount;
-
-		template<class Archive>
-		void serialize(Archive& archive)
-		{
-			ARCHIVE_BUTI(leftPos);
-			ARCHIVE_BUTI(rightPos);
-			ARCHIVE_BUTI(maxFriendCount);
-		}
-	};
-
 	class GameLevelManager;
 
 	class FriendManager :public GameComponent
@@ -46,27 +31,21 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_vec_friendSpawnAreas);
 		}
-
-		std::int32_t GetFriendDataSize() { return m_vec_friendSpawnAreas.size(); }
 
 		void ResetCurrentLevelFriendCount() { m_currentLevelFriendCount = 0; }
 		void AddFriendCount();
-		void SpawnFriends();
 
+		static std::vector<Value_ptr<FriendData>>& GetFriendDatas() { return g_vec_friendDatas; }
 		static void ClearFriendData() { g_vec_friendDatas.clear(); }
 		static void AddFriendData(Value_ptr<FriendData> arg_data) { g_vec_friendDatas.push_back(arg_data); }
 	private:
-		void SpawnFriends(const std::int32_t arg_spawnCount);
-
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
 		std::int32_t m_friendCount;
 		std::int32_t m_currentLevelFriendCount;
 
 		static std::vector<Value_ptr<FriendData>> g_vec_friendDatas;
-		std::vector<Value_ptr<FriendSpawnArea>> m_vec_friendSpawnAreas;
 	};
 
 }

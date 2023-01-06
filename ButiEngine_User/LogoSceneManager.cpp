@@ -1,6 +1,5 @@
 
 #include "LogoSceneManager.h"
-#include"Header/ApplicationCreater.h"
 void ButiEngine::LogoSceneManager::OnUpdate()
 {
    

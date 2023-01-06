@@ -1,6 +1,5 @@
 #include "stdafx_u.h"
 #include "ResultManager.h"
-#include "FriendManager.h"
 #include "Result_Camera.h"
 #include "Result_BackHuman.h"
 #include "Result_FriendFallPoint.h"
@@ -34,7 +33,6 @@ void ButiEngine::ResultManager::OnShowUI()
 
 void ButiEngine::ResultManager::Start()
 {
-	m_vwp_friendManager = GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>();
 	m_vwp_camera = GetManager().lock()->GetGameObject("CameraMan").lock()->GetGameComponent<Result_Camera>();
 	m_vwp_backHuman = GetManager().lock()->GetGameObject("BackHuman_Body").lock()->GetGameComponent<Result_BackHuman>();
 	m_vwp_fallPoint = GetManager().lock()->GetGameObject("FallPoint").lock()->GetGameComponent<Result_FriendFallPoint>();
@@ -105,8 +103,6 @@ void ButiEngine::ResultManager::CheckStartZoomOut()
 			StartFailed();
 		}
 
-		GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn");
-
 		m_isStartedZoomOut = true;
 	}
 }
@@ -116,6 +112,7 @@ void ButiEngine::ResultManager::StartSuccess()
 	m_vwp_backHuman.lock()->StartTurnSuccessAnimation();
 	GetManager().lock()->AddObjectFromCereal("Effect_ConcentratedLine_RedNYellow");
 	GetManager().lock()->AddObjectFromCereal("Text_Success");
+	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn");
 }
 
 void ButiEngine::ResultManager::StartFailed()
@@ -123,4 +120,5 @@ void ButiEngine::ResultManager::StartFailed()
 	m_vwp_backHuman.lock()->StartTurnFailedAnimation();
 	GetManager().lock()->AddObjectFromCereal("Background_Gray");
 	GetManager().lock()->AddObjectFromCereal("Text_Failed");
+	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn");
 }

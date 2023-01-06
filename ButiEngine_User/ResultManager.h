@@ -2,7 +2,6 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class FriendManager;
 	class Result_Camera;
 	class Result_BackHuman;
 	class Result_FriendFallPoint;
@@ -36,7 +35,6 @@ namespace ButiEngine {
 		void StartSuccess();
 		void StartFailed();
 
-		Value_weak_ptr<FriendManager> m_vwp_friendManager;
 		Value_weak_ptr<Result_Camera> m_vwp_camera;
 		Value_weak_ptr<Result_BackHuman> m_vwp_backHuman;
 		Value_weak_ptr<Result_FriendFallPoint> m_vwp_fallPoint;

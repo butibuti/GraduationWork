@@ -26,8 +26,6 @@ void ButiEngine::SceneTransition_Fade::OnUpdate()
 		color.w = m_isSceneEnd ? 1.0f : 0.0f;
 		m_vwp_meshDraw.lock()->SetColor(color);
 
-		gameObject.lock()->SetIsRemove(true);
-
 		if (m_isSceneEnd)
 		{
 			auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
@@ -36,6 +34,8 @@ void ButiEngine::SceneTransition_Fade::OnUpdate()
 			sceneManager->LoadScene(sceneName);
 			sceneManager->ChangeScene(sceneName);
 		}
+
+		return;
 	}
 }
 

@@ -55,6 +55,7 @@ void ButiEngine::Result_CompleteFriend::CreateParts(Value_weak_ptr<FriendData> a
 
 	auto head = GetManager().lock()->AddObjectFromCereal("Result_FriendHead", arg_vwp_friendData.lock()->vlp_headTransform);
 	auto bone = m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone()->searchBoneByName("head");
+	head.lock()->transform->SetBaseTransform(m_vwp_body.lock()->transform, true);
 	head.lock()->transform->SetBaseTransform(bone->transform);
 
 	auto eye = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Eyes", arg_vwp_friendData.lock()->vlp_eyeTransform);
