@@ -3,6 +3,7 @@
 #include "FriendManager.h"
 #include "Result_FriendFallPoint.h"
 #include "ResultManager.h"
+#include "Result_BackHuman.h"
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 
 void ButiEngine::Result_CompleteFriend::OnUpdate()
@@ -110,6 +111,8 @@ void ButiEngine::Result_CompleteFriend::CheckFall()
 			m_vwp_fallPoint.lock()->GetGameComponent<Result_FriendFallPoint>()->StopMove();
 			GetManager().lock()->GetGameObject("ResultManager").lock()->GetGameComponent<ResultManager>()->StartFailedTimer();
 		}
+
+		GetManager().lock()->GetGameObject("BackHuman_Body").lock()->GetGameComponent<Result_BackHuman>()->AdvanceFacePartAnimation();
 
 		m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
 			GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());

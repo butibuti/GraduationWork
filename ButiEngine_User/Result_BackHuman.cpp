@@ -30,15 +30,9 @@ void ButiEngine::Result_BackHuman::Start()
 
 	auto rightEye = GetManager().lock()->GetGameObject("BackHuman_RightEye");
 	rightEye.lock()->transform->SetBaseTransform(head->transform);
-	m_vlp_rightEyeAnimationController = ButiRendering::CreateAnimationController(rightEye.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
-	m_vlp_rightEyeAnimationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(rightEye.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
 
 	auto leftEye = GetManager().lock()->GetGameObject("BackHuman_LeftEye");
 	leftEye.lock()->transform->SetBaseTransform(head->transform);
-	m_vlp_leftEyeAnimationController = ButiRendering::CreateAnimationController(leftEye.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
-	m_vlp_leftEyeAnimationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(leftEye.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
 
 	auto nose = GetManager().lock()->GetGameObject("BackHuman_Nose");
 	nose.lock()->transform->SetBaseTransform(head->transform);
@@ -52,8 +46,7 @@ void ButiEngine::Result_BackHuman::Start()
 	m_bodyAnimSpeed = 1.0f;
 
 	std::int32_t successBorder = GetManager().lock()->GetGameObject("ResultManager").lock()->GetGameComponent<ResultManager>()->GetSuccessBorder();
-	float animFrame = 10.0f;
-	m_partAnimSpeed = animFrame / successBorder;
+	m_partAnimSpeed = m_vlp_mouthAnimationController->GetCurrentModelAnimation()->GetEnd() * 0.5f / successBorder;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Result_BackHuman::Clone()
@@ -63,8 +56,6 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Result_BackHuman::C
 
 void ButiEngine::Result_BackHuman::AdvanceFacePartAnimation()
 {
-	m_vlp_rightEyeAnimationController->Update(m_partAnimSpeed);
-	m_vlp_leftEyeAnimationController->Update(m_partAnimSpeed);
 	m_vlp_mouthAnimationController->Update(m_partAnimSpeed);
 }
 
@@ -79,6 +70,8 @@ void ButiEngine::Result_BackHuman::StartTurnSuccessAnimation()
 	m_bodyAnimSpeed = 3.0f;
 	m_vlp_bodyAnimationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
 		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
+
+	m_vlp_mouthAnimationController->SetProgress(1.0f);
 }
 
 void ButiEngine::Result_BackHuman::StartTurnFailedAnimation()
@@ -89,12 +82,14 @@ void ButiEngine::Result_BackHuman::StartTurnFailedAnimation()
 		m_bodyAnimSpeed = 3.0f;
 		m_vlp_bodyAnimationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
 			GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[2]->GetAnimation());
+
+		ResetPartAnimation();
 	}
 }
 
 void ButiEngine::Result_BackHuman::ResetPartAnimation()
 {
-	m_vlp_rightEyeAnimationController->SetProgress(0.0f);
-	m_vlp_leftEyeAnimationController->SetProgress(0.0f);
-	m_vlp_mouthAnimationController->SetProgress(0.0f);
+	auto mouth = GetManager().lock()->GetGameObject("BackHuman_Mouth");
+	m_vlp_mouthAnimationController->ChangeAnimation(30.0f, gameObject.lock()->GetResourceContainer()->
+		GetModel(mouth.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
 }
