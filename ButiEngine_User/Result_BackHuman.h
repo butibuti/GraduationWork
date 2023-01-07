@@ -30,8 +30,19 @@ namespace ButiEngine {
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_bodyAnimationController;
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_mouthAnimationController;
 
+		bool m_isStartTurnAnimation;
+
+		float m_mouthPoseFrame;
 		float m_bodyAnimSpeed;
-		float m_partAnimSpeed;
+		float m_mouthAnimSpeed;
+		float m_eyeAnimSpeed;
+
+		float m_startEyeScale;
+		float m_targetEyeScale;
+
+		Value_ptr<Transform> m_vlp_rightEyeTransform;
+		Value_ptr<Transform> m_vlp_leftEyeTransform;
+		Value_ptr<RelativeTimer> m_vlp_eyeAnimTimer;
 	};
 
 }

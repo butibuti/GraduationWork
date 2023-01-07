@@ -184,31 +184,7 @@ void ButiEngine::Result_FriendFallPoint::OnShowUI()
 
 void ButiEngine::Result_FriendFallPoint::Start()
 {
-	//auto resultManager = GetManager().lock()->GetGameObject("ResultManager").lock()->GetGameComponent<ResultManager>();
-	//auto friendDatas = FriendManager::GetFriendDatas();
-	//if (friendDatas.size() < (resultManager->GetSuccessBorder() - 3))
-	//{
-	//	m_vec_checkPoints.erase(m_vec_checkPoints.begin());
-	//	auto friendSpawner = GetManager().lock()->GetGameObject("Result_FriendSpawner").lock()->GetGameComponent<Result_FriendSpawner>();
-	//	float diff = friendSpawner->GetFriendSpawnPos(friendDatas.size() - 1).x - m_vec_checkPoints[0]->pos;
 
-	//	auto end = m_vec_checkPoints.end();
-	//	for (auto itr = m_vec_checkPoints.begin(); itr != end - 1; ++itr)
-	//	{
-	//		(*itr)->pos += diff;
-	//	}
-	//}
-
-	//m_isStart = false;
-
-	//m_moveSpeed = m_initSpeed;
-
-	//m_vlp_changeSpeedTimer = ObjectFactory::Create<RelativeTimer>(60);
-	//m_vlp_limitTimer = ObjectFactory::Create<RelativeTimer>(60);
-
-	//m_passedPointCount = 0;
-
-	//SetNextCheckPoint();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Result_FriendFallPoint::Clone()
