@@ -43,8 +43,6 @@ namespace ButiEngine {
 
 		bool m_isStartedZoomIn;
 		bool m_isStartedZoomOut;
-
-		Value_ptr<RelativeTimer> m_vlp_failedTimer;
 	};
 
 }

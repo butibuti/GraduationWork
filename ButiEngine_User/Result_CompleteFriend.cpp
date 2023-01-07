@@ -104,14 +104,6 @@ void ButiEngine::Result_CompleteFriend::CheckFall()
 
 	if (pos.x >= fallPointPos.x)
 	{
-		gameObject.lock()->RemoveGameObjectTag(GameObjectTag("NotFalling"));
-		auto notFallingFriends = GetManager().lock()->GetGameObjects(GameObjectTag("NotFalling"));
-		if (notFallingFriends.GetSize() == 0)
-		{
-			m_vwp_fallPoint.lock()->GetGameComponent<Result_FriendFallPoint>()->StopMove();
-			GetManager().lock()->GetGameObject("ResultManager").lock()->GetGameComponent<ResultManager>()->StartFailedTimer();
-		}
-
 		GetManager().lock()->GetGameObject("BackHuman_Body").lock()->GetGameComponent<Result_BackHuman>()->AdvanceFacePartAnimation();
 
 		m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->

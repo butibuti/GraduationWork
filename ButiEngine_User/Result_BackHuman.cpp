@@ -89,7 +89,5 @@ void ButiEngine::Result_BackHuman::StartTurnFailedAnimation()
 
 void ButiEngine::Result_BackHuman::ResetPartAnimation()
 {
-	auto mouth = GetManager().lock()->GetGameObject("BackHuman_Mouth");
-	m_vlp_mouthAnimationController->ChangeAnimation(30.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(mouth.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
+	m_vlp_mouthAnimationController->SetProgress(0.0f);
 }

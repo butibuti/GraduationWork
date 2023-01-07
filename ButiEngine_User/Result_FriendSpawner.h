@@ -34,14 +34,15 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_vec_friendSpawnAreas);
+			ARCHIVE_BUTI(m_vlp_friendSpawnArea);
 		}
 
+		Vector3 GetFriendSpawnPos(const std::int32_t arg_friendNum);
 		void SpawnFriends();
 	private:
 		void SpawnFriends(const std::int32_t arg_spawnCount);
 
-		std::vector<Value_ptr<FriendSpawnArea>> m_vec_friendSpawnAreas;
+		Value_ptr<FriendSpawnArea> m_vlp_friendSpawnArea;
 	};
 
 }

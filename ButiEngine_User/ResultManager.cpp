@@ -8,13 +8,6 @@ void ButiEngine::ResultManager::OnUpdate()
 {
 	CheckStartZoomIn();
 	CheckStartZoomOut();
-
-	if (m_vlp_failedTimer->Update())
-	{
-		m_vlp_failedTimer->Stop();
-		m_vwp_camera.lock()->ZoomOut();
-		StartFailed();
-	}
 }
 
 void ButiEngine::ResultManager::OnSet()
@@ -40,8 +33,6 @@ void ButiEngine::ResultManager::Start()
 	m_isStartedZoomIn = false;
 	m_isStartedZoomOut = false;
 
-	m_vlp_failedTimer = ObjectFactory::Create<RelativeTimer>(120);
-
 	//m_vwp_fallPoint.lock()->StartMove();
 }
 
@@ -60,7 +51,6 @@ void ButiEngine::ResultManager::StartFailedTimer()
 		return;
 	}
 
-	m_vlp_failedTimer->Start();
 	m_isStartedZoomIn = true;
 	m_isStartedZoomOut = true;
 }
