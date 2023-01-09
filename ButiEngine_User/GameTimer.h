@@ -5,6 +5,7 @@ namespace ButiEngine {
 	class StageManager;
 	class PauseManager;
 
+	class Heart;
 	class GameTimer :public GameComponent
 	{
 	public:
@@ -36,6 +37,7 @@ namespace ButiEngine {
 
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
+		Value_weak_ptr<Heart> m_vwp_heart;
 
 		Value_ptr<RelativeTimer> m_vlp_timer;
 		std::int32_t m_countSecond;

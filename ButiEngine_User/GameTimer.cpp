@@ -3,13 +3,15 @@
 #include "PauseManager.h"
 #include "StageManager.h"
 
+#include"Heart.h"
+constexpr float div60 = 1.0f / 60;
 void ButiEngine::GameTimer::OnUpdate()
 {
 	if (!CanUpdate())
 	{
 		return;
 	}
-
+	m_vwp_heart.lock()->SetScore(static_cast<std::int32_t>( m_vlp_timer->GetRemainFrame()*div60));
 	if (m_vlp_timer->Update())
 	{
 		m_vlp_timer->Stop();
@@ -55,6 +57,7 @@ void ButiEngine::GameTimer::Start()
 
 	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(m_countSecond * 60);
 	m_vlp_timer->Start();
+	m_vwp_heart = GetManager().lock()->GetGameObject("BackHeart").lock()->GetGameComponent<Heart>();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameTimer::Clone()
