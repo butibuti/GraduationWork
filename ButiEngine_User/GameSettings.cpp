@@ -127,7 +127,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameSettings::Clone
 	return ObjectFactory::Create<GameSettings>();
 }
 
-ButiEngine::Vector3 ButiEngine::GameSettings::GetCorrection()
+float ButiEngine::GameSettings::GetCorrection()
 {
 	Matrix4x4 deviceMatrix;
 	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_data.trackerIndex], deviceMatrix);
@@ -185,7 +185,7 @@ ButiEngine::Vector3 ButiEngine::GameSettings::GetCorrection()
 	Vector3 correction = m_data.headMoveLimit * 2.0f / moveAreaSize;
 
 
-	return correction;
+	return correction.x;
 }
 
 void ButiEngine::GameSettings::SetOrigin()

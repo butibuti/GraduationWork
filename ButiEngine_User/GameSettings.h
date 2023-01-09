@@ -45,7 +45,7 @@ namespace ButiEngine {
 		}
 
 		Vector3 GetHeadMoveLimit() { return m_data.headMoveLimit; }
-		Vector3 GetCorrection();
+		float GetCorrection();
 		Vector3 GetTablePos() { return m_data.tablePos; }
 		Vector3 GetBodyPos() { return m_data.bodyPos; }
 
