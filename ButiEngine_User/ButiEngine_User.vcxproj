@@ -358,9 +358,11 @@
     <ClCompile Include="Effect_Belt.cpp" />
     <ClCompile Include="Effect_Box.cpp" />
     <ClCompile Include="Effect_CompleteFriend.cpp" />
+    <ClCompile Include="Effect_Heart.cpp" />
     <ClCompile Include="Effect_Hukidashi.cpp" />
     <ClCompile Include="Effect_PartHitFlash.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
+    <ClCompile Include="FriendAligner.cpp" />
     <ClCompile Include="FriendBody.cpp" />
     <ClCompile Include="FriendBodySpawner.cpp" />
     <ClCompile Include="FriendBody_Neck.cpp" />
@@ -376,6 +378,7 @@
     <ClCompile Include="GameSettings.cpp" />
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="Heart.cpp" />
+    <ClCompile Include="HeartEmitter.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LogoSceneManager.cpp" />
     <ClCompile Include="main.cpp">
@@ -419,9 +422,11 @@
     <ClInclude Include="Effect_Belt.h" />
     <ClInclude Include="Effect_Box.h" />
     <ClInclude Include="Effect_CompleteFriend.h" />
+    <ClInclude Include="Effect_Heart.h" />
     <ClInclude Include="Effect_Hukidashi.h" />
     <ClInclude Include="Effect_PartHitFlash.h" />
     <ClInclude Include="EnemySpawner.h" />
+    <ClInclude Include="FriendAligner.h" />
     <ClInclude Include="FriendBody.h" />
     <ClInclude Include="FriendBodySpawner.h" />
     <ClInclude Include="FriendBody_Neck.h" />
@@ -437,6 +442,7 @@
     <ClInclude Include="GameSettings.h" />
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="Heart.h" />
+    <ClInclude Include="HeartEmitter.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LogoSceneManager.h" />
     <ClInclude Include="Naruko.h" />

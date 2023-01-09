@@ -123,17 +123,17 @@ void ButiEngine::FriendFacePartSpawner::FirstSpawnFacePart()
 	auto eye = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eyes");
 	auto eyePartComponent = eye.lock()->GetGameComponent<FriendFacePart>();
 	eyePartComponent->SetMovePattern(0);
-	eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(eyePartComponent->GetMovePattern()));
+	eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(eyePartComponent->GetMovePattern(), true));
 
 	auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
 	auto nosePartComponent = nose.lock()->GetGameComponent<FriendFacePart>();
 	nosePartComponent->SetMovePattern(0);
-	nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(nosePartComponent->GetMovePattern()));
+	nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(nosePartComponent->GetMovePattern(), true));
 
 	auto mouth = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Mouth");
 	auto mouthPartComponent = mouth.lock()->GetGameComponent<FriendFacePart>();
 	mouthPartComponent->SetMovePattern(0);
-	mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(mouthPartComponent->GetMovePattern()));
+	mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(mouthPartComponent->GetMovePattern(), true));
 }
 
 void ButiEngine::FriendFacePartSpawner::SpawnFacePart()
@@ -194,10 +194,14 @@ void ButiEngine::FriendFacePartSpawner::SetSpawnDummyPartInterval()
 	m_vlp_spawnDummyPartTimer->Reset();
 }
 
-ButiEngine::Vector3 ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartPos(const MovePattern arg_movePattern)
+ButiEngine::Vector3 ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartPos(const MovePattern arg_movePattern, bool arg_isFirstSpawn)
 {
 	std::string movePatternStr = "Stay";
-	if (arg_movePattern == MovePattern::Straight)
+	if (arg_isFirstSpawn)
+	{
+		movePatternStr = "Stay_First";
+	}
+	else if (arg_movePattern == MovePattern::Straight)
 	{
 		movePatternStr = "Straight";
 	}

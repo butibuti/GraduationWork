@@ -54,6 +54,9 @@
     <ClCompile Include="Result_BackHuman.cpp" />
     <ClCompile Include="SceneTransition_Fade.cpp" />
     <ClCompile Include="Result_FriendSpawner.cpp" />
+    <ClCompile Include="FriendAligner.cpp" />
+    <ClCompile Include="Effect_Heart.cpp" />
+    <ClCompile Include="HeartEmitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -107,6 +110,9 @@
     <ClInclude Include="Result_BackHuman.h" />
     <ClInclude Include="SceneTransition_Fade.h" />
     <ClInclude Include="Result_FriendSpawner.h" />
+    <ClInclude Include="FriendAligner.h" />
+    <ClInclude Include="Effect_Heart.h" />
+    <ClInclude Include="HeartEmitter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />
