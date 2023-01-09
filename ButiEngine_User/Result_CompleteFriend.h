@@ -36,6 +36,9 @@ namespace ButiEngine {
 		bool m_isFallStarted;
 		bool m_isFall;
 		Vector3 m_velocity;
+
+		static float g_groundedSoundVolume;
+		float m_addGroundedSoundVolume;
 	};
 
 }

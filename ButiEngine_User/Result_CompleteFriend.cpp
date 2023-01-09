@@ -6,6 +6,8 @@
 #include "Result_BackHuman.h"
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 
+float ButiEngine::Result_CompleteFriend::g_groundedSoundVolume = 0.1f;
+
 void ButiEngine::Result_CompleteFriend::OnUpdate()
 {
 	CheckFall();
@@ -39,6 +41,13 @@ void ButiEngine::Result_CompleteFriend::Start()
 	m_isFallStarted = false;
 	m_isFall = false;
 	m_velocity = Vector3Const::Zero;
+
+	std::int32_t successBorder = GetManager().lock()->GetGameObject("ResultManager").lock()->GetGameComponent<ResultManager>()->GetSuccessBorder();
+	float minVolume = 0.1f;
+	float maxVolume = 1.0f;
+	m_addGroundedSoundVolume = (maxVolume - minVolume) / successBorder;
+
+	g_groundedSoundVolume = minVolume;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Result_CompleteFriend::Clone()
@@ -87,6 +96,15 @@ void ButiEngine::Result_CompleteFriend::Fall()
 
 	if (pos.y <= 0.0f)
 	{
+		auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Grounded_Base.wav"));
+		GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
+
+		sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Grounded_High.wav"));
+		GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, g_groundedSoundVolume);
+
+		g_groundedSoundVolume += m_addGroundedSoundVolume;
+		g_groundedSoundVolume = min(1.0f, g_groundedSoundVolume);
+
 		gameObject.lock()->transform->SetLocalPositionY(0.0f);
 		m_isFall = false;
 	}

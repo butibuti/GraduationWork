@@ -103,6 +103,12 @@ void ButiEngine::ResultManager::StartSuccess()
 	GetManager().lock()->AddObjectFromCereal("Effect_ConcentratedLine_RedNYellow");
 	GetManager().lock()->AddObjectFromCereal("Text_Success");
 	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn");
+
+	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Success.wav"));
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
+
+	sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Success2.wav"));
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
 }
 
 void ButiEngine::ResultManager::StartFailed()
@@ -111,4 +117,7 @@ void ButiEngine::ResultManager::StartFailed()
 	GetManager().lock()->AddObjectFromCereal("Background_Gray");
 	GetManager().lock()->AddObjectFromCereal("Text_Failed");
 	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn");
+
+	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Failed.wav"));
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
 }
