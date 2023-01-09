@@ -8,7 +8,6 @@ void ButiEngine::ScoreManager::OnUpdate()
 #ifdef DEBUG
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::U)) {
 		m_score += 1000;
-		m_vlp_heart->SetScore(m_score);
 	}
 #endif // DEBUG
 
@@ -29,7 +28,6 @@ void ButiEngine::ScoreManager::OnShowUI()
 void ButiEngine::ScoreManager::Start()
 {
 	m_score = 0;
-	m_vlp_heart = GetManager().lock()->GetGameObject("BackHeart").lock()->GetGameComponent<Heart>();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::ScoreManager::Clone()
@@ -53,5 +51,5 @@ void ButiEngine::ScoreManager::CalcScore(Value_weak_ptr<GameObject> arg_vwp_head
 	addScore *= 2 * (1 + bodyComponent->IsFast());
 
 	m_score += addScore;
-	m_vlp_heart->SetScore(m_score);
+	//m_vlp_heart->SetScore(m_score);
 }

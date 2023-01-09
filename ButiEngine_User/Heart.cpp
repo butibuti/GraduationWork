@@ -14,7 +14,7 @@ void ButiEngine::Heart::OnSet()
 
 void ButiEngine::Heart::Start()
 {
-	m_maxScore = pows[m_maxDigit]-1;
+	m_maxScore = 60;// pows[m_maxDigit] - 1;
 	float xOffset = (m_maxDigit-1) * -0.5f;
 	for (std::int32_t index = 0; index < m_maxDigit; index++) {
 		auto numObject = GetManager().lock()->AddObjectFromCereal("Number");
