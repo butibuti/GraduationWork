@@ -43,10 +43,6 @@ void ButiEngine::GameSettings::OnUpdate()
 	{
 		SetMoveAreaLeftBottom();
 	}
-	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::T))
-	{
-		SetTablePos();
-	}
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::S))
 	{
 		OutputCereal(m_data, "GameSettings.savedata");
