@@ -8,6 +8,48 @@ void ButiEngine::Result_FriendFallPoint::OnUpdate()
 {
 	if (!m_isStart)
 	{
+		if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::S))
+		{
+			auto resultManager = GetManager().lock()->GetGameObject("ResultManager").lock()->GetGameComponent<ResultManager>();
+			auto friendDatas = FriendManager::GetFriendDatas();
+			if (friendDatas.size() < (resultManager->GetSuccessBorder() - 3))
+			{
+				auto friendSpawner = GetManager().lock()->GetGameObject("Result_FriendSpawner").lock()->GetGameComponent<Result_FriendSpawner>();
+				std::int32_t startZoomInFriendNum = max(0, friendDatas.size() - 2);
+				float diff = friendSpawner->GetFriendSpawnPos(startZoomInFriendNum).x - m_vec_checkPoints[0]->pos;
+
+				m_vec_checkPoints[0]->changeSpeedFrame = 10;
+
+				auto end = m_vec_checkPoints.end();
+				std::int32_t index = 0;
+				float diffCheckPoint0_1 = m_vec_checkPoints[0]->pos - m_vec_checkPoints[1]->pos;
+				for (auto itr = m_vec_checkPoints.begin(); itr != end - 1; ++itr)
+				{
+					(*itr)->pos += diff;
+					if (index >= 1)
+					{
+						(*itr)->pos += diffCheckPoint0_1 * 0.75f;
+					}
+					if ((*itr)->hasLimit)
+					{
+						(*itr)->limitFrame += 30;
+					}
+					index++;
+				}
+			}
+
+			m_isStart = false;
+
+			m_moveSpeed = m_initSpeed;
+
+			m_vlp_changeSpeedTimer = ObjectFactory::Create<RelativeTimer>(60);
+			m_vlp_limitTimer = ObjectFactory::Create<RelativeTimer>(60);
+
+			m_passedPointCount = 0;
+
+			SetNextCheckPoint();
+			StartMove();
+		}
 		return;
 	}
 

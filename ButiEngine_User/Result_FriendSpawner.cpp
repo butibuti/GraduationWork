@@ -5,6 +5,18 @@
 
 void ButiEngine::Result_FriendSpawner::OnUpdate()
 {
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::Q))
+	{
+		SpawnFriends(8);
+	}
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::W))
+	{
+		SpawnFriends(13);
+	}
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::E))
+	{
+		SpawnFriends(20);
+	}
 }
 
 void ButiEngine::Result_FriendSpawner::OnSet()
