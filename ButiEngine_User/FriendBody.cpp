@@ -118,7 +118,11 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 {
 	m_vwp_head = arg_vwp_head;
 
-	auto bone = gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetBone()->searchBoneByName("head");
+	auto modelDraw = gameObject.lock()->GetGameComponent<ModelDrawComponent>();
+	modelDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
+	modelDraw->SetMaterialTag(MaterialTag("Material/FriendsBody.mat"), 0);
+
+	auto bone = modelDraw->GetBone()->searchBoneByName("head");
 
 	m_vwp_head.lock()->transform->SetBaseTransform(bone->transform);
 

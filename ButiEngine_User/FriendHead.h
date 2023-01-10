@@ -89,6 +89,8 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_appearTimer;
 
 		bool m_isPut;
+
+		bool m_isChangeMaterial;
 	};
 
 }

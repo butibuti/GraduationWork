@@ -25,6 +25,15 @@ void ButiEngine::FriendHead::OnUpdate()
 		return;
 	}
 
+	if (!m_isChangeMaterial && CanPut())
+	{
+		auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
+		meshDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
+		meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead.mat"), 0);
+
+		m_isChangeMaterial = true;
+	}
+
 	Control();
 	CalcVelocity();
 	CheckPut();
