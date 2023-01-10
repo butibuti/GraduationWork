@@ -160,17 +160,6 @@ bool ButiEngine::FriendBody::IsFront()
 	return angle <= m_frontBorder;
 }
 
-bool ButiEngine::FriendBody::IsFast()
-{
-	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	if (gameLevel == 0)
-	{
-		return false;
-	}
-
-	return gameObject.lock()->transform->GetLocalPosition().x > 0.0f;
-}
-
 void ButiEngine::FriendBody::Rotate()
 {
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
@@ -179,7 +168,12 @@ void ButiEngine::FriendBody::Rotate()
 		return;
 	}
 
-	gameObject.lock()->transform->RollLocalRotationY_Degrees(m_vec_rotateSpeeds[gameLevel] * GameDevice::GetWorldSpeed());
+	float rotateSpeed = m_vec_rotateSpeeds[gameLevel];
+	if (m_isMoveBack)
+	{
+		rotateSpeed *= 2.0f;
+	}
+	gameObject.lock()->transform->RollLocalRotationY_Degrees(rotateSpeed * GameDevice::GetWorldSpeed());
 
 	if (m_isStopRotate)
 	{

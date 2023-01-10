@@ -28,6 +28,7 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_trackerIndex);
+			ARCHIVE_BUTI(m_fastBorder);
 		}
 
 		Vector3 GetVelocity() { return m_velocity; }
@@ -44,6 +45,7 @@ namespace ButiEngine {
 		std::int32_t GetMouthScore();
 
 		bool IsBeautiful();
+		bool IsFast();
 	private:
 		void Control();
 		void ControlByGamePad();
@@ -90,7 +92,11 @@ namespace ButiEngine {
 
 		bool m_isPut;
 
-		bool m_isChangeMaterial;
+		bool m_isCompleteFace;
+
+		bool m_isFast;
+		std::int32_t m_fastBorder;
+		Value_ptr<RelativeTimer> m_vlp_completeFaceCountUpTimer;
 	};
 
 }

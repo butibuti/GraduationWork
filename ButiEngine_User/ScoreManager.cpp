@@ -48,7 +48,7 @@ void ButiEngine::ScoreManager::CalcScore(Value_weak_ptr<GameObject> arg_vwp_head
 
 	addScore *= 2 * (1 + headComponent->IsBeautiful());
 	addScore *= 2 * (1 + bodyComponent->IsFront());
-	addScore *= 2 * (1 + bodyComponent->IsFast());
+	addScore *= 2 * (1 + headComponent->IsFast());
 
 	m_score += addScore;
 	//m_vlp_heart->SetScore(m_score);

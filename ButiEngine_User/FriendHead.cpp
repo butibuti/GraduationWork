@@ -25,13 +25,21 @@ void ButiEngine::FriendHead::OnUpdate()
 		return;
 	}
 
-	if (!m_isChangeMaterial && CanPut())
+	if (m_vlp_completeFaceCountUpTimer->Update())
+	{
+		m_vlp_completeFaceCountUpTimer->Stop();
+		m_isFast = false;
+	}
+
+	if (!m_isCompleteFace && CanPut())
 	{
 		auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
 		meshDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
 		meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead.mat"), 0);
 
-		m_isChangeMaterial = true;
+		m_vlp_completeFaceCountUpTimer->Start();
+
+		m_isCompleteFace = true;
 	}
 
 	Control();
@@ -68,6 +76,9 @@ void ButiEngine::FriendHead::OnRemove()
 void ButiEngine::FriendHead::OnShowUI()
 {
 	GUI::DragInt("TrackerIndex", m_trackerIndex, 1.0, 0, 16);
+
+	GUI::BulletText(U8("完成時「はやい」ボーナスが付くまでの時間"));
+	GUI::DragInt("##fastBorder", m_fastBorder, 1.0f, 0, 1000);
 }
 
 void ButiEngine::FriendHead::Start()
@@ -91,12 +102,16 @@ void ButiEngine::FriendHead::Start()
 	m_vlp_appearTimer->Start();
 
 	m_isPut = false;
+
+	m_isFast = true;
+	m_vlp_completeFaceCountUpTimer = ObjectFactory::Create<RelativeTimer>(m_fastBorder);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
 {
 	auto clone = ObjectFactory::Create<FriendHead>();
 	clone->m_trackerIndex = m_trackerIndex;
+	clone->m_fastBorder = m_fastBorder;
 	return clone;
 }
 
@@ -187,6 +202,19 @@ bool ButiEngine::FriendHead::IsBeautiful()
 	dummyPartCount += m_vwp_mouthHitAreaComponent.lock()->GetDummyPartCount();
 	
 	return dummyPartCount == 0;
+}
+
+bool ButiEngine::FriendHead::IsFast()
+{
+	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
+
+	if (gameLevel == 0)
+	{
+		return false;
+	}
+
+	return m_isFast;
 }
 
 void ButiEngine::FriendHead::Control()

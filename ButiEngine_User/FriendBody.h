@@ -34,7 +34,6 @@ namespace ButiEngine {
 		void SetHead(Value_weak_ptr<GameObject> arg_vwp_head);
 		
 		bool IsFront();
-		bool IsFast();
 	private:
 		void Rotate();
 		void MoveBack();
