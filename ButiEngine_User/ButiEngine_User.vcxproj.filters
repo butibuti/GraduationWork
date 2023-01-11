@@ -60,6 +60,8 @@
     <ClCompile Include="SpriteAnimation_DestroyOwn.cpp" />
     <ClCompile Include="GameFinishDirecting.cpp" />
     <ClCompile Include="Text_GameStart.cpp" />
+    <ClCompile Include="GameEnd_FriendSpawner.cpp" />
+    <ClCompile Include="GameEnd_CompleteFriend.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -119,6 +121,8 @@
     <ClInclude Include="SpriteAnimation_DestroyOwn.h" />
     <ClInclude Include="GameFinishDirecting.h" />
     <ClInclude Include="Text_GameStart.h" />
+    <ClInclude Include="GameEnd_FriendSpawner.h" />
+    <ClInclude Include="GameEnd_CompleteFriend.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

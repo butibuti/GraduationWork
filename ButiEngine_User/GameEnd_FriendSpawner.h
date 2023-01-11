@@ -2,12 +2,12 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class FriendAligner :public GameComponent
+	class GameEnd_FriendSpawner :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "FriendAligner";
+			return "GameEnd_FriendSpawner";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -19,14 +19,13 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_maxFriendCount);
 		}
 
-		Vector3 GetCalcFriendPos(std::int32_t arg_friendNum);
+		void SpawnFriends();
 	private:
-		std::int32_t m_maxFriendCount;
+		void SpawnFriends(const std::int32_t arg_spawnCount);
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(FriendAligner, true);
+BUTI_REGIST_GAMECOMPONENT(GameEnd_FriendSpawner, true);

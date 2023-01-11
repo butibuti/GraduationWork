@@ -60,8 +60,8 @@ void ButiEngine::Result_FriendSpawner::OnShowUI()
 		GUI::BulletText(U8("RightPos(¶‚ª+‰E‚ª-)"));
 		GUI::DragFloat("##RightPos", m_vlp_friendSpawnArea->rightPos, 0.1f, -3000.0f, 3000.0f);
 
-		GUI::BulletText("MaxFriendCount");
-		GUI::DragInt("##MaxFriendCount", m_vlp_friendSpawnArea->maxFriendCount, 1.0f, 1, 100);
+		GUI::BulletText("Space");
+		GUI::DragFloat("##Space", m_vlp_friendSpawnArea->space, 1.0f, 0.1f, 100.0f);
 
 		GUI::TreePop();
 	}
@@ -83,12 +83,14 @@ ButiEngine::Vector3 ButiEngine::Result_FriendSpawner::GetFriendSpawnPos(const st
 	constexpr float friendScaleX = 2.0f;
 	std::int32_t spawnAreaIndex = 0;
 
-	float spawnAreaLength = abs(m_vlp_friendSpawnArea->rightPos - m_vlp_friendSpawnArea->leftPos) - friendScaleX;
-	std::int32_t maxFriendCount = max(m_vlp_friendSpawnArea->maxFriendCount - 2, 1);
-	float space = spawnAreaLength / maxFriendCount;
 	float spawnStartPos = m_vlp_friendSpawnArea->leftPos;
 	Vector3 spawnPos = Vector3(spawnStartPos, 30.0f, 0.0f);
-	spawnPos.x -= space * arg_friendNum;
+	spawnPos.x -= m_vlp_friendSpawnArea->space * arg_friendNum;
+
+	if (arg_friendNum % 2 == 0)
+	{
+		spawnPos.z -= 2.0f;
+	}
 
 	return spawnPos;
 }

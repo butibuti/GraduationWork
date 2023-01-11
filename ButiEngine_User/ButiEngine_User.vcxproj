@@ -352,6 +352,8 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameEnd_CompleteFriend.cpp" />
+    <ClCompile Include="GameEnd_FriendSpawner.cpp" />
     <ClCompile Include="SpriteAnimation_DestroyOwn.cpp" />
     <ClCompile Include="Effect_ConcentratedLine.cpp" />
     <ClCompile Include="Debug_Camera.cpp" />
@@ -420,6 +422,8 @@
     <ClCompile Include="UI_Score.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameEnd_CompleteFriend.h" />
+    <ClInclude Include="GameEnd_FriendSpawner.h" />
     <ClInclude Include="SpriteAnimation_DestroyOwn.h" />
     <ClInclude Include="Effect_ConcentratedLine.h" />
     <ClInclude Include="Debug_Camera.h" />

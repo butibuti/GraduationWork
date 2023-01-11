@@ -2,12 +2,14 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class FriendAligner :public GameComponent
+	struct FriendData;
+
+	class GameEnd_CompleteFriend :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "FriendAligner";
+			return "GameEnd_CompleteFriend";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -19,14 +21,13 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_maxFriendCount);
 		}
 
-		Vector3 GetCalcFriendPos(std::int32_t arg_friendNum);
+		void CreateParts(Value_weak_ptr<FriendData> arg_vwp_friendData);
 	private:
-		std::int32_t m_maxFriendCount;
+		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(FriendAligner, true);
+BUTI_REGIST_GAMECOMPONENT(GameEnd_CompleteFriend, true);

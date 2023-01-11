@@ -6,14 +6,14 @@ namespace ButiEngine {
 	{
 		float leftPos;
 		float rightPos;
-		std::int32_t maxFriendCount;
+		float space;
 
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(leftPos);
 			ARCHIVE_BUTI(rightPos);
-			ARCHIVE_BUTI(maxFriendCount);
+			ARCHIVE_BUTI(space);
 		}
 	};
 
