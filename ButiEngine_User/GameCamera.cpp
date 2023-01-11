@@ -5,6 +5,12 @@
 
 void ButiEngine::GameCamera::OnUpdate()
 {
+	if (m_isGameFinishZoom)
+	{
+		gameObject.lock()->transform->RollLocalRotationZ_Degrees(0.05f);
+		return;
+	}
+
 	LookAtTarget();
 
 	if (m_vlp_waitShakeTimer->Update())
@@ -105,6 +111,16 @@ void ButiEngine::GameCamera::ZoomOut(const std::int32_t arg_zoomOutFrame)
 
 	AddPositionAnimation(m_startPos, arg_zoomOutFrame);
 	StartLookAtTarget(lookTargetPos, arg_zoomOutFrame * 0.5f);
+}
+
+void ButiEngine::GameCamera::GameFinishZoom()
+{
+	Vector3 targetPos = gameObject.lock()->transform->GetLocalPosition();
+	targetPos += gameObject.lock()->transform->GetFront() * 50.0f;
+
+	AddPositionAnimation(targetPos, 600);
+
+	m_isGameFinishZoom = true;
 }
 
 void ButiEngine::GameCamera::StartShake(const std::int32_t arg_shakeFrame)

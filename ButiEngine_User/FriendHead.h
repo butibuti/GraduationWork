@@ -9,6 +9,7 @@ namespace ButiEngine {
 	class FriendManager;
 	class FriendHead_PartHitArea;
 	class FriendHead_Center;
+	class StageManager;
 
 	class FriendHead :public GameComponent
 	{
@@ -50,6 +51,7 @@ namespace ButiEngine {
 		void Control();
 		void ControlByGamePad();
 		void ControlByVRTracker();
+		void SpawnStarFlash();
 		void OnPut(Value_weak_ptr<GameObject> arg_vwp_body);
 
 		void Appear();
@@ -62,6 +64,7 @@ namespace ButiEngine {
 
 		void CreatePartHitArea();
 
+		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
@@ -97,6 +100,8 @@ namespace ButiEngine {
 		bool m_isFast;
 		std::int32_t m_fastBorder;
 		Value_ptr<RelativeTimer> m_vlp_completeFaceCountUpTimer;
+
+		Value_ptr<RelativeTimer> m_vlp_spawnStarFlashIntervalTimer;
 	};
 
 }

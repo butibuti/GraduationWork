@@ -24,6 +24,7 @@ namespace ButiEngine {
 		void NormalZoom(const std::int32_t arg_zoomInFrame);
 		void SpecialZoom(const std::int32_t arg_zoomInFrame);
 		void ZoomOut(const std::int32_t arg_zoomOutFrame);
+		void GameFinishZoom();
 		void StartShake(const std::int32_t arg_shakeFrame);
 		void StopShake();
 	private:
@@ -41,6 +42,8 @@ namespace ButiEngine {
 		Vector3 m_lookTargetPos;
 		Matrix4x4 m_zoomStartRotation;
 		Value_ptr<RelativeTimer> m_vlp_lookTimer;
+
+		bool m_isGameFinishZoom;
 	};
 
 }

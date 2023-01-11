@@ -120,7 +120,8 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 
 	auto modelDraw = gameObject.lock()->GetGameComponent<ModelDrawComponent>();
 	modelDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
-	modelDraw->SetMaterialTag(MaterialTag("Material/FriendsBody.mat"), 0);
+	modelDraw->SetMaterialTag(MaterialTag("Material/FrendsBody.mat"), 0);
+	modelDraw->ReRegist();
 
 	auto bone = modelDraw->GetBone()->searchBoneByName("head");
 
@@ -331,7 +332,24 @@ void ButiEngine::FriendBody::SaveFriendData()
 		m_vlp_friendData->vec_vlp_dummyTransforms.push_back((*itr).lock()->transform->Clone());
 	}
 
-	GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
+	std::int32_t addCount = 1;
+	if (headComponent->IsBeautiful())
+	{
+		addCount++;
+	}
+	if (headComponent->IsFast())
+	{
+		addCount++;
+	}
+	if (IsFront())
+	{
+		addCount++;
+	}
+
+	for (std::int32_t i = 0; i < addCount; i++)
+	{
+		GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
+	}
 }
 
 ButiEngine::Vector3 ButiEngine::FriendBody::GetFrontXZ(const Vector3& arg_front)

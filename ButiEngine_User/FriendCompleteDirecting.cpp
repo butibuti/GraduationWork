@@ -163,7 +163,7 @@ void ButiEngine::FriendCompleteDirecting::SetHukidashiParameter()
 	{
 		m_vlp_spawnHukidashiIntervalTimer = ObjectFactory::Create<RelativeTimer>(10);
 	}
-
+	
 	if (headComponent->IsBeautiful())
 	{
 		m_vec_hukidashiNames.push_back("Effect_Hukidashi_Beautiful");

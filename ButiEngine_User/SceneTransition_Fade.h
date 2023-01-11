@@ -24,6 +24,8 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_transitionFrame);
 			ARCHIVE_BUTI(m_nextSceneName);
 		}
+
+		void SetNextSceneName(const std::string& arg_nextSceneName) { m_nextSceneName = arg_nextSceneName; }
 	private:
 		Vector4 m_startColor;
 		bool m_isSceneEnd;

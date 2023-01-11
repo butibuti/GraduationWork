@@ -57,6 +57,9 @@
     <ClCompile Include="FriendAligner.cpp" />
     <ClCompile Include="Effect_Heart.cpp" />
     <ClCompile Include="HeartEmitter.cpp" />
+    <ClCompile Include="SpriteAnimation_DestroyOwn.cpp" />
+    <ClCompile Include="GameFinishDirecting.cpp" />
+    <ClCompile Include="Text_GameStart.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -113,6 +116,9 @@
     <ClInclude Include="FriendAligner.h" />
     <ClInclude Include="Effect_Heart.h" />
     <ClInclude Include="HeartEmitter.h" />
+    <ClInclude Include="SpriteAnimation_DestroyOwn.h" />
+    <ClInclude Include="GameFinishDirecting.h" />
+    <ClInclude Include="Text_GameStart.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

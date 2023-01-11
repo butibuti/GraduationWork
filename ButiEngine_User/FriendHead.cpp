@@ -10,6 +10,7 @@
 #include "FriendHead_PartHitArea.h"
 #include "GameLevelManager.h"
 #include "FriendHead_Center.h"
+#include "StageManager.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
@@ -31,13 +32,23 @@ void ButiEngine::FriendHead::OnUpdate()
 		m_isFast = false;
 	}
 
+	if (m_isFast && m_vwp_stageManager.lock()->IsGameStart())
+	{
+		if (m_vlp_spawnStarFlashIntervalTimer->Update())
+		{
+			SpawnStarFlash();
+		}
+	}
+
 	if (!m_isCompleteFace && CanPut())
 	{
 		auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
 		meshDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
 		meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead.mat"), 0);
+		meshDraw->ReRegist();
 
 		m_vlp_completeFaceCountUpTimer->Start();
+		m_vlp_spawnStarFlashIntervalTimer->Start();
 
 		m_isCompleteFace = true;
 	}
@@ -77,12 +88,13 @@ void ButiEngine::FriendHead::OnShowUI()
 {
 	GUI::DragInt("TrackerIndex", m_trackerIndex, 1.0, 0, 16);
 
-	GUI::BulletText(U8("完成時「はやい」ボーナスが付くまでの時間"));
+	GUI::BulletText(U8("完成時「はやい」ボーナスが付く時間"));
 	GUI::DragInt("##fastBorder", m_fastBorder, 1.0f, 0, 1000);
 }
 
 void ButiEngine::FriendHead::Start()
 {
+	m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
 	m_vwp_inputManager = GetManager().lock()->GetGameObject("InputManager").lock()->GetGameComponent<InputManager>();
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
@@ -105,6 +117,8 @@ void ButiEngine::FriendHead::Start()
 
 	m_isFast = true;
 	m_vlp_completeFaceCountUpTimer = ObjectFactory::Create<RelativeTimer>(m_fastBorder);
+
+	m_vlp_spawnStarFlashIntervalTimer = ObjectFactory::Create<RelativeTimer>(5);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
@@ -206,6 +220,11 @@ bool ButiEngine::FriendHead::IsBeautiful()
 
 bool ButiEngine::FriendHead::IsFast()
 {
+	if (!m_isFast)
+	{
+		return false;
+	}
+
 	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
 
@@ -268,6 +287,32 @@ void ButiEngine::FriendHead::ControlByVRTracker()
 {
 	gameObject.lock()->transform->SetLocalPosition(GetTrackerPos());
 	gameObject.lock()->transform->SetLocalRotation(GetTrackerRotation());
+}
+
+void ButiEngine::FriendHead::SpawnStarFlash()
+{
+	Vector3 center = m_vwp_headCenter.lock()->transform->GetWorldPosition();
+	center += 1.0f * Vector3Const::ZAxis;
+
+	Vector3 dir = Vector3Const::Zero;
+	dir.x = ButiRandom::GetRandom(5.0f, 15.0f, 10);
+	dir.y = ButiRandom::GetRandom(5.0f, 15.0f, 10);
+
+	if (ButiRandom::GetInt(0, 1))
+	{
+		dir.x *= -1.0f;
+	}
+	if (ButiRandom::GetInt(0, 1))
+	{
+		dir.y *= -1.0f;
+	}
+
+	dir.Normalize();
+
+	float radius = 0.5f;
+	Vector3 pos = center + dir * radius;
+	auto starFlash = GetManager().lock()->AddObjectFromCereal("Effect_StarFlash");
+	starFlash.lock()->transform->SetLocalPosition(pos);
 }
 
 void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)

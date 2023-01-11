@@ -4,6 +4,7 @@
 #include "GameTimer.h"
 #include "GameLevelManager.h"
 #include "FriendManager.h"
+#include "GameFinishDirecting.h"
 
 void ButiEngine::StageManager::OnUpdate()
 {
@@ -27,11 +28,8 @@ void ButiEngine::StageManager::OnUpdate()
 
 		auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/BGM.wav"));
 		GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlayBGM(sound, 0.1f);
-	}
 
-	if (m_vwp_gameTimer.lock()->GetRemainSecond() == 0)
-	{
-		m_vwp_pauseManager.lock()->SetIsPause(true);
+		GetManager().lock()->AddObjectFromCereal("Text_GameStart");
 	}
 
 	if (m_vwp_pauseManager.lock()->IsPause())
@@ -44,6 +42,13 @@ void ButiEngine::StageManager::OnUpdate()
 		{
 			ResetGame();
 		}
+		return;
+	}
+
+	if (m_vwp_gameTimer.lock()->GetRemainSecond() == 0)
+	{
+		m_vwp_pauseManager.lock()->SetIsPause(true);
+		gameObject.lock()->AddGameComponent<GameFinishDirecting>();
 	}
 }
 
