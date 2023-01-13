@@ -2,12 +2,12 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class Effect_Heart :public GameComponent
+	class GameEndManager :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "Effect_Heart";
+			return "GameEndManager";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -20,9 +20,11 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 		}
+
 	private:
+		Value_ptr<RelativeTimer> m_vlp_gameEndTimer;
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(Effect_Heart, true);
+BUTI_REGIST_GAMECOMPONENT(GameEndManager, true);

@@ -352,6 +352,8 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Effect_HeartSpawner.cpp" />
+    <ClCompile Include="GameEndManager.cpp" />
     <ClCompile Include="GameEnd_CompleteFriend.cpp" />
     <ClCompile Include="GameEnd_FriendSpawner.cpp" />
     <ClCompile Include="SpriteAnimation_DestroyOwn.cpp" />
@@ -418,10 +420,13 @@
     <ClCompile Include="Enemy_Test.cpp" />
     <ClCompile Include="Text_GameStart.cpp" />
     <ClCompile Include="UI_GameLevel.cpp" />
+    <ClCompile Include="UI_MakeFriendsCount.cpp" />
     <ClCompile Include="UI_RemainTime.cpp" />
     <ClCompile Include="UI_Score.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Effect_HeartSpawner.h" />
+    <ClInclude Include="GameEndManager.h" />
     <ClInclude Include="GameEnd_CompleteFriend.h" />
     <ClInclude Include="GameEnd_FriendSpawner.h" />
     <ClInclude Include="SpriteAnimation_DestroyOwn.h" />
@@ -479,6 +484,7 @@
     <ClInclude Include="Enemy_Test.h" />
     <ClInclude Include="Text_GameStart.h" />
     <ClInclude Include="UI_GameLevel.h" />
+    <ClInclude Include="UI_MakeFriendsCount.h" />
     <ClInclude Include="UI_RemainTime.h" />
     <ClInclude Include="UI_Score.h" />
   </ItemGroup>

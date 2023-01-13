@@ -38,6 +38,7 @@ void ButiEngine::GameEnd_CompleteFriend::CreateParts(Value_weak_ptr<FriendData> 
 	m_vlp_animationController = ButiRendering::CreateAnimationController(body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
 	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
 		GetModel(body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
+	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
 
 	auto head = GetManager().lock()->AddObjectFromCereal("Result_FriendHead", arg_vwp_friendData.lock()->vlp_headTransform);
 	auto bone = body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone()->searchBoneByName("head");

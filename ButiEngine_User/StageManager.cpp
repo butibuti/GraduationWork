@@ -8,11 +8,6 @@
 
 void ButiEngine::StageManager::OnUpdate()
 {
-	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::J))
-	{
-		ChangeResultScene();
-	}
-
 	if (!m_isGameStart)
 	{
 		if (m_vwp_gameLevelManager.lock()->GetGameLevel() == 2)
@@ -58,7 +53,6 @@ void ButiEngine::StageManager::OnSet()
 
 void ButiEngine::StageManager::OnRemove()
 {
-	GetManager().lock()->GetApplication().lock()->GetSoundManager()->DestroyBGM();
 }
 
 void ButiEngine::StageManager::OnShowUI()

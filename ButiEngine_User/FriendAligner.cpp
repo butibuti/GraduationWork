@@ -37,10 +37,10 @@ ButiEngine::Vector3 ButiEngine::FriendAligner::GetCalcFriendPos(std::int32_t arg
 	float leftPos = (pos + scale * 0.5f).x;
 
 	float length = abs(rightPos - leftPos);
-	float space = length / m_maxFriendCount;
+	float space = length / (m_maxFriendCount - 1);
 
 	Vector3 friendPos = pos;
-	friendPos.z -= space * (arg_friendNum / m_maxFriendCount);
+	friendPos.z -= space * 1.5f * (arg_friendNum / m_maxFriendCount);
 	arg_friendNum %= m_maxFriendCount;
 	friendPos.x = leftPos;
 	friendPos.x -= space * arg_friendNum;

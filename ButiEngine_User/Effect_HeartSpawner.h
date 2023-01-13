@@ -2,12 +2,12 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class Effect_Heart :public GameComponent
+	class Effect_HeartSpawner :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "Effect_Heart";
+			return "Effect_HeartSpawner";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -21,8 +21,14 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 		}
 	private:
+		void SpawnHeart();
+		void SetSpawnInterval();
+
+		Value_ptr<RelativeTimer> m_vlp_spawnTimer;
+		std::int32_t m_minSpawnIntervalFrame;
+		std::int32_t m_maxSpawnIntervalFrame;
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(Effect_Heart, true);
+BUTI_REGIST_GAMECOMPONENT(Effect_HeartSpawner, true);

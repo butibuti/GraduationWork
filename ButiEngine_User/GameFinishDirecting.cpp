@@ -10,6 +10,8 @@ void ButiEngine::GameFinishDirecting::OnUpdate()
 
 void ButiEngine::GameFinishDirecting::OnSet()
 {
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->DestroyBGM();
+
 	GetManager().lock()->AddObjectFromCereal("Text_GameFinish");
 	auto belt_left = GetManager().lock()->AddObjectFromCereal("Effect_Belt");
 	belt_left.lock()->GetGameComponent<Effect_Belt>()->SetIsSpawnToRight(false);
@@ -18,6 +20,10 @@ void ButiEngine::GameFinishDirecting::OnSet()
 
 	GetManager().lock()->GetGameObject("CameraParent").lock()->GetGameComponent<GameCamera>()->GameFinishZoom();
 	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GamePlay");
+
+	auto exInfo = GetManager().lock()->GetGameObject("MainScreen").lock()->GetGameComponent<MeshDrawComponent>()->GetExInfo();
+	exInfo.x = 0.0f;
+	GetManager().lock()->GetGameObject("MainScreen").lock()->GetGameComponent<MeshDrawComponent>()->SetExInfo(exInfo);
 }
 
 void ButiEngine::GameFinishDirecting::OnRemove()

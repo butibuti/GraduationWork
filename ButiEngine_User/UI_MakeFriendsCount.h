@@ -2,12 +2,12 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class Effect_Heart :public GameComponent
+	class UI_MakeFriendsCount :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "Effect_Heart";
+			return "UI_MakeFriendsCount";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -20,9 +20,10 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 		}
+
 	private:
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(Effect_Heart, true);
+BUTI_REGIST_GAMECOMPONENT(UI_MakeFriendsCount, true);
