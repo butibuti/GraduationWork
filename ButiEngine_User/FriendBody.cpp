@@ -7,6 +7,7 @@
 #include "FriendBody_Neck.h"
 #include "FriendManager.h"
 #include "FriendHead.h"
+#include "FriendBodySpawner.h"
 #include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 
@@ -103,6 +104,11 @@ void ButiEngine::FriendBody::Start()
 	m_moveHorizontalTargetPos = Vector3(-7.0f, 0.5f, 0.0f);
 
 	m_vlp_moveHorizontalTimer->Start();
+
+	m_vlp_pullUpTimer = ObjectFactory::Create<RelativeTimer>(30);
+	m_vlp_pullUpTimer->Start();
+
+	m_offsetPos = gameObject.lock()->transform->GetLocalPosition();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
@@ -139,6 +145,10 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 		m_vwp_neck.lock()->SetIsRemove(true);
 	}
 
+	if (m_vwp_friendBodySpawner.lock().get() != NULL)
+	{
+		m_vwp_friendBodySpawner.lock()->DecreaceBodiesNumber();
+	}
 	StartMoveBack();
 	StartDance();
 }
@@ -167,6 +177,13 @@ bool ButiEngine::FriendBody::IsFast()
 	return gameObject.lock()->transform->GetLocalPosition().x > 0.0f;
 }
 
+void ButiEngine::FriendBody::SetParameter(float arg_moveSpeed, float arg_rotateSpeed)
+{
+	m_moveSpeed = arg_moveSpeed;
+	m_rotateSpeed = arg_rotateSpeed;
+	
+}
+
 void ButiEngine::FriendBody::Rotate()
 {
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
@@ -175,7 +192,7 @@ void ButiEngine::FriendBody::Rotate()
 		return;
 	}
 
-	gameObject.lock()->transform->RollLocalRotationY_Degrees(m_vec_rotateSpeeds[gameLevel] * GameDevice::GetWorldSpeed());
+	gameObject.lock()->transform->RollLocalRotationY_Degrees(m_rotateSpeed * GameDevice::GetWorldSpeed());
 
 	if (m_isStopRotate)
 	{
@@ -217,6 +234,8 @@ void ButiEngine::FriendBody::StartMoveBack()
 
 	m_isMoveBack = true;
 	m_vlp_moveBackTimer->Start();
+
+	
 }
 
 void ButiEngine::FriendBody::StartDance()
@@ -235,20 +254,31 @@ void ButiEngine::FriendBody::MoveHorizontal()
 		return;
 	}
 
-	float progress = m_vlp_moveHorizontalTimer->GetPercent();
-	Vector3 newPos = MathHelper::LerpPosition(m_moveHorizontalStartPos, m_moveHorizontalTargetPos, progress);
+	if (m_vlp_pullUpTimer->Update())
+	{
+		m_vlp_pullUpTimer->Stop();
+		m_vlp_pullUpTimer->SetCount(30);
+	}
+
+	Vector3 newPos = gameObject.lock()->transform->GetLocalPosition();
+
+	newPos.x += m_moveSpeed * GameDevice::GetWorldSpeed();
+	float progress = m_vlp_pullUpTimer->GetPercent();
+	newPos.y = MathHelper::Lerp(m_offsetPos.y, 0, Easing::EaseOutElastic(progress));
 
 	gameObject.lock()->transform->SetLocalPosition(newPos);
 
-	if (m_vlp_moveHorizontalTimer->Update())
+	if (abs(gameObject.lock()->transform->GetLocalPosition().x) > OUT_AREA_DISTANCE)
 	{
-		m_vlp_moveHorizontalTimer->Stop();
-
 		if (m_vwp_neck.lock())
 		{
 			m_vwp_neck.lock()->SetIsRemove(true);
 		}
 		gameObject.lock()->SetIsRemove(true);
+		if (m_vwp_friendBodySpawner.lock().get() != NULL)
+		{
+			m_vwp_friendBodySpawner.lock()->DecreaceBodiesNumber();
+		}
 	}
 }
 

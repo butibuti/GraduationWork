@@ -5,6 +5,7 @@ namespace ButiEngine {
 	class GameSettings;
 	class PauseManager;
 	class GameLevelManager;
+	class FriendBodySpawner;
 	struct FriendData;
 
 	class FriendBody :public GameComponent
@@ -35,6 +36,11 @@ namespace ButiEngine {
 		
 		bool IsFront();
 		bool IsFast();
+
+		Value_weak_ptr<FriendBodySpawner> m_vwp_friendBodySpawner;
+		const float OUT_AREA_DISTANCE = 6;
+
+		void SetParameter(float arg_moveSpeed, float arg_rotateSpeed);
 	private:
 		void Rotate();
 		void MoveBack();
@@ -82,6 +88,11 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_moveHorizontalTimer;
 		Vector3 m_moveHorizontalStartPos;
 		Vector3 m_moveHorizontalTargetPos;
+
+		Value_ptr<RelativeTimer> m_vlp_pullUpTimer;
+		float m_moveSpeed;
+		float m_rotateSpeed;
+		Vector3 m_offsetPos;
 	};
 
 }
