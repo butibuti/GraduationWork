@@ -4,8 +4,18 @@
 
 void ButiEngine::Effect_Hukidashi::OnUpdate()
 {
+    if (m_vlp_appearTimer->Update())
+    {
+        m_vlp_appearTimer->Stop();
+        m_vlp_lifeTimer->Start();
+
+        Vector3 targetScale = gameObject.lock()->transform->GetLocalScale() * 0.9f;
+        AddScaleAnimation(targetScale, 80, Easing::EasingType::Liner);
+    }
+
     if (m_vlp_lifeTimer->Update())
     {
+        m_vlp_lifeTimer->Stop();
         std::int32_t animFrame = 10;
         gameObject.lock()->AddGameComponent<SucideComponent>(animFrame);
         AddScaleAnimation(0.0f, animFrame, Easing::EasingType::EaseOutExpo);
@@ -26,14 +36,17 @@ void ButiEngine::Effect_Hukidashi::OnShowUI()
 
 void ButiEngine::Effect_Hukidashi::Start()
 {
-    m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(60);
-    m_vlp_lifeTimer->Start();
+    m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(80);
 
     m_scaleMagnification = 1.0f;
 
     Vector3 targetScale = gameObject.lock()->transform->GetLocalScale();
     targetScale *= 1.1f;
-    AddScaleAnimation(targetScale, 10, Easing::EasingType::Parabola);
+    std::int32_t appearFrame = 10;
+    AddScaleAnimation(targetScale, appearFrame, Easing::EasingType::Parabola);
+
+    m_vlp_appearTimer = ObjectFactory::Create<RelativeTimer>(appearFrame);
+    m_vlp_appearTimer->Start();
 
     auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Bonus.wav"));
     GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);

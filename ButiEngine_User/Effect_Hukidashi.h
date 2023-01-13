@@ -23,6 +23,7 @@ namespace ButiEngine {
 	private:
 		void AddScaleAnimation(const Vector3& arg_targetScale, const std::int32_t arg_animFrame, const Easing::EasingType arg_easeType);
 
+		Value_ptr<RelativeTimer> m_vlp_appearTimer;
 		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
 
 		float m_scaleMagnification;

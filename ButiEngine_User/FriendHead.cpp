@@ -118,7 +118,7 @@ void ButiEngine::FriendHead::Start()
 	m_isFast = true;
 	m_vlp_completeFaceCountUpTimer = ObjectFactory::Create<RelativeTimer>(m_fastBorder);
 
-	m_vlp_spawnStarFlashIntervalTimer = ObjectFactory::Create<RelativeTimer>(5);
+	m_vlp_spawnStarFlashIntervalTimer = ObjectFactory::Create<RelativeTimer>(3);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
@@ -309,7 +309,7 @@ void ButiEngine::FriendHead::SpawnStarFlash()
 
 	dir.Normalize();
 
-	float radius = 0.5f;
+	float radius = 0.75f;
 	Vector3 pos = center + dir * radius;
 	auto starFlash = GetManager().lock()->AddObjectFromCereal("Effect_StarFlash");
 	starFlash.lock()->transform->SetLocalPosition(pos);
@@ -317,7 +317,7 @@ void ButiEngine::FriendHead::SpawnStarFlash()
 
 void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
 {
-	GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->CalcScore(gameObject, arg_vwp_body);
+	//GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->CalcScore(gameObject, arg_vwp_body);
 
 	arg_vwp_body.lock()->GetGameComponent<FriendBody>()->SetHead(gameObject);
 

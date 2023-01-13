@@ -3,9 +3,15 @@
 #include "Result_Camera.h"
 #include "Result_BackHuman.h"
 #include "Result_FriendFallPoint.h"
+#include "Result_FriendSpawner.h"
 
 void ButiEngine::ResultManager::OnUpdate()
 {
+	if (m_vlp_waitStartFallTimer && m_vlp_waitStartFallTimer->Update())
+	{
+		m_vlp_waitStartFallTimer->Stop();
+		m_vwp_fallPoint.lock()->StartMove();
+	}
 	CheckStartZoomIn();
 	CheckStartZoomOut();
 }
@@ -33,7 +39,14 @@ void ButiEngine::ResultManager::Start()
 	m_isStartedZoomIn = false;
 	m_isStartedZoomOut = false;
 
-	//m_vwp_fallPoint.lock()->StartMove();
+#ifdef DEBUG
+	return;
+#endif // DEBUG
+
+	GetManager().lock()->GetGameObject("Result_FriendSpawner").lock()->GetGameComponent<Result_FriendSpawner>()->SpawnFriends();
+
+	m_vlp_waitStartFallTimer = ObjectFactory::Create<RelativeTimer>(60);
+	m_vlp_waitStartFallTimer->Start();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::ResultManager::Clone()

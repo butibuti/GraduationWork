@@ -39,6 +39,8 @@ namespace ButiEngine {
 		Value_weak_ptr<Result_BackHuman> m_vwp_backHuman;
 		Value_weak_ptr<Result_FriendFallPoint> m_vwp_fallPoint;
 
+		Value_ptr<RelativeTimer> m_vlp_waitStartFallTimer;
+
 		std::int32_t m_successBorder;
 
 		bool m_isStartedZoomIn;

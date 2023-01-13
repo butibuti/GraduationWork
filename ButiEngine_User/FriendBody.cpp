@@ -7,8 +7,10 @@
 #include "FriendBody_Neck.h"
 #include "FriendManager.h"
 #include "FriendHead.h"
+#include "FriendBodySpawner.h"
 #include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
+#include "BonusFriend.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -103,6 +105,11 @@ void ButiEngine::FriendBody::Start()
 	m_moveHorizontalTargetPos = Vector3(-7.0f, 0.5f, 0.0f);
 
 	m_vlp_moveHorizontalTimer->Start();
+
+	m_vlp_pullUpTimer = ObjectFactory::Create<RelativeTimer>(30);
+	m_vlp_pullUpTimer->Start();
+
+	m_offsetPos = gameObject.lock()->transform->GetLocalPosition();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
@@ -144,6 +151,10 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 		m_vwp_neck.lock()->SetIsRemove(true);
 	}
 
+	if (m_vwp_friendBodySpawner.lock().get() != NULL)
+	{
+		m_vwp_friendBodySpawner.lock()->DecreaceBodiesNumber();
+	}
 	StartMoveBack();
 	StartDance();
 }
@@ -155,10 +166,18 @@ bool ButiEngine::FriendBody::IsFront()
 	{
 		return false;
 	}
-	Vector3 front = gameObject.lock()->transform->GetFront();
-	float angle = abs(MathHelper::ToDegree(std::acos(front.Dot(Vector3Const::ZAxis))));
+	Vector3 front = GetFrontXZ(gameObject.lock()->transform->GetFront());
+	Vector3 headFront = GetFrontXZ(m_vwp_head.lock()->transform->GetFront());
+	float angle = abs(MathHelper::ToDegree(std::acos(front.Dot(headFront))));
 
 	return angle <= m_frontBorder;
+}
+
+void ButiEngine::FriendBody::SetParameter(float arg_moveSpeed, float arg_rotateSpeed)
+{
+	m_moveSpeed = arg_moveSpeed;
+	m_rotateSpeed = arg_rotateSpeed;
+	
 }
 
 void ButiEngine::FriendBody::Rotate()
@@ -169,12 +188,11 @@ void ButiEngine::FriendBody::Rotate()
 		return;
 	}
 
-	float rotateSpeed = m_vec_rotateSpeeds[gameLevel];
 	if (m_isMoveBack)
 	{
-		rotateSpeed *= 2.0f;
+		m_rotateSpeed = 10.0f;
 	}
-	gameObject.lock()->transform->RollLocalRotationY_Degrees(rotateSpeed * GameDevice::GetWorldSpeed());
+	gameObject.lock()->transform->RollLocalRotationY_Degrees(m_rotateSpeed * GameDevice::GetWorldSpeed());
 
 	if (m_isStopRotate)
 	{
@@ -199,8 +217,6 @@ void ButiEngine::FriendBody::MoveBack()
 		m_isStopRotate = true;
 
 		gameObject.lock()->transform->SetLocalPosition(m_moveBackTargetPos);
-
-		SpawnNewHead();
 	}
 }
 
@@ -216,6 +232,8 @@ void ButiEngine::FriendBody::StartMoveBack()
 
 	m_isMoveBack = true;
 	m_vlp_moveBackTimer->Start();
+
+	
 }
 
 void ButiEngine::FriendBody::StartDance()
@@ -234,20 +252,31 @@ void ButiEngine::FriendBody::MoveHorizontal()
 		return;
 	}
 
-	float progress = m_vlp_moveHorizontalTimer->GetPercent();
-	Vector3 newPos = MathHelper::LerpPosition(m_moveHorizontalStartPos, m_moveHorizontalTargetPos, progress);
+	if (m_vlp_pullUpTimer->Update())
+	{
+		m_vlp_pullUpTimer->Stop();
+		m_vlp_pullUpTimer->SetCount(30);
+	}
+
+	Vector3 newPos = gameObject.lock()->transform->GetLocalPosition();
+
+	newPos.x += m_moveSpeed * GameDevice::GetWorldSpeed();
+	float progress = m_vlp_pullUpTimer->GetPercent();
+	newPos.y = MathHelper::Lerp(m_offsetPos.y, 0, Easing::EaseOutElastic(progress));
 
 	gameObject.lock()->transform->SetLocalPosition(newPos);
 
-	if (m_vlp_moveHorizontalTimer->Update())
+	if (abs(gameObject.lock()->transform->GetLocalPosition().x) > OUT_AREA_DISTANCE)
 	{
-		m_vlp_moveHorizontalTimer->Stop();
-
 		if (m_vwp_neck.lock())
 		{
 			m_vwp_neck.lock()->SetIsRemove(true);
 		}
 		gameObject.lock()->SetIsRemove(true);
+		if (m_vwp_friendBodySpawner.lock().get() != NULL)
+		{
+			m_vwp_friendBodySpawner.lock()->DecreaceBodiesNumber();
+		}
 	}
 }
 
@@ -333,22 +362,32 @@ void ButiEngine::FriendBody::SaveFriendData()
 	}
 
 	std::int32_t addCount = 1;
-	if (headComponent->IsBeautiful())
-	{
-		addCount++;
-	}
+	//if (headComponent->IsBeautiful())
+	//{
+	//	addCount++;
+	//}
 	if (headComponent->IsFast())
 	{
-		addCount++;
+		addCount *= 2;
 	}
 	if (IsFront())
 	{
-		addCount++;
+		addCount *= 2;
 	}
 
 	for (std::int32_t i = 0; i < addCount; i++)
 	{
 		GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
+
+		if (i != 0)
+		{
+			Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
+			auto bonusFriend = GetManager().lock()->AddObjectFromCereal("BonusFriend", ObjectFactory::Create<Transform>(pos));
+			auto bonusFriendComponent = bonusFriend.lock()->GetGameComponent<BonusFriend>();
+			bonusFriendComponent->CreateParts(m_vlp_friendData);
+			bonusFriendComponent->SetFrontBorder(m_frontBorder);
+			m_vec_bonusFriends.push_back(bonusFriend);
+		}
 	}
 }
 

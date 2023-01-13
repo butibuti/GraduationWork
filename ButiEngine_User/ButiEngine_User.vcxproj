@@ -352,6 +352,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BonusFriend.cpp" />
     <ClCompile Include="Effect_HeartSpawner.cpp" />
     <ClCompile Include="GameEndManager.cpp" />
     <ClCompile Include="GameEnd_CompleteFriend.cpp" />
@@ -425,6 +426,7 @@
     <ClCompile Include="UI_Score.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BonusFriend.h" />
     <ClInclude Include="Effect_HeartSpawner.h" />
     <ClInclude Include="GameEndManager.h" />
     <ClInclude Include="GameEnd_CompleteFriend.h" />

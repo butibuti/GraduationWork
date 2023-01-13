@@ -65,6 +65,7 @@
     <ClCompile Include="GameEndManager.cpp" />
     <ClCompile Include="UI_MakeFriendsCount.cpp" />
     <ClCompile Include="Effect_HeartSpawner.cpp" />
+    <ClCompile Include="BonusFriend.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -129,6 +130,7 @@
     <ClInclude Include="GameEndManager.h" />
     <ClInclude Include="UI_MakeFriendsCount.h" />
     <ClInclude Include="Effect_HeartSpawner.h" />
+    <ClInclude Include="BonusFriend.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

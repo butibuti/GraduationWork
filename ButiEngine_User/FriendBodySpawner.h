@@ -25,8 +25,15 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_vec_spawnIntervalFrames);
 		}
+		void DecreaceBodiesNumber();
 	private:
 		void SpawnBody();
+		void SpawnBody(Vector3 spawnPosition, float moveSpeed, float rotateSpeed, float initRotationY);
+
+		void StartSpawnPattern();
+		void UpdateSpawnPattern();
+
+		void StartNextSpawnPattern();
 
 		void SetSpawnInterval();
 
@@ -39,6 +46,14 @@ namespace ButiEngine {
 
 		std::vector<std::int32_t> m_vec_spawnIntervalFrames;
 		Value_ptr<RelativeTimer> m_vlp_spawnTimer;
+
+		std::int32_t m_currentSpawnPatternTime;
+		std::int32_t m_spawnedBodiesNumber;
+		std::int32_t m_existingBodiesNumber;
+		Value_ptr<RelativeTimer> m_vlp_spawnPatternTimer;
+
+		std::int32_t m_spawnPatternOrderCounter;
+		bool m_isPlayPattern;
 
 	};
 }

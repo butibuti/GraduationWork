@@ -6,6 +6,7 @@
 #include "FriendHead.h"
 #include "Effect_Belt.h"
 #include "Effect_CompleteFriend.h"
+#include "BonusFriend.h"
 
 void ButiEngine::FriendCompleteDirecting::OnUpdate()
 {
@@ -32,6 +33,16 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 			m_vwp_gameCamera.lock()->NormalZoom(m_zoomFrame);
 		}
 
+		auto bodyComponent = gameObject.lock()->GetGameComponent<FriendBody>();
+		auto bonusFriends = bodyComponent->GetBonusFriens();
+		auto end = bonusFriends.end();
+		std::int32_t index = 0;
+		for (auto itr = bonusFriends.begin(); itr != end; ++itr)
+		{
+			(*itr).lock()->GetGameComponent<BonusFriend>()->Appear(index);
+			index++;
+		}
+
 		m_vlp_spawnHukidashiIntervalTimer->Start();
 		SpawnHukidashi();
 
@@ -50,6 +61,18 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 
 		m_vwp_pauseManager.lock()->SetIsPause(false);
 		m_vwp_gameCamera.lock()->ZoomOut(20);
+
+		auto bodyComponent = gameObject.lock()->GetGameComponent<FriendBody>();
+		auto bonusFriends = bodyComponent->GetBonusFriens();
+		auto end = bonusFriends.end();
+		for (auto itr = bonusFriends.begin(); itr != end; ++itr)
+		{
+			(*itr).lock()->GetGameComponent<BonusFriend>()->StartMoveBack();
+		}
+
+		auto head = GetManager().lock()->AddObjectFromCereal("FriendHead");
+		head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
+
 		SetIsRemove(true);
 	}
 }
@@ -67,7 +90,7 @@ void ButiEngine::FriendCompleteDirecting::OnSet()
 	auto headComponent = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead")).lock()->GetGameComponent<FriendHead>();
 	auto bodyComponent = gameObject.lock()->GetGameComponent<FriendBody>();
 
-	if (headComponent->IsBeautiful() && headComponent->IsFast() && bodyComponent->IsFront())
+	if (/*headComponent->IsBeautiful() && */headComponent->IsFast() && bodyComponent->IsFront())
 	{
 		m_isSpecialDirecting = true;
 	}
@@ -164,10 +187,10 @@ void ButiEngine::FriendCompleteDirecting::SetHukidashiParameter()
 		m_vlp_spawnHukidashiIntervalTimer = ObjectFactory::Create<RelativeTimer>(10);
 	}
 	
-	if (headComponent->IsBeautiful())
-	{
-		m_vec_hukidashiNames.push_back("Effect_Hukidashi_Beautiful");
-	}
+	//if (headComponent->IsBeautiful())
+	//{
+	//	m_vec_hukidashiNames.push_back("Effect_Hukidashi_Beautiful");
+	//}
 	if (headComponent->IsFast())
 	{
 		m_vec_hukidashiNames.push_back("Effect_Hukidashi_Fast");
