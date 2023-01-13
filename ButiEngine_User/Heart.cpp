@@ -1,7 +1,7 @@
 #include "stdafx_u.h"
 #include "Heart.h"
 #include"ScoreNumber.h"
-
+#include"GameTimer.h"
 std::int32_t pows[]{1,10,100,1000,10000 ,100000,1000000,10000000,100000000,1000000000 };
 
 void ButiEngine::Heart::OnUpdate()
@@ -14,7 +14,7 @@ void ButiEngine::Heart::OnSet()
 
 void ButiEngine::Heart::Start()
 {
-	m_maxScore = 60;// pows[m_maxDigit] - 1;
+	m_maxScore = GetManager().lock()->GetGameObject("GameTimer").lock()->GetGameComponent<GameTimer>()->GetCountSecond();// pows[m_maxDigit] - 1;
 	float xOffset = (m_maxDigit-1) * -0.5f;
 	for (std::int32_t index = 0; index < m_maxDigit; index++) {
 		auto numObject = GetManager().lock()->AddObjectFromCereal("Number");

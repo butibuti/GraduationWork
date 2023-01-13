@@ -27,6 +27,7 @@ namespace ButiEngine {
 		}
 
 		void SetCountSecond(std::int32_t arg_countSecond);
+		std::int32_t GetCountSecond() { return m_countSecond; }
 		std::int32_t GetRemainSecond();
 
 		void StartTimer();
