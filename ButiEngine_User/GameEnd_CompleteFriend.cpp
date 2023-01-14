@@ -5,7 +5,7 @@
 
 void ButiEngine::GameEnd_CompleteFriend::OnUpdate()
 {
-	m_vlp_animationController->Update();
+	m_vlp_animationController->Update(0.5f);
 }
 
 void ButiEngine::GameEnd_CompleteFriend::OnSet()

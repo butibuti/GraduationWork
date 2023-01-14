@@ -15,7 +15,7 @@ void ButiEngine::BonusFriend::OnUpdate()
 
 	if (m_isDance)
 	{
-		m_vlp_animationController->Update();
+		m_vlp_animationController->Update(0.5f);
 	}
 
 	if (m_isRotate)

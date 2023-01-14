@@ -18,7 +18,7 @@ void ButiEngine::Result_CompleteFriend::OnUpdate()
 
 	if (m_vlp_animationController)
 	{
-		m_vlp_animationController->Update();
+		m_vlp_animationController->Update(0.5f);
 	}
 }
 
