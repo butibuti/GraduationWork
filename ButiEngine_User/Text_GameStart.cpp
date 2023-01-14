@@ -3,9 +3,15 @@
 #include "Header/GameObjects/DefaultGameComponent/PositionAnimationComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/ScaleAnimationComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/SpriteAnimationComponent.h"
+#include "PauseManager.h"
 
 void ButiEngine::Text_GameStart::OnUpdate()
 {
+	if (m_vwp_pauseManager.lock()->IsPause())
+	{
+		return;
+	}
+
 	if (m_vlp_lifeTimer->Update())
 	{
 		m_vlp_lifeTimer->Stop();
@@ -34,6 +40,8 @@ void ButiEngine::Text_GameStart::OnShowUI()
 
 void ButiEngine::Text_GameStart::Start()
 {
+	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+
 	m_vwp_spriteAnimation = gameObject.lock()->GetGameComponent<SpriteAnimationComponent>();
 
 	m_vlp_animationIntervalTimer = ObjectFactory::Create<RelativeTimer>(m_animIntervalFrame);

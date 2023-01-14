@@ -2,6 +2,7 @@
 #include "GameTimer.h"
 #include "PauseManager.h"
 #include "StageManager.h"
+#include "Text_CountDown.h"
 
 #include"Heart.h"
 constexpr float div60 = 1.0f / 60;
@@ -15,6 +16,22 @@ void ButiEngine::GameTimer::OnUpdate()
 	if (m_vlp_timer->Update())
 	{
 		m_vlp_timer->Stop();
+	}
+
+	if (!m_vlp_timer->IsOn())
+	{
+		return;
+	}
+
+	std::int32_t remainSecond = GetRemainSecond();
+	if (m_prevRemainSecond != remainSecond)
+	{
+		m_prevRemainSecond = remainSecond;
+		if (remainSecond <= 5)
+		{
+			auto countDown = GetManager().lock()->AddObjectFromCereal("Text_CountDown");
+			countDown.lock()->GetGameComponent<Text_CountDown>()->SetNumber(remainSecond);
+		}
 	}
 }
 
@@ -58,6 +75,8 @@ void ButiEngine::GameTimer::Start()
 	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(m_countSecond * 60);
 	m_vlp_timer->Start();
 	m_vwp_heart = GetManager().lock()->GetGameObject("BackHeart").lock()->GetGameComponent<Heart>();
+
+	m_prevRemainSecond = m_countSecond;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameTimer::Clone()

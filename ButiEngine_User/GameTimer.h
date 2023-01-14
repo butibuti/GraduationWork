@@ -42,6 +42,8 @@ namespace ButiEngine {
 
 		Value_ptr<RelativeTimer> m_vlp_timer;
 		std::int32_t m_countSecond;
+
+		std::int32_t m_prevRemainSecond;
 	};
 
 }

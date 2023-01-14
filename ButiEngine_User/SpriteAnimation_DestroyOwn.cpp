@@ -1,7 +1,6 @@
 #include "stdafx_u.h"
 #include "SpriteAnimation_DestroyOwn.h"
 #include "Header/GameObjects/DefaultGameComponent/SpriteAnimationComponent.h"
-
 void ButiEngine::SpriteAnimation_DestroyOwn::OnUpdate()
 {
 	Animation();

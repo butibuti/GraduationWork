@@ -419,6 +419,7 @@
     </ClCompile>
     <ClCompile Include="TestBehavior.cpp" />
     <ClCompile Include="Enemy_Test.cpp" />
+    <ClCompile Include="Text_CountDown.cpp" />
     <ClCompile Include="Text_GameStart.cpp" />
     <ClCompile Include="UI_GameLevel.cpp" />
     <ClCompile Include="UI_MakeFriendsCount.cpp" />
@@ -484,6 +485,7 @@
     <ClInclude Include="stdafx_u.h" />
     <ClInclude Include="TestBehavior.h" />
     <ClInclude Include="Enemy_Test.h" />
+    <ClInclude Include="Text_CountDown.h" />
     <ClInclude Include="Text_GameStart.h" />
     <ClInclude Include="UI_GameLevel.h" />
     <ClInclude Include="UI_MakeFriendsCount.h" />

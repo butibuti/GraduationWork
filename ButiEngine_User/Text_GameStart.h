@@ -3,6 +3,7 @@
 namespace ButiEngine {
 
 	class SpriteAnimationComponent;
+	class PauseManager;
 
 	class Text_GameStart :public GameComponent
 	{
@@ -32,6 +33,8 @@ namespace ButiEngine {
 
 		Value_weak_ptr<SpriteAnimationComponent> m_vwp_spriteAnimation;
 		Value_ptr<RelativeTimer> m_vlp_animationIntervalTimer;
+
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 
 		std::int32_t m_life;
 		std::int32_t m_animIntervalFrame;
