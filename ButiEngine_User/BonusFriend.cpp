@@ -69,6 +69,12 @@ void ButiEngine::BonusFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_fri
 		GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
 	m_vlp_animationController->GetCurrentModelAnimation()->SetProgress(0);
 
+	auto modelDraw = m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>();
+	auto heartBone = modelDraw->GetBone()->searchBoneByName("Heart");
+	auto heart = GetManager().lock()->AddObjectFromCereal("FriendHeart");
+	heart.lock()->transform->SetLocalPosition(Vector3Const::Zero);
+	heart.lock()->transform->SetBaseTransform(heartBone->transform, true);
+
 	m_vwp_head = GetManager().lock()->AddObjectFromCereal("Result_FriendHead", arg_vwp_friendData.lock()->vlp_headTransform);
 	auto bone = m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone()->searchBoneByName("head");
 	m_vwp_head.lock()->transform->SetBaseTransform(m_vwp_body.lock()->transform, true);
@@ -223,9 +229,9 @@ void ButiEngine::BonusFriend::StartMoveBack()
 
 	m_moveBackStartPos = pos;
 
-	m_moveBackTargetPos.x = ButiRandom::GetInt(-5, 5);
-	m_moveBackTargetPos.y = pos.y;
-	m_moveBackTargetPos.z = pos.z + (ButiRandom::GetInt(-50, -45));
+	m_moveBackTargetPos.x = ButiRandom::GetInt(-7, 7);
+	m_moveBackTargetPos.y = 0.0f;
+	m_moveBackTargetPos.z = pos.z + (ButiRandom::GetInt(-70, -45));
 
 	m_isMoveBack = true;
 	m_isRotate = true;

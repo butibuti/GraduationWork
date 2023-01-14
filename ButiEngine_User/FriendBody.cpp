@@ -19,7 +19,10 @@ void ButiEngine::FriendBody::OnUpdate()
 		return;
 	}
 
-	m_vlp_animationController->Update();
+	if (m_isDance)
+	{
+		m_vlp_animationController->Update();
+	}
 
 	if (m_isRotate)
 	{
@@ -83,15 +86,25 @@ void ButiEngine::FriendBody::Start()
 	ResizeLevelParameter();
 
 	m_vlp_animationController = ButiRendering::CreateAnimationController(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
+	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
+		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
+	m_vlp_animationController->GetCurrentModelAnimation()->SetProgress(0.0f);
 
 	m_vwp_neck = GetManager().lock()->AddObjectFromCereal("FriendBody_Neck");
 	m_vwp_neck.lock()->SetObjectName(gameObject.lock()->GetGameObjectName() + "_Neck");
 	m_vwp_neck.lock()->GetGameComponent<FriendBody_Neck>()->SetParent(gameObject);
 
+	auto modelDraw = gameObject.lock()->GetGameComponent<ModelDrawComponent>();
+	auto bone = modelDraw->GetBone()->searchBoneByName("Heart");
+	m_vwp_heart = GetManager().lock()->AddObjectFromCereal("FriendHeart");
+	m_vwp_heart.lock()->transform->SetLocalPosition(Vector3Const::Zero);
+	m_vwp_heart.lock()->transform->SetBaseTransform(bone->transform, true);
+
 	m_vlp_friendData = ObjectFactory::Create<FriendData>();
 
 	m_isRotate = true;
 	m_isStopRotate = false;
+	m_isDance = false;
 
 	m_isMoveBack = false;
 	m_vlp_moveBackTimer = ObjectFactory::Create<RelativeTimer>(90);
@@ -242,6 +255,8 @@ void ButiEngine::FriendBody::StartDance()
 		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
 
 	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
+
+	m_isDance = true;
 }
 
 void ButiEngine::FriendBody::MoveHorizontal()
@@ -272,8 +287,12 @@ void ButiEngine::FriendBody::MoveHorizontal()
 		{
 			m_vwp_neck.lock()->SetIsRemove(true);
 		}
+		if (m_vwp_heart.lock())
+		{
+			m_vwp_heart.lock()->SetIsRemove(true);
+		}
 		gameObject.lock()->SetIsRemove(true);
-		if (m_vwp_friendBodySpawner.lock().get() != NULL)
+		if (m_vwp_friendBodySpawner.lock())
 		{
 			m_vwp_friendBodySpawner.lock()->DecreaceBodiesNumber();
 		}

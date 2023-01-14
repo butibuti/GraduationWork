@@ -70,6 +70,7 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_neck;
+		Value_weak_ptr<GameObject> m_vwp_heart;
 
 		Value_ptr<FriendData> m_vlp_friendData;
 
@@ -80,6 +81,7 @@ namespace ButiEngine {
 		bool m_isRotate;
 		bool m_isStopRotate;
 		float m_frontBorder;
+		bool m_isDance;
 
 		bool m_isMoveBack;
 		Value_ptr<RelativeTimer> m_vlp_moveBackTimer;

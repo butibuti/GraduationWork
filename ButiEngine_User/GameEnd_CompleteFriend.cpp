@@ -40,6 +40,12 @@ void ButiEngine::GameEnd_CompleteFriend::CreateParts(Value_weak_ptr<FriendData> 
 		GetModel(body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
 	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
 
+	auto modelDraw = body.lock()->GetGameComponent<ModelDrawComponent>();
+	auto heartBone = modelDraw->GetBone()->searchBoneByName("Heart");
+	auto heart = GetManager().lock()->AddObjectFromCereal("FriendHeart");
+	heart.lock()->transform->SetLocalPosition(Vector3Const::Zero);
+	heart.lock()->transform->SetBaseTransform(heartBone->transform, true);
+
 	auto head = GetManager().lock()->AddObjectFromCereal("Result_FriendHead", arg_vwp_friendData.lock()->vlp_headTransform);
 	auto bone = body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone()->searchBoneByName("head");
 	head.lock()->transform->SetBaseTransform(body.lock()->transform, true);

@@ -7,11 +7,11 @@
 constexpr float div60 = 1.0f / 60;
 void ButiEngine::GameTimer::OnUpdate()
 {
+	m_vwp_heart.lock()->SetScore(GetRemainSecond());
 	if (!CanUpdate())
 	{
 		return;
 	}
-	m_vwp_heart.lock()->SetScore(static_cast<std::int32_t>( m_vlp_timer->GetRemainFrame()*div60));
 	if (m_vlp_timer->Update())
 	{
 		m_vlp_timer->Stop();
@@ -89,10 +89,11 @@ std::int32_t ButiEngine::GameTimer::GetRemainSecond()
 		return m_countSecond;
 	}
 
-	std::int32_t remainSecond = (m_vlp_timer->GetRemainFrame() / 60.0f) + 1;
+	std::int32_t currentSecond = m_vlp_timer->GetCurrentCountFrame() * div60;
+	std::int32_t remainSecond = m_countSecond - currentSecond;
 	std::int32_t maxSecond = m_vlp_timer->GetMaxCountFrame() * 60.0f;
 
-	return min(maxSecond, remainSecond);
+	return remainSecond;
 }
 
 void ButiEngine::GameTimer::StartTimer()
