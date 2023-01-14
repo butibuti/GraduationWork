@@ -3,6 +3,7 @@
 namespace ButiEngine {
 
 	struct FriendData;
+	class PauseManager;
 
 	class BonusFriend :public GameComponent
 	{
@@ -38,6 +39,8 @@ namespace ButiEngine {
 		Vector3 GetFrontXZ(const Vector3& arg_front);
 
 		bool IsFrontHead();
+
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 
 		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_body;

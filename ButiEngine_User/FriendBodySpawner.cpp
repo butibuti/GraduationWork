@@ -233,9 +233,10 @@ void ButiEngine::FriendBodySpawner::UpdateSpawnPattern()
 		{
 			if (m_vlp_spawnTimer->Update())
 			{
-				SpawnBody(Vector3(5.5, -4, 0), -0.2f, -100, 0);
+				SpawnBody(Vector3(5.5, -4, 0), -0.15f, -100, 0);
 				m_vlp_spawnTimer->Stop();
 			}
+
 
 		}
 		break;
@@ -250,8 +251,8 @@ void ButiEngine::FriendBodySpawner::UpdateSpawnPattern()
 	case 13:
 		if (m_vlp_spawnTimer->Update())
 		{
-			m_vlp_spawnTimer->ChangeCountFrame(ButiRandom::GetInt(3, 5));
-			SpawnBody(Vector3(5.5f, -4, 0), ButiRandom::GetRandom(-0.1f, -0.2f,10), ButiRandom::GetRandom(100.0f, 120.0f, 10), ButiRandom::GetRandom(0.0f, 360.0f, 10));
+			m_vlp_spawnTimer->ChangeCountFrame(ButiRandom::GetInt(6, 10));
+			SpawnBody(Vector3(5.5f, -4, 0), ButiRandom::GetRandom(-0.1f, -0.15f,10), ButiRandom::GetRandom(20.0f, 30.0f, 10), ButiRandom::GetRandom(0.0f, 360.0f, 10));
 		}
 		break;
 	}

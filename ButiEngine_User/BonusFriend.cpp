@@ -4,9 +4,15 @@
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/PositionAnimationComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
+#include "PauseManager.h"
 
 void ButiEngine::BonusFriend::OnUpdate()
 {
+	if (m_vwp_pauseManager.lock()->IsPause())
+	{
+		return;
+	}
+
 	if (m_isDance)
 	{
 		m_vlp_animationController->Update();
@@ -37,6 +43,8 @@ void ButiEngine::BonusFriend::OnShowUI()
 
 void ButiEngine::BonusFriend::Start()
 {
+	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+
 	m_vlp_moveBackTimer = ObjectFactory::Create<RelativeTimer>(30);
 
 	m_isMoveBack = false;
