@@ -67,6 +67,11 @@
     <ClCompile Include="Effect_HeartSpawner.cpp" />
     <ClCompile Include="BonusFriend.cpp" />
     <ClCompile Include="Text_CountDown.cpp" />
+    <ClCompile Include="SwayAnimation.cpp" />
+    <ClCompile Include="UI_FriendCount.cpp" />
+    <ClCompile Include="TutorialManager.cpp" />
+    <ClCompile Include="UI_TutorialText.cpp" />
+    <ClCompile Include="Text_OK.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -133,6 +138,11 @@
     <ClInclude Include="Effect_HeartSpawner.h" />
     <ClInclude Include="BonusFriend.h" />
     <ClInclude Include="Text_CountDown.h" />
+    <ClInclude Include="SwayAnimation.h" />
+    <ClInclude Include="UI_FriendCount.h" />
+    <ClInclude Include="TutorialManager.h" />
+    <ClInclude Include="UI_TutorialText.h" />
+    <ClInclude Include="Text_OK.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

@@ -11,6 +11,7 @@
 #include "GameLevelManager.h"
 #include "FriendHead_Center.h"
 #include "StageManager.h"
+#include "TutorialManager.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
@@ -32,11 +33,21 @@ void ButiEngine::FriendHead::OnUpdate()
 		m_isFast = false;
 	}
 
-	if (m_isFast && m_vwp_stageManager.lock()->IsGameStart())
+	if (m_isFast)
 	{
-		if (m_vlp_spawnStarFlashIntervalTimer->Update())
+		if (m_isTutorial)
 		{
-			SpawnStarFlash();
+			if (m_vlp_spawnStarFlashIntervalTimer->Update())
+			{
+				SpawnStarFlash();
+			}
+		}
+		else if (m_vwp_stageManager.lock()->IsGameStart())
+		{
+			if (m_vlp_spawnStarFlashIntervalTimer->Update())
+			{
+				SpawnStarFlash();
+			}
 		}
 	}
 
@@ -94,7 +105,17 @@ void ButiEngine::FriendHead::OnShowUI()
 
 void ButiEngine::FriendHead::Start()
 {
-	m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
+	auto tutorialManager = GetManager().lock()->GetGameObject("TutorialManager");
+	if (tutorialManager.lock())
+	{
+		m_vwp_tutorialManager = tutorialManager.lock()->GetGameComponent<TutorialManager>();
+		m_isTutorial = true;
+	}
+
+	if (!m_isTutorial)
+	{
+		m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
+	}
 	m_vwp_inputManager = GetManager().lock()->GetGameObject("InputManager").lock()->GetGameComponent<InputManager>();
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
@@ -116,6 +137,11 @@ void ButiEngine::FriendHead::Start()
 	m_isPut = false;
 
 	m_isFast = true;
+	if (m_isTutorial && m_vwp_tutorialManager.lock()->GetTutorialPhase() != 2)
+	{
+		m_isFast = false;
+	}
+
 	m_vlp_completeFaceCountUpTimer = ObjectFactory::Create<RelativeTimer>(m_fastBorder);
 
 	m_vlp_spawnStarFlashIntervalTimer = ObjectFactory::Create<RelativeTimer>(3);
@@ -228,7 +254,7 @@ bool ButiEngine::FriendHead::IsFast()
 	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
 
-	if (gameLevel == 0)
+	if (!m_isTutorial && gameLevel == 0)
 	{
 		return false;
 	}
@@ -321,7 +347,10 @@ void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
 
 	arg_vwp_body.lock()->GetGameComponent<FriendBody>()->SetHead(gameObject);
 
-	m_vwp_friendManager.lock()->AddFriendCount();
+	if (!m_isTutorial)
+	{
+		m_vwp_friendManager.lock()->AddFriendCount();
+	}
 
 	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 

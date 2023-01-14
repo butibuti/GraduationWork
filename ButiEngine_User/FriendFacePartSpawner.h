@@ -36,8 +36,8 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_vec_maxSpawnDummyPartIntervalFrames);
 		}
 
-	private:
 		void FirstSpawnFacePart();
+	private:
 		void SpawnFacePart();
 		void SetSpawnFacePartInterval();
 		void SpawnDummyPart();
@@ -65,6 +65,8 @@ namespace ButiEngine {
 		std::vector<std::int32_t> m_vec_maxDummyPartCounts;
 		std::vector<std::int32_t> m_vec_minSpawnDummyPartIntervalFrames;
 		std::vector<std::int32_t> m_vec_maxSpawnDummyPartIntervalFrames;
+
+		bool m_isTutorial;
 	};
 
 }

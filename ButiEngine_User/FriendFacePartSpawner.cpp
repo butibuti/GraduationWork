@@ -86,7 +86,16 @@ void ButiEngine::FriendFacePartSpawner::OnShowUI()
 
 void ButiEngine::FriendFacePartSpawner::Start()
 {
-	m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
+	auto tutorialManager = GetManager().lock()->GetGameObject("TutorialManager");
+	if (tutorialManager.lock())
+	{
+		m_isTutorial = true;
+	}
+
+	if (!m_isTutorial)
+	{
+		m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
+	}
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 
@@ -149,6 +158,34 @@ void ButiEngine::FriendFacePartSpawner::SpawnFacePart()
 	auto facePartComponent = facePart.lock()->GetGameComponent<FriendFacePart>();
 	facePartComponent->SetMovePattern(gameLevel);
 	facePart.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(facePartComponent->GetMovePattern()));
+
+	std::int32_t minCount = 5;
+	std::int32_t eyeSpawnCount = minCount - FriendFacePart::GetEyeCount();
+	for (std::int32_t i = 0; i < eyeSpawnCount; i++)
+	{
+		auto eye = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eyes");
+		auto eyeFacePartComponent = eye.lock()->GetGameComponent<FriendFacePart>();
+		eyeFacePartComponent->SetMovePattern(gameLevel);
+		eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(eyeFacePartComponent->GetMovePattern()));
+	}
+
+	std::int32_t noseSpawnCount = minCount - FriendFacePart::GetNoseCount();
+	for (std::int32_t i = 0; i < noseSpawnCount; i++)
+	{
+		auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
+		auto noseFacePartComponent = nose.lock()->GetGameComponent<FriendFacePart>();
+		noseFacePartComponent->SetMovePattern(gameLevel);
+		nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(noseFacePartComponent->GetMovePattern()));
+	}
+
+	std::int32_t mouthSpawnCount = minCount - FriendFacePart::GetMouthCount();
+	for (std::int32_t i = 0; i < mouthSpawnCount; i++)
+	{
+		auto mouth = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Mouth");
+		auto mouthFacePartComponent = mouth.lock()->GetGameComponent<FriendFacePart>();
+		mouthFacePartComponent->SetMovePattern(gameLevel);
+		mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(mouthFacePartComponent->GetMovePattern()));
+	}
 }
 
 void ButiEngine::FriendFacePartSpawner::SetSpawnFacePartInterval()
@@ -257,6 +294,10 @@ std::string ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartName()
 
 bool ButiEngine::FriendFacePartSpawner::CanUpdate()
 {
+	if (m_isTutorial)
+	{
+		return false;
+	}
 	if (!m_vwp_stageManager.lock()->IsGameStart())
 	{
 		return false;

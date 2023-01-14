@@ -115,7 +115,7 @@ void ButiEngine::ResultManager::StartSuccess()
 	m_vwp_backHuman.lock()->StartTurnSuccessAnimation();
 	GetManager().lock()->AddObjectFromCereal("Effect_ConcentratedLine_RedNYellow");
 	GetManager().lock()->AddObjectFromCereal("Text_Success");
-	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn");
+	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GameEnd");
 
 	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Success.wav"));
 	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
@@ -129,7 +129,7 @@ void ButiEngine::ResultManager::StartFailed()
 	m_vwp_backHuman.lock()->StartTurnFailedAnimation();
 	GetManager().lock()->AddObjectFromCereal("Background_Gray");
 	GetManager().lock()->AddObjectFromCereal("Text_Failed");
-	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn");
+	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GameEnd");
 
 	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Failed.wav"));
 	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);

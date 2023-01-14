@@ -10,6 +10,7 @@ namespace ButiEngine {
 	class FriendHead_PartHitArea;
 	class FriendHead_Center;
 	class StageManager;
+	class TutorialManager;
 
 	class FriendHead :public GameComponent
 	{
@@ -102,6 +103,9 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_completeFaceCountUpTimer;
 
 		Value_ptr<RelativeTimer> m_vlp_spawnStarFlashIntervalTimer;
+
+		bool m_isTutorial;
+		Value_weak_ptr<TutorialManager> m_vwp_tutorialManager;
 	};
 
 }

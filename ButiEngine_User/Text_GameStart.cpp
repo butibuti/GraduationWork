@@ -18,6 +18,12 @@ void ButiEngine::Text_GameStart::OnUpdate()
 		AddAnimation();
 	}
 
+	if (m_vlp_animTimer && m_vlp_animTimer->Update())
+	{
+		m_vlp_animTimer->Stop();
+		GetManager().lock()->GetGameObject("UI_FriendCount").lock()->GetGameComponent<PositionAnimation>()->SetIsActive(true);
+	}
+
 	Animation();
 }
 
@@ -70,17 +76,22 @@ void ButiEngine::Text_GameStart::Animation()
 
 void ButiEngine::Text_GameStart::AddAnimation()
 {
+	std::int32_t animFrame = 60;
+
 	auto posAnim = gameObject.lock()->AddGameComponent<PositionAnimation>();
 
 	posAnim->SetInitPosition(gameObject.lock()->transform->GetLocalPosition());
 	posAnim->SetTargetPosition(Vector3(0, 480, 0));
-	posAnim->SetSpeed(1.0f / 60);
+	posAnim->SetSpeed(1.0f / animFrame);
 	posAnim->SetEaseType(Easing::EasingType::Liner);
 
 	auto scaleAnim = gameObject.lock()->AddGameComponent<ScaleAnimation>();
 
 	scaleAnim->SetInitScale(gameObject.lock()->transform->GetLocalScale());
 	scaleAnim->SetTargetScale(gameObject.lock()->transform->GetLocalScale() * 0.5f);
-	scaleAnim->SetSpeed(1.0f / 60);
+	scaleAnim->SetSpeed(1.0f / animFrame);
 	scaleAnim->SetEaseType(Easing::EasingType::Liner);
+
+	m_vlp_animTimer = ObjectFactory::Create<RelativeTimer>(animFrame);
+	m_vlp_animTimer->Start();
 }

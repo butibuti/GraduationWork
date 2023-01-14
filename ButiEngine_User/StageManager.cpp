@@ -5,9 +5,16 @@
 #include "GameLevelManager.h"
 #include "FriendManager.h"
 #include "GameFinishDirecting.h"
+#include "Header/GameObjects/DefaultGameComponent/PositionAnimationComponent.h"
+#include "FriendFacePart.h"
 
 void ButiEngine::StageManager::OnUpdate()
 {
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::T))
+	{
+		GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_Tutorial");
+		m_vwp_pauseManager.lock()->SetIsPause(true);
+	}
 	if (!m_isGameStart)
 	{
 		if (m_vwp_gameLevelManager.lock()->GetGameLevel() == 2)
@@ -25,6 +32,11 @@ void ButiEngine::StageManager::OnUpdate()
 		GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlayBGM(sound, 0.1f);
 
 		GetManager().lock()->AddObjectFromCereal("Text_GameStart");
+
+		auto titleLogo = GetManager().lock()->GetGameObject("TitleLogo");
+		titleLogo.lock()->GetGameComponent<PositionAnimation>()->SetIsActive(true);
+		auto sucide = titleLogo.lock()->AddGameComponent<SucideComponent>(60);
+		sucide->Start();
 	}
 
 	if (m_vwp_pauseManager.lock()->IsPause())
@@ -67,7 +79,8 @@ void ButiEngine::StageManager::Start()
 
 	m_vlp_waitPlayBGMTimer = ObjectFactory::Create<RelativeTimer>(30);
 
-	GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->ClearFriendData();
+	FriendManager::ClearFriendData();
+	FriendFacePart::ResetPartCount();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::StageManager::Clone()

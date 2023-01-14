@@ -6,7 +6,7 @@ void ButiEngine::GameEndManager::OnUpdate()
 {
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::Space))
 	{
-		GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GameEnd");
+		GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GamePlay_1");
 	}
 }
 

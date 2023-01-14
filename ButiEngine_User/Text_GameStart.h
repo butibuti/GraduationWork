@@ -30,6 +30,7 @@ namespace ButiEngine {
 		void AddAnimation();
 
 		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
+		Value_ptr<RelativeTimer> m_vlp_animTimer;
 
 		Value_weak_ptr<SpriteAnimationComponent> m_vwp_spriteAnimation;
 		Value_ptr<RelativeTimer> m_vlp_animationIntervalTimer;

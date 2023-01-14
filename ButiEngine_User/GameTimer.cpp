@@ -8,7 +8,10 @@
 constexpr float div60 = 1.0f / 60;
 void ButiEngine::GameTimer::OnUpdate()
 {
-	m_vwp_heart.lock()->SetScore(GetRemainSecond());
+	if (m_vwp_heart.lock())
+	{
+		m_vwp_heart.lock()->SetScore(GetRemainSecond());
+	}
 	if (!CanUpdate())
 	{
 		return;

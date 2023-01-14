@@ -7,6 +7,7 @@
 #include "Effect_Belt.h"
 #include "Effect_CompleteFriend.h"
 #include "BonusFriend.h"
+#include "TutorialManager.h"
 
 void ButiEngine::FriendCompleteDirecting::OnUpdate()
 {
@@ -70,8 +71,20 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 			(*itr).lock()->GetGameComponent<BonusFriend>()->StartMoveBack();
 		}
 
-		auto head = GetManager().lock()->AddObjectFromCereal("FriendHead");
-		head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
+		auto tutorialManager = GetManager().lock()->GetGameObject("TutorialManager");
+		if (tutorialManager.lock())
+		{
+			if (tutorialManager.lock()->GetGameComponent<TutorialManager>()->GetTutorialPhase() != 3)
+			{
+				auto head = GetManager().lock()->AddObjectFromCereal("FriendHead");
+				head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
+			}
+		}
+		else
+		{
+			auto head = GetManager().lock()->AddObjectFromCereal("FriendHead");
+			head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
+		}
 
 		SetIsRemove(true);
 	}

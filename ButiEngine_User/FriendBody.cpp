@@ -11,6 +11,7 @@
 #include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 #include "BonusFriend.h"
+#include "TutorialManager.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -79,6 +80,13 @@ void ButiEngine::FriendBody::OnShowUI()
 
 void ButiEngine::FriendBody::Start()
 {
+	auto tutorialManager = GetManager().lock()->GetGameObject("TutorialManager");
+	if (tutorialManager.lock())
+	{
+		m_vwp_tutorialManager = tutorialManager.lock()->GetGameComponent<TutorialManager>();
+		m_isTutorial = true;
+	}
+
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
@@ -158,13 +166,19 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	m_isMoveHorizontal = false;
 	gameObject.lock()->AddGameComponent<FriendCompleteDirecting>();
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendBody"));
+
+	if (m_isTutorial)
+	{
+		auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
+		m_vwp_tutorialManager.lock()->CheckPhaseClear(headComponent->IsFast(), IsFront());
+	}
 	
 	if (m_vwp_neck.lock())
 	{
 		m_vwp_neck.lock()->SetIsRemove(true);
 	}
 
-	if (m_vwp_friendBodySpawner.lock().get() != NULL)
+	if (m_vwp_friendBodySpawner.lock())
 	{
 		m_vwp_friendBodySpawner.lock()->DecreaceBodiesNumber();
 	}
@@ -174,8 +188,13 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 
 bool ButiEngine::FriendBody::IsFront()
 {
+	if (m_isTutorial && m_vwp_tutorialManager.lock()->GetTutorialPhase() != 1)
+	{
+		return false;
+	}
+
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	if (gameLevel == 0)
+	if (!m_isTutorial && gameLevel == 0)
 	{
 		return false;
 	}
@@ -196,7 +215,7 @@ void ButiEngine::FriendBody::SetParameter(float arg_moveSpeed, float arg_rotateS
 void ButiEngine::FriendBody::Rotate()
 {
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	if (gameLevel == 0)
+	if (!m_isTutorial && gameLevel == 0)
 	{
 		return;
 	}
@@ -262,7 +281,7 @@ void ButiEngine::FriendBody::StartDance()
 void ButiEngine::FriendBody::MoveHorizontal()
 {
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	if (gameLevel == 0)
+	if (!m_isTutorial && gameLevel == 0)
 	{
 		return;
 	}
@@ -396,7 +415,10 @@ void ButiEngine::FriendBody::SaveFriendData()
 
 	for (std::int32_t i = 0; i < addCount; i++)
 	{
-		GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
+		if (!m_isTutorial)
+		{
+			GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
+		}
 
 		if (i != 0)
 		{

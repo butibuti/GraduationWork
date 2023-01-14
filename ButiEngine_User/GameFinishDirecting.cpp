@@ -19,11 +19,14 @@ void ButiEngine::GameFinishDirecting::OnSet()
 	belt_right.lock()->GetGameComponent<Effect_Belt>()->SetIsSpawnToRight(true);
 
 	GetManager().lock()->GetGameObject("CameraParent").lock()->GetGameComponent<GameCamera>()->GameFinishZoom();
-	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GamePlay");
+	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_Result");
 
 	auto exInfo = GetManager().lock()->GetGameObject("MainScreen").lock()->GetGameComponent<MeshDrawComponent>()->GetExInfo();
 	exInfo.x = 0.0f;
 	GetManager().lock()->GetGameObject("MainScreen").lock()->GetGameComponent<MeshDrawComponent>()->SetExInfo(exInfo);
+
+	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/GameFinish.wav"));
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
 }
 
 void ButiEngine::GameFinishDirecting::OnRemove()

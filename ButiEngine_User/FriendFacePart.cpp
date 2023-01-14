@@ -9,9 +9,13 @@
 #include "StageManager.h"
 #include "SeparateDrawObject.h"
 #include "PartStickAnimation.h"
-#include "SeparateDrawObject.h"
 #include "FriendHead_PartHitArea.h"
 #include "GameLevelManager.h"
+#include "SwayAnimation.h"
+
+std::int32_t ButiEngine::FriendFacePart::g_eyeCount = 0;
+std::int32_t ButiEngine::FriendFacePart::g_noseCount = 0;
+std::int32_t ButiEngine::FriendFacePart::g_mouthCount = 0;
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
@@ -233,7 +237,16 @@ void ButiEngine::FriendFacePart::OnShowUI()
 
 void ButiEngine::FriendFacePart::Start()
 {
-	m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
+	auto tutorialManager = GetManager().lock()->GetGameObject("TutorialManager");
+	if (tutorialManager.lock())
+	{
+		m_isTutorial = true;
+	}
+
+	if (!m_isTutorial)
+	{
+		m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
+	}
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 
@@ -264,6 +277,23 @@ void ButiEngine::FriendFacePart::Start()
 
 	m_state = FacePartState::Move;
 	m_vlp_chaseTimer = ObjectFactory::Create<RelativeTimer>(1);
+
+	switch (m_type)
+	{
+	case ButiEngine::PartType::Eye:
+		g_eyeCount++;
+		break;
+	case ButiEngine::PartType::Nose:
+		g_noseCount++;
+		break;
+	case ButiEngine::PartType::Mouth:
+		g_mouthCount++;
+		break;
+	case ButiEngine::PartType::Dummy:
+		break;
+	default:
+		break;
+	}
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clone()
@@ -284,6 +314,23 @@ void ButiEngine::FriendFacePart::Dead()
 {
 	gameObject.lock()->SetIsRemove(true);
 	gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->SetIsRemove(true);
+
+	switch (m_type)
+	{
+	case ButiEngine::PartType::Eye:
+		g_eyeCount--;
+		break;
+	case ButiEngine::PartType::Nose:
+		g_noseCount--;
+		break;
+	case ButiEngine::PartType::Mouth:
+		g_mouthCount--;
+		break;
+	case ButiEngine::PartType::Dummy:
+		break;
+	default:
+		break;
+	}
 }
 
 void ButiEngine::FriendFacePart::Move()
@@ -450,6 +497,30 @@ void ButiEngine::FriendFacePart::StartChase()
 	{
 		rigidBodyComponent->SetIsRemove(true);
 	}
+
+	auto swayComponent = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->GetGameComponent<SwayAnimation>();
+	if (swayComponent)
+	{
+		swayComponent->SetIsRemove(true);
+	}
+
+	switch (m_type)
+	{
+	case ButiEngine::PartType::Eye:
+		g_eyeCount--;
+		break;
+	case ButiEngine::PartType::Nose:
+		g_noseCount--;
+		break;
+	case ButiEngine::PartType::Mouth:
+		g_mouthCount--;
+		break;
+	case ButiEngine::PartType::Dummy:
+		break;
+	default:
+		break;
+	}
+
 	m_vlp_chaseTimer->Start();
 }
 
@@ -522,7 +593,7 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 
 bool ButiEngine::FriendFacePart::CanUpdate()
 {
-	if (!m_vwp_stageManager.lock()->IsGameStart() && m_movePattern != MovePattern::Stay)
+	if (m_vwp_stageManager.lock() && !m_vwp_stageManager.lock()->IsGameStart() && m_movePattern != MovePattern::Stay)
 	{
 		return false;
 	}

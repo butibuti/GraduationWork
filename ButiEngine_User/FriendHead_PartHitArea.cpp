@@ -81,11 +81,6 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead_PartHitA
 
 bool ButiEngine::FriendHead_PartHitArea::CanStickPart(const PartType arg_type)
 {
-	//if (!GameDevice::GetInput().CheckKey(ButiInput::Keys::Space))
-	//{
-	//	return false;
-	//}
-
 	if (arg_type == PartType::Dummy)
 	{
 		return true;

@@ -60,6 +60,17 @@ namespace ButiEngine {
 		MovePattern GetMovePattern() { return m_movePattern; }
 
 		void Dead();
+
+		static void ResetPartCount()
+		{
+			g_eyeCount = 0;
+			g_noseCount = 0;
+			g_mouthCount = 0;
+		}
+
+		static std::int32_t GetEyeCount() { return g_eyeCount; }
+		static std::int32_t GetNoseCount() { return g_noseCount; }
+		static std::int32_t GetMouthCount() { return g_mouthCount; }
 	private:
 		void Move();
 		void MoveStay();
@@ -118,6 +129,12 @@ namespace ButiEngine {
 		Vector3 m_chaseStartPos;
 		Value_weak_ptr<GameObject> m_vwp_chaseTarget;
 		Value_ptr<RelativeTimer> m_vlp_chaseTimer;
+
+		bool m_isTutorial;
+
+		static std::int32_t g_eyeCount;
+		static std::int32_t g_noseCount;
+		static std::int32_t g_mouthCount;
 	};
 
 }
