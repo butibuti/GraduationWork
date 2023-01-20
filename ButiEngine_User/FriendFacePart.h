@@ -87,8 +87,6 @@ namespace ButiEngine {
 		void StartChase();
 		void Chase();
 
-		void ChangeGroupMask();
-
 		void OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
 
 		bool CanUpdate();
@@ -104,8 +102,6 @@ namespace ButiEngine {
 
 		Value_ptr<RelativeTimer> m_vlp_deadTimer;
 		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
-
-		Value_ptr<RelativeTimer> m_vlp_changeGroupMaskTimer;
 
 		std::vector<float> m_vec_minStraightMoveSpeeds;
 		std::vector<float> m_vec_maxStraightMoveSpeeds;

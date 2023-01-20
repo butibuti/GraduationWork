@@ -50,6 +50,7 @@ namespace ButiEngine {
 		bool IsFast();
 	private:
 		void Control();
+		void ControlByKeyboard();
 		void ControlByGamePad();
 		void ControlByVRTracker();
 		void SpawnStarFlash();

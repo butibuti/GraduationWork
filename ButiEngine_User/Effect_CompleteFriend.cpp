@@ -5,7 +5,7 @@
 void ButiEngine::Effect_CompleteFriend::OnUpdate()
 {
 	float progress = m_vlp_animationTimer->GetPercent();
-	float newRotation = MathHelper::Lerp(-10.0f, -370.0f, Easing::EaseOutQuart(progress));
+	float newRotation = MathHelper::Lerp(-10.0f, -360.0f, Easing::EaseOutQuart(progress));
 
 	gameObject.lock()->transform->SetLocalRotationZ_Degrees(newRotation);
 

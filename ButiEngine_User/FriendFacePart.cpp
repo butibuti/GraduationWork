@@ -36,12 +36,6 @@ void ButiEngine::FriendFacePart::OnUpdate()
 		Dead();
 	}
 
-	if (m_vlp_changeGroupMaskTimer->Update())
-	{
-		m_vlp_changeGroupMaskTimer->Stop();
-		ChangeGroupMask();
-	}
-
 	switch (m_state)
 	{
 	case ButiEngine::FacePartState::Move:
@@ -250,11 +244,11 @@ void ButiEngine::FriendFacePart::Start()
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 
-	m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+	//m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
 
 	ResizeLevelParameter();
 
-	m_vlp_deadTimer = ObjectFactory::Create<RelativeTimer>(180);
+	m_vlp_deadTimer = ObjectFactory::Create<RelativeTimer>(10);
 	m_vlp_deadTimer->Start();
 
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
@@ -264,9 +258,6 @@ void ButiEngine::FriendFacePart::Start()
 		m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(600);
 		m_vlp_lifeTimer->Start();
 	}
-
-	m_vlp_changeGroupMaskTimer = ObjectFactory::Create<RelativeTimer>(30);
-	m_vlp_changeGroupMaskTimer->Start();
 
 	m_isCollisionHead = false;
 
@@ -357,11 +348,12 @@ void ButiEngine::FriendFacePart::MoveStay()
 
 void ButiEngine::FriendFacePart::MoveStraight()
 {
-	Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
-	if (m_vwp_rigidBodyComponent.lock())
-	{
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity);
-	}
+	Vector3 velocity = m_moveDirection * m_moveSpeed;
+	gameObject.lock()->transform->Translate(velocity * GameDevice::GetWorldSpeed());
+	//if (m_vwp_rigidBodyComponent.lock())
+	//{
+	//	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity);
+	//}
 }
 
 void ButiEngine::FriendFacePart::MoveThrow()
@@ -370,15 +362,16 @@ void ButiEngine::FriendFacePart::MoveThrow()
 
 void ButiEngine::FriendFacePart::InitThrow()
 {
-	if (m_movePattern == MovePattern::Throw)
-	{
-		m_vwp_rigidBodyComponent.lock()->SetIsAffectedGravity(true);
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetGravity(Vector3(0.0f, -1.5f, 0.0f));
-		m_moveDirection.y += 0.5f;
-		m_moveDirection.Normalize();
-		Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
-		m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity);
-	}
+	//if (m_movePattern != MovePattern::Throw)
+	//{
+	//	return;
+	//}
+	//m_vwp_rigidBodyComponent.lock()->SetIsAffectedGravity(true);
+	//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetGravity(Vector3(0.0f, -1.5f, 0.0f));
+	//m_moveDirection.y += 0.5f;
+	//m_moveDirection.Normalize();
+	//Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
+	//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity);
 }
 
 void ButiEngine::FriendFacePart::SetMovePattern(const std::int32_t arg_gameLevel)
@@ -492,11 +485,8 @@ void ButiEngine::FriendFacePart::StartChase()
 	Vector3 chaseTargetPos = GetChaseTargetPos();
 	m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(chaseTargetPos), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
 	m_vwp_chaseTarget.lock()->transform->SetBaseTransform(head.lock()->transform);
-	auto rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
-	if (rigidBodyComponent)
-	{
-		rigidBodyComponent->SetIsRemove(true);
-	}
+
+	//m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 
 	auto swayComponent = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->GetGameComponent<SwayAnimation>();
 	if (swayComponent)
@@ -540,32 +530,6 @@ void ButiEngine::FriendFacePart::Chase()
 	}
 }
 
-void ButiEngine::FriendFacePart::ChangeGroupMask()
-{
-	return;
-
-	std::int32_t mask = 65535;
-	switch (m_type)
-	{
-	case ButiEngine::PartType::Eye:
-		mask = 65313;
-		break;
-	case ButiEngine::PartType::Nose:
-		mask = 65345;
-		break;
-	case ButiEngine::PartType::Mouth:
-		mask = 65409;
-		break;
-	case ButiEngine::PartType::Dummy:
-		mask = 65505;
-		break;
-	default:
-		break;
-	}
-
-	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetCollisionGroupMask(mask);
-}
-
 void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea)
 {
 	m_vwp_partHitArea = arg_vwp_partHitArea;
@@ -578,7 +542,7 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 			partHitAreaComponent->SetCanStickPart(false);
 		}
 
-		m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
+		//m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 		gameObject.lock()->GetGameComponent<TriggerComponent>()->SetIsRemove(true);
 
 		m_vlp_deadTimer->Stop();

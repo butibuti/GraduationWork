@@ -121,7 +121,7 @@ void ButiEngine::FriendHead::Start()
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_friendManager = GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>();
 
-	m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
+	//m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
 
 	m_vwp_headCenter = GetManager().lock()->AddObjectFromCereal("HeadCenter");
 	m_vwp_headCenter.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
@@ -269,9 +269,40 @@ void ButiEngine::FriendHead::Control()
 		ControlByVRTracker();
 	}
 
+	ControlByKeyboard();
 	ControlByGamePad();
 
-	m_vwp_rigidBodyComponent.lock()->TransformApply();
+	//m_vwp_rigidBodyComponent.lock()->TransformApply();
+}
+
+void ButiEngine::FriendHead::ControlByKeyboard()
+{
+	Vector3 direction = Vector3Const::Zero;
+
+	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::D))
+	{
+		direction.x = 1.0f;
+	}
+	else if (GameDevice::GetInput().CheckKey(ButiInput::Keys::A))
+	{
+		direction.x = -1.0f;
+	}
+	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::W))
+	{
+		direction.y = 1.0f;
+	}
+	else if (GameDevice::GetInput().CheckKey(ButiInput::Keys::S))
+	{
+		direction.y = -1.0f;
+	}
+
+	direction.x *= -1.0f;
+	direction.Normalize();
+
+	constexpr float moveSpeed = 0.1f;
+
+	Vector3 velocity = direction * moveSpeed * GameDevice::GetWorldSpeed();
+	gameObject.lock()->transform->Translate(velocity);
 }
 
 void ButiEngine::FriendHead::ControlByGamePad()
@@ -284,14 +315,14 @@ void ButiEngine::FriendHead::ControlByGamePad()
 		direction = leftStick;
 	}
 
-	Vector2 rightStick = m_vwp_inputManager.lock()->GetRightStick();
-	if (rightStick.GetLength() != 0.0f)
-	{
-		direction.z = rightStick.y * 0.5f;
-	}
+	//Vector2 rightStick = m_vwp_inputManager.lock()->GetRightStick();
+	//if (rightStick.GetLength() != 0.0f)
+	//{
+	//	direction.z = rightStick.y * 0.5f;
+	//}
 
 	direction.x *= -1.0f;
-	direction.z *= -1.0f;
+	//direction.z *= -1.0f;
 	direction.Normalize();
 
 	constexpr float moveSpeed = 0.1f;
@@ -352,7 +383,7 @@ void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
 		m_vwp_friendManager.lock()->AddFriendCount();
 	}
 
-	m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
+	//m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 
 	m_isPut = true;
 }
@@ -385,7 +416,7 @@ void ButiEngine::FriendHead::Appear()
 		CreatePartHitArea();
 	}
 
-	m_vwp_rigidBodyComponent.lock()->TransformApply();
+	//m_vwp_rigidBodyComponent.lock()->TransformApply();
 }
 
 void ButiEngine::FriendHead::CalcVelocity()
@@ -408,6 +439,7 @@ ButiEngine::Vector3 ButiEngine::FriendHead::GetTrackerPos()
 	Vector3 pos = deviceMatrix.GetPosition();
 	pos *= m_vwp_gameSettings.lock()->GetCorrection();
 	pos.x *= -1;
+	pos.z = 0.0f;
 	
 	return pos;
 }
