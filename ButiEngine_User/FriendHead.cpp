@@ -85,10 +85,10 @@ void ButiEngine::FriendHead::OnRemove()
 	{
 		m_vwp_eyesHitArea.lock()->SetIsRemove(true);
 	}
-	if (m_vwp_noseHitArea.lock())
-	{
-		m_vwp_noseHitArea.lock()->SetIsRemove(true);
-	}
+	//if (m_vwp_noseHitArea.lock())
+	//{
+	//	m_vwp_noseHitArea.lock()->SetIsRemove(true);
+	//}
 	if (m_vwp_mouthHitArea.lock())
 	{
 		m_vwp_mouthHitArea.lock()->SetIsRemove(true);
@@ -175,11 +175,11 @@ std::vector<ButiEngine::Value_weak_ptr<ButiEngine::GameObject>> ButiEngine::Frie
 	std::vector<ButiEngine::Value_weak_ptr<ButiEngine::GameObject>> vec_dummies;
 	
 	auto eyesHitAreaDummyParts = m_vwp_eyesHitAreaComponent.lock()->GetStickDummyParts();
-	auto noseHitAreaDummyParts = m_vwp_noseHitAreaComponent.lock()->GetStickDummyParts();
+	//auto noseHitAreaDummyParts = m_vwp_noseHitAreaComponent.lock()->GetStickDummyParts();
 	auto mouthHitAreaDummyParts = m_vwp_mouthHitAreaComponent.lock()->GetStickDummyParts();
 
 	vec_dummies.insert(vec_dummies.end(), eyesHitAreaDummyParts.begin(), eyesHitAreaDummyParts.end());
-	vec_dummies.insert(vec_dummies.end(), noseHitAreaDummyParts.begin(), noseHitAreaDummyParts.end());
+	//vec_dummies.insert(vec_dummies.end(), noseHitAreaDummyParts.begin(), noseHitAreaDummyParts.end());
 	vec_dummies.insert(vec_dummies.end(), mouthHitAreaDummyParts.begin(), mouthHitAreaDummyParts.end());
 
 	return vec_dummies;
@@ -238,7 +238,7 @@ bool ButiEngine::FriendHead::IsBeautiful()
 
 	std::int32_t dummyPartCount = 0;
 	dummyPartCount += m_vwp_eyesHitAreaComponent.lock()->GetDummyPartCount();
-	dummyPartCount += m_vwp_noseHitAreaComponent.lock()->GetDummyPartCount();
+	//dummyPartCount += m_vwp_noseHitAreaComponent.lock()->GetDummyPartCount();
 	dummyPartCount += m_vwp_mouthHitAreaComponent.lock()->GetDummyPartCount();
 	
 	return dummyPartCount == 0;
@@ -260,6 +260,27 @@ bool ButiEngine::FriendHead::IsFast()
 	}
 
 	return m_isFast;
+}
+
+bool ButiEngine::FriendHead::IsExact()
+{
+	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
+
+	if (!m_isTutorial && gameLevel == 0)
+	{
+		return false;
+	}
+
+	if (!m_vwp_eyesHitAreaComponent.lock()->IsExact())
+	{
+		return false;
+	}
+	if (!m_vwp_mouthHitAreaComponent.lock()->IsExact())
+	{
+		return false;
+	}
+	return true;
 }
 
 void ButiEngine::FriendHead::Control()
@@ -482,10 +503,10 @@ bool ButiEngine::FriendHead::CanPut()
 	{
 		return false;
 	}
-	if (!m_vwp_noseHitAreaComponent.lock()->GetStickPart().lock())
-	{
-		return false;
-	}
+	//if (!m_vwp_noseHitAreaComponent.lock()->GetStickPart().lock())
+	//{
+	//	return false;
+	//}
 	if (!m_vwp_mouthHitAreaComponent.lock()->GetStickPart().lock())
 	{
 		return false;
@@ -512,14 +533,14 @@ bool ButiEngine::FriendHead::CanUpdate()
 void ButiEngine::FriendHead::CreatePartHitArea()
 {
 	m_vwp_eyesHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Eyes");
-	m_vwp_noseHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Nose");
+	//m_vwp_noseHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Nose");
 	m_vwp_mouthHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Mouth");
 
 	m_vwp_eyesHitAreaComponent = m_vwp_eyesHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
-	m_vwp_noseHitAreaComponent = m_vwp_noseHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
+	//m_vwp_noseHitAreaComponent = m_vwp_noseHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 	m_vwp_mouthHitAreaComponent = m_vwp_mouthHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 
 	m_vwp_eyesHitAreaComponent.lock()->SetParent(m_vwp_headCenter);
-	m_vwp_noseHitAreaComponent.lock()->SetParent(m_vwp_headCenter);
+	//m_vwp_noseHitAreaComponent.lock()->SetParent(m_vwp_headCenter);
 	m_vwp_mouthHitAreaComponent.lock()->SetParent(m_vwp_headCenter);
 }

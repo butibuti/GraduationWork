@@ -23,6 +23,8 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_type);
 			ARCHIVE_BUTI(m_partFurthest);
+			ARCHIVE_BUTI(m_exactAngleBorder);
+			ARCHIVE_BUTI(m_exactPosBorder);
 		}
 
 		void SetParent(Value_weak_ptr<GameObject> arg_vwp_parent)
@@ -46,6 +48,10 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> GetPart() { return m_vwp_part; }
 
 		void RemoveAllComponent();
+
+		bool IsExact();
+		bool IsExactAngle();
+		bool IsExactPos();
 	private:
 		Value_weak_ptr<GameObject> m_vwp_parent;
 
@@ -60,6 +66,9 @@ namespace ButiEngine {
 
 		//ƒXƒRƒA‚ª0‚É‚È‚é‹——£
 		float m_partFurthest;
+
+		float m_exactAngleBorder;
+		float m_exactPosBorder;
 
 		bool m_canStickPart;
 	};

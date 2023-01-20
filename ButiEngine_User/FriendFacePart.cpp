@@ -466,6 +466,12 @@ void ButiEngine::FriendFacePart::StickEffect()
 
 	auto partHitFlash = GetManager().lock()->AddObjectFromCereal("Effect_PartHitFlash");
 	partHitFlash.lock()->transform->SetLocalPosition(gameObject.lock()->transform->GetWorldPosition());
+	partHitFlash.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
+
+	auto partHitBeam = GetManager().lock()->AddObjectFromCereal("Effect_PartHitBeam");
+	partHitBeam.lock()->transform->SetLocalPosition(gameObject.lock()->transform->GetWorldPosition());
+	partHitBeam.lock()->transform->SetLocalRotation(drawObject.lock()->transform->GetLocalRotation());
+	partHitBeam.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
 
 	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/PartHit.wav"));
 	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
@@ -525,6 +531,8 @@ void ButiEngine::FriendFacePart::Chase()
 	if (m_vlp_chaseTimer->Update())
 	{
 		m_vlp_chaseTimer->Stop();
+
+		gameObject.lock()->transform->SetLocalPosition(m_vwp_chaseTarget.lock()->transform->GetWorldPosition());
 
 		StickToHead();
 	}

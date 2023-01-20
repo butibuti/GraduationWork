@@ -48,6 +48,7 @@ namespace ButiEngine {
 
 		bool IsBeautiful();
 		bool IsFast();
+		bool IsExact();
 	private:
 		void Control();
 		void ControlByKeyboard();

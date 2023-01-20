@@ -13,7 +13,7 @@ void ButiEngine::Effect_CompleteFriend::OnUpdate()
 	{
 		m_vlp_animationTimer->Stop();
 
-		gameObject.lock()->transform->SetLocalRotationZ_Degrees(-10.0f);
+		gameObject.lock()->transform->SetLocalRotationZ_Degrees(-360.0f);
 		Dead();
 	}
 }

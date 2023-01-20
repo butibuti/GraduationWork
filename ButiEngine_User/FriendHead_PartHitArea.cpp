@@ -2,6 +2,7 @@
 #include "FriendHead_PartHitArea.h"
 #include "FriendFacePart.h"
 #include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
+#include "SeparateDrawObject.h"
 
 void ButiEngine::FriendHead_PartHitArea::OnUpdate()
 {
@@ -58,8 +59,11 @@ void ButiEngine::FriendHead_PartHitArea::OnShowUI()
 		m_type = PartType::Dummy;
 	}
 
-	GUI::BulletText(U8("スコアが0になる距離"));
-	GUI::DragFloat("##partFurthest", &m_partFurthest, 1.0f, 0.0f, 100.0f);
+	GUI::BulletText(U8("正確判定になる角度範囲"));
+	GUI::DragFloat("##angleBorder", &m_exactAngleBorder, 1.0f, 0.0f, 100.0f);
+
+	GUI::BulletText(U8("正確判定になる位置範囲"));
+	GUI::DragFloat("##posBorder", &m_exactPosBorder, 1.0f, 0.0f, 100.0f);
 }
 
 void ButiEngine::FriendHead_PartHitArea::Start()
@@ -76,6 +80,8 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead_PartHitA
 	auto clone = ObjectFactory::Create<FriendHead_PartHitArea>();
 	clone->m_type = m_type;
 	clone->m_partFurthest = m_partFurthest;
+	clone->m_exactAngleBorder = m_exactAngleBorder;
+	clone->m_exactPosBorder = m_exactPosBorder;
 	return clone;
 }
 
@@ -126,4 +132,36 @@ void ButiEngine::FriendHead_PartHitArea::RemoveAllComponent()
 {
 	gameObject.lock()->GetGameComponent<TriggerComponent>()->SetIsRemove(true);
 	SetIsRemove(true);
+}
+
+bool ButiEngine::FriendHead_PartHitArea::IsExact()
+{
+	return IsExactAngle() && IsExactPos();
+}
+
+bool ButiEngine::FriendHead_PartHitArea::IsExactAngle()
+{
+	if (!m_vwp_part.lock())
+	{
+		return false;
+	}
+	
+	float partAngle = m_vwp_part.lock()->transform->GetLocalRotation_Euler().z;
+	float drawObjectAngle = m_vwp_part.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->transform->GetLocalRotation_Euler().z;
+	
+	return abs(partAngle + drawObjectAngle) <= m_exactAngleBorder;
+}
+
+bool ButiEngine::FriendHead_PartHitArea::IsExactPos()
+{
+	if (!m_vwp_part.lock())
+	{
+		return false;
+	}
+
+	float pos = gameObject.lock()->transform->GetLocalPosition().z;
+	float partPos = m_vwp_part.lock()->transform->GetLocalPosition().z;
+	float diff = partPos - pos;
+
+	return diff >= -m_exactPosBorder;
 }

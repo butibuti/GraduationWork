@@ -389,7 +389,7 @@ void ButiEngine::FriendBody::SaveFriendData()
 
 	auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
 	m_vlp_friendData->vlp_eyeTransform = headComponent->GetEye().lock()->transform->Clone();
-	m_vlp_friendData->vlp_noseTransform = headComponent->GetNose().lock()->transform->Clone();
+	//m_vlp_friendData->vlp_noseTransform = headComponent->GetNose().lock()->transform->Clone();
 	m_vlp_friendData->vlp_mouthTransform = headComponent->GetMouth().lock()->transform->Clone();
 
 	auto vec_dummies = headComponent->GetDummies();
@@ -404,10 +404,10 @@ void ButiEngine::FriendBody::SaveFriendData()
 	//{
 	//	addCount++;
 	//}
-	if (headComponent->IsFast())
-	{
-		addCount *= 2;
-	}
+	//if (headComponent->IsFast())
+	//{
+	//	addCount *= 2;
+	//}
 	if (IsFront())
 	{
 		addCount *= 2;
