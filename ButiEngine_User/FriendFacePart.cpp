@@ -588,6 +588,7 @@ ButiEngine::Vector3 ButiEngine::FriendFacePart::GetChaseTargetPos()
 	rayStartPos.z += 50.0f;
 
 	Vector3 chaseTargetPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
+	chaseTargetPos.z = m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->GetStickPos().z;
 
 	List<ButiBullet::PhysicsRaycastResult> list_rayRes;
 	if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->

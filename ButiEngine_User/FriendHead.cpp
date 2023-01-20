@@ -540,7 +540,13 @@ void ButiEngine::FriendHead::CreatePartHitArea()
 	//m_vwp_noseHitAreaComponent = m_vwp_noseHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 	m_vwp_mouthHitAreaComponent = m_vwp_mouthHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 
-	m_vwp_eyesHitAreaComponent.lock()->SetParent(m_vwp_headCenter);
+	m_vwp_eyesHitAreaComponent.lock()->SetParent(gameObject);
 	//m_vwp_noseHitAreaComponent.lock()->SetParent(m_vwp_headCenter);
-	m_vwp_mouthHitAreaComponent.lock()->SetParent(m_vwp_headCenter);
+	m_vwp_mouthHitAreaComponent.lock()->SetParent(gameObject);
+
+	auto eyesDefault = GetManager().lock()->GetGameObject("Eyes_Default");
+	eyesDefault.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);
+
+	auto mouthDefault = GetManager().lock()->GetGameObject("Mouth_Default");
+	mouthDefault.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);
 }

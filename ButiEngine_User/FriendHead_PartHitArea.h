@@ -44,6 +44,8 @@ namespace ButiEngine {
 
 		void StickPart(Value_weak_ptr<GameObject> arg_vwp_part, const PartType arg_type);
 
+		Vector3 GetStickPos();
+
 		std::int32_t GetCalcScore();
 		Value_weak_ptr<GameObject> GetPart() { return m_vwp_part; }
 
@@ -57,6 +59,8 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> m_vwp_part;
 		std::vector<Value_weak_ptr<GameObject>> m_vec_vwp_dummyParts;
+
+		Value_weak_ptr<GameObject> m_vwp_defaultPosObject;
 
 		PartType m_type;
 

@@ -73,6 +73,15 @@ void ButiEngine::FriendHead_PartHitArea::Start()
 
 	m_standardPos = gameObject.lock()->transform->GetLocalPosition();
 	m_standardPos += m_vwp_parent.lock()->transform->GetLocalPosition();
+
+	if (m_type == PartType::Eye)
+	{
+		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Eyes_Default");
+	}
+	else if (m_type == PartType::Mouth)
+	{
+		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Mouth_Default");
+	}
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead_PartHitArea::Clone()
@@ -105,6 +114,11 @@ void ButiEngine::FriendHead_PartHitArea::StickPart(Value_weak_ptr<GameObject> ar
 	{
 		m_vwp_part = arg_vwp_part;
 	}
+}
+
+ButiEngine::Vector3 ButiEngine::FriendHead_PartHitArea::GetStickPos()
+{
+	return m_vwp_defaultPosObject.lock()->transform->GetWorldPosition();
 }
 
 std::int32_t ButiEngine::FriendHead_PartHitArea::GetCalcScore()
@@ -159,7 +173,7 @@ bool ButiEngine::FriendHead_PartHitArea::IsExactPos()
 		return false;
 	}
 
-	float pos = gameObject.lock()->transform->GetLocalPosition().z;
+	float pos = m_vwp_defaultPosObject.lock()->transform->GetLocalPosition().z;
 	float partPos = m_vwp_part.lock()->transform->GetLocalPosition().z;
 	float diff = partPos - pos;
 
