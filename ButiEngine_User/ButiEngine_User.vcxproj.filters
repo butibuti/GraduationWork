@@ -72,6 +72,7 @@
     <ClCompile Include="TutorialManager.cpp" />
     <ClCompile Include="UI_TutorialText.cpp" />
     <ClCompile Include="Text_OK.cpp" />
+    <ClCompile Include="FlashAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="TutorialManager.h" />
     <ClInclude Include="UI_TutorialText.h" />
     <ClInclude Include="Text_OK.h" />
+    <ClInclude Include="FlashAnimation.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

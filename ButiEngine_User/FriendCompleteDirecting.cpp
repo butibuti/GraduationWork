@@ -204,7 +204,7 @@ void ButiEngine::FriendCompleteDirecting::SetHukidashiParameter()
 	//{
 	//	m_vec_hukidashiNames.push_back("Effect_Hukidashi_Beautiful");
 	//}
-
+	
 	if (headComponent->IsExact())
 	{
 		m_vec_hukidashiNames.push_back("Effect_Hukidashi_Beautiful");

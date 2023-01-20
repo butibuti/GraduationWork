@@ -354,6 +354,7 @@
   <ItemGroup>
     <ClCompile Include="BonusFriend.cpp" />
     <ClCompile Include="Effect_HeartSpawner.cpp" />
+    <ClCompile Include="FlashAnimation.cpp" />
     <ClCompile Include="GameEndManager.cpp" />
     <ClCompile Include="GameEnd_CompleteFriend.cpp" />
     <ClCompile Include="GameEnd_FriendSpawner.cpp" />
@@ -434,6 +435,7 @@
   <ItemGroup>
     <ClInclude Include="BonusFriend.h" />
     <ClInclude Include="Effect_HeartSpawner.h" />
+    <ClInclude Include="FlashAnimation.h" />
     <ClInclude Include="GameEndManager.h" />
     <ClInclude Include="GameEnd_CompleteFriend.h" />
     <ClInclude Include="GameEnd_FriendSpawner.h" />

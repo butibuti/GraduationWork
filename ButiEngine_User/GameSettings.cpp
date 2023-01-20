@@ -134,48 +134,6 @@ float ButiEngine::GameSettings::GetCorrection()
 	Vector3 pos = deviceMatrix.GetPosition();
 
 	Vector3 moveAreaSize;
-	//if (pos.x >= 0.0f)
-	//{
-	//	moveAreaSize.x = abs(m_data.moveAreaFrontRightTop.x);
-	//}
-	//else
-	//{
-	//	moveAreaSize.x = abs(m_data.moveAreaBackLeftBottom.x);
-	//}
-
-	//if (moveAreaSize.x == 0.0f)
-	//{
-	//	moveAreaSize.x = 0.01f;
-	//}
-
-
-	//if (pos.y >= 0.0f)
-	//{
-	//	moveAreaSize.y = abs(m_data.moveAreaFrontRightTop.y);
-	//}
-	//else
-	//{
-	//	moveAreaSize.y = abs(m_data.moveAreaBackLeftBottom.y);
-	//}
-
-	//if (moveAreaSize.y == 0.0f)
-	//{
-	//	moveAreaSize.y = 0.01f;
-	//}
-
-	//if (pos.z >= 0.0f)
-	//{
-	//	moveAreaSize.z = abs(m_data.moveAreaFrontRightTop.z);
-	//}
-	//else
-	//{
-	//	moveAreaSize.z = abs(m_data.moveAreaBackLeftBottom.z);
-	//}
-
-	//if (moveAreaSize.z == 0.0f)
-	//{
-	//	moveAreaSize.z = 0.01f;
-	//}
 
 	moveAreaSize = m_data.moveAreaFrontRightTop - m_data.moveAreaBackLeftBottom;
 	moveAreaSize.x = abs(moveAreaSize.x);

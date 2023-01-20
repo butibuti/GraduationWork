@@ -398,7 +398,7 @@ void ButiEngine::FriendBody::SaveFriendData()
 	{
 		m_vlp_friendData->vec_vlp_dummyTransforms.push_back((*itr).lock()->transform->Clone());
 	}
-
+	
 	std::int32_t addCount = 1;
 	//if (headComponent->IsBeautiful())
 	//{

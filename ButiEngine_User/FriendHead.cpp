@@ -271,7 +271,7 @@ bool ButiEngine::FriendHead::IsExact()
 	{
 		return false;
 	}
-
+	
 	if (!m_vwp_eyesHitAreaComponent.lock()->IsExact())
 	{
 		return false;
