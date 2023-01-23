@@ -73,6 +73,8 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_neck;
 		Value_weak_ptr<GameObject> m_vwp_heart;
 
+		Value_weak_ptr<GameObject> m_vwp_guideHead;
+
 		Value_ptr<FriendData> m_vlp_friendData;
 
 		std::vector<Value_weak_ptr<GameObject>> m_vec_bonusFriends;

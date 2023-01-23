@@ -13,6 +13,7 @@ void ButiEngine::StageManager::OnUpdate()
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::T))
 	{
 		GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_Tutorial");
+		GetManager().lock()->GetApplication().lock()->GetSoundManager()->DestroyBGM();
 		m_vwp_pauseManager.lock()->SetIsPause(true);
 	}
 	if (!m_isGameStart)

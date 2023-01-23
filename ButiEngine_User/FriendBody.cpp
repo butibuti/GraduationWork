@@ -108,6 +108,10 @@ void ButiEngine::FriendBody::Start()
 	m_vwp_heart.lock()->transform->SetLocalPosition(Vector3Const::Zero);
 	m_vwp_heart.lock()->transform->SetBaseTransform(bone->transform, true);
 
+	m_vwp_guideHead = GetManager().lock()->AddObjectFromCereal("GuideHead");
+	m_vwp_guideHead.lock()->SetObjectName(gameObject.lock()->GetGameObjectName() + "_GuideHead");
+	m_vwp_guideHead.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
+
 	m_vlp_friendData = ObjectFactory::Create<FriendData>();
 
 	m_isRotate = true;
@@ -176,6 +180,11 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	if (m_vwp_neck.lock())
 	{
 		m_vwp_neck.lock()->SetIsRemove(true);
+	}
+
+	if (m_vwp_guideHead.lock())
+	{
+		m_vwp_guideHead.lock()->SetIsRemove(true);
 	}
 
 	if (m_vwp_friendBodySpawner.lock())
@@ -306,6 +315,10 @@ void ButiEngine::FriendBody::MoveHorizontal()
 		{
 			m_vwp_neck.lock()->SetIsRemove(true);
 		}
+		if (m_vwp_guideHead.lock())
+		{
+			m_vwp_guideHead.lock()->SetIsRemove(true);
+		}
 		if (m_vwp_heart.lock())
 		{
 			m_vwp_heart.lock()->SetIsRemove(true);
@@ -389,7 +402,7 @@ void ButiEngine::FriendBody::SaveFriendData()
 
 	auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
 	m_vlp_friendData->vlp_eyeTransform = headComponent->GetEye().lock()->transform->Clone();
-	//m_vlp_friendData->vlp_noseTransform = headComponent->GetNose().lock()->transform->Clone();
+	m_vlp_friendData->vlp_noseTransform = headComponent->GetNose().lock()->transform->Clone();
 	m_vlp_friendData->vlp_mouthTransform = headComponent->GetMouth().lock()->transform->Clone();
 
 	auto vec_dummies = headComponent->GetDummies();

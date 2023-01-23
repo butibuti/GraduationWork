@@ -78,6 +78,10 @@ void ButiEngine::FriendHead_PartHitArea::Start()
 	{
 		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Eyes_Default");
 	}
+	else if (m_type == PartType::Nose)
+	{
+		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Nose_Default");
+	}
 	else if (m_type == PartType::Mouth)
 	{
 		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Mouth_Default");

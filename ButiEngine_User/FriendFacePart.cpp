@@ -382,7 +382,7 @@ void ButiEngine::FriendFacePart::SetMovePattern(const std::int32_t arg_gameLevel
 		return;
 	}
 
-	float random = ButiRandom::GetRandom(0.0f, 100.0f, 10);
+	float random = ButiRandom::GetInt(1, 100);
 	float stayBorder = m_vec_stayProbabilities[arg_gameLevel];
 	float straightBorder = stayBorder + m_vec_straightProbabilities[arg_gameLevel];
 	float throwBorder = straightBorder + m_vec_throwProbabilities[arg_gameLevel];
@@ -401,7 +401,7 @@ void ButiEngine::FriendFacePart::SetMovePattern(const std::int32_t arg_gameLevel
 	}
 	else
 	{
-		m_movePattern = MovePattern::Stay;
+		m_movePattern = MovePattern::Straight;
 	}
 }
 

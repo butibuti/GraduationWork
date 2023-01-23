@@ -134,10 +134,10 @@ void ButiEngine::FriendFacePartSpawner::FirstSpawnFacePart()
 	eyePartComponent->SetMovePattern(0);
 	eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(eyePartComponent->GetMovePattern(), true));
 
-	//auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
-	//auto nosePartComponent = nose.lock()->GetGameComponent<FriendFacePart>();
-	//nosePartComponent->SetMovePattern(0);
-	//nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(nosePartComponent->GetMovePattern(), true));
+	auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
+	auto nosePartComponent = nose.lock()->GetGameComponent<FriendFacePart>();
+	nosePartComponent->SetMovePattern(0);
+	nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(nosePartComponent->GetMovePattern(), true));
 
 	auto mouth = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Mouth");
 	auto mouthPartComponent = mouth.lock()->GetGameComponent<FriendFacePart>();
@@ -169,14 +169,14 @@ void ButiEngine::FriendFacePartSpawner::SpawnFacePart()
 		eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(eyeFacePartComponent->GetMovePattern()));
 	}
 
-	//std::int32_t noseSpawnCount = minCount - FriendFacePart::GetNoseCount();
-	//for (std::int32_t i = 0; i < noseSpawnCount; i++)
-	//{
-	//	auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
-	//	auto noseFacePartComponent = nose.lock()->GetGameComponent<FriendFacePart>();
-	//	noseFacePartComponent->SetMovePattern(gameLevel);
-	//	nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(noseFacePartComponent->GetMovePattern()));
-	//}
+	std::int32_t noseSpawnCount = minCount - FriendFacePart::GetNoseCount();
+	for (std::int32_t i = 0; i < noseSpawnCount; i++)
+	{
+		auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
+		auto noseFacePartComponent = nose.lock()->GetGameComponent<FriendFacePart>();
+		noseFacePartComponent->SetMovePattern(gameLevel);
+		nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(noseFacePartComponent->GetMovePattern()));
+	}
 
 	std::int32_t mouthSpawnCount = minCount - FriendFacePart::GetMouthCount();
 	for (std::int32_t i = 0; i < mouthSpawnCount; i++)
@@ -273,18 +273,18 @@ std::string ButiEngine::FriendFacePartSpawner::GetRandomSpawnPartName()
 {
 	std::string facePartName;
 
-	std::int32_t maxRandom = 1;
+	std::int32_t maxRandom = 2;
 
 	std::int32_t random = ButiRandom::GetInt(0, maxRandom);
 	if (random <= 0)
 	{
 		facePartName = "FriendFacePart_Eyes";
 	}
-	//else if (random <= 1)
-	//{
-	//	facePartName = "FriendFacePart_Nose";
-	//}
 	else if (random <= 1)
+	{
+		facePartName = "FriendFacePart_Nose";
+	}
+	else if (random <= 2)
 	{
 		facePartName = "FriendFacePart_Mouth";
 	}

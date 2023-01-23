@@ -77,8 +77,8 @@ void ButiEngine::Result_CompleteFriend::CreateParts(Value_weak_ptr<FriendData> a
 	auto eye = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Eyes", arg_vwp_friendData.lock()->vlp_eyeTransform);
 	eye.lock()->transform->SetBaseTransform(head.lock()->transform, true);
 
-	//auto nose = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Nose", arg_vwp_friendData.lock()->vlp_noseTransform);
-	//nose.lock()->transform->SetBaseTransform(head.lock()->transform, true);
+	auto nose = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Nose", arg_vwp_friendData.lock()->vlp_noseTransform);
+	nose.lock()->transform->SetBaseTransform(head.lock()->transform, true);
 
 	auto mouth = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Mouth", arg_vwp_friendData.lock()->vlp_mouthTransform);
 	mouth.lock()->transform->SetBaseTransform(head.lock()->transform, true);
