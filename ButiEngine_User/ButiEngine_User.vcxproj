@@ -369,7 +369,6 @@
     <ClCompile Include="Effect_Heart.cpp" />
     <ClCompile Include="Effect_Hukidashi.cpp" />
     <ClCompile Include="Effect_PartHitFlash.cpp" />
-    <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="FriendAligner.cpp" />
     <ClCompile Include="FriendBody.cpp" />
     <ClCompile Include="FriendBodySpawner.cpp" />
@@ -393,7 +392,6 @@
     <ClCompile Include="main.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release_imguiEditor|x64'">/wd4996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="Naruko.cpp" />
     <ClCompile Include="PartStickAnimation.cpp" />
     <ClCompile Include="PauseManager.cpp" />
     <ClCompile Include="RemoveMeshDraw.cpp" />
@@ -408,9 +406,6 @@
     <ClCompile Include="ScoreNumber.cpp" />
     <ClCompile Include="SeparateDrawObject.cpp" />
     <ClCompile Include="ShakeComponent.cpp" />
-    <ClCompile Include="Soldier.cpp" />
-    <ClCompile Include="SoldierManager.cpp" />
-    <ClCompile Include="SoldierSpawner.cpp" />
     <ClCompile Include="EditorObject.cpp" />
     <ClCompile Include="StageManager.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -421,16 +416,12 @@
     </ClCompile>
     <ClCompile Include="SwayAnimation.cpp" />
     <ClCompile Include="TestBehavior.cpp" />
-    <ClCompile Include="Enemy_Test.cpp" />
     <ClCompile Include="Text_CountDown.cpp" />
     <ClCompile Include="Text_GameStart.cpp" />
     <ClCompile Include="Text_OK.cpp" />
     <ClCompile Include="TutorialManager.cpp" />
     <ClCompile Include="UI_FriendCount.cpp" />
-    <ClCompile Include="UI_GameLevel.cpp" />
     <ClCompile Include="UI_MakeFriendsCount.cpp" />
-    <ClCompile Include="UI_RemainTime.cpp" />
-    <ClCompile Include="UI_Score.cpp" />
     <ClCompile Include="UI_TutorialText.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -450,7 +441,6 @@
     <ClInclude Include="Effect_Heart.h" />
     <ClInclude Include="Effect_Hukidashi.h" />
     <ClInclude Include="Effect_PartHitFlash.h" />
-    <ClInclude Include="EnemySpawner.h" />
     <ClInclude Include="FriendAligner.h" />
     <ClInclude Include="FriendBody.h" />
     <ClInclude Include="FriendBodySpawner.h" />
@@ -471,7 +461,6 @@
     <ClInclude Include="HeartEmitter.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LogoSceneManager.h" />
-    <ClInclude Include="Naruko.h" />
     <ClInclude Include="PartStickAnimation.h" />
     <ClInclude Include="PauseManager.h" />
     <ClInclude Include="RemoveMeshDraw.h" />
@@ -486,24 +475,17 @@
     <ClInclude Include="ScoreNumber.h" />
     <ClInclude Include="SeparateDrawObject.h" />
     <ClInclude Include="ShakeComponent.h" />
-    <ClInclude Include="Soldier.h" />
-    <ClInclude Include="SoldierManager.h" />
-    <ClInclude Include="SoldierSpawner.h" />
     <ClInclude Include="EditorObject.h" />
     <ClInclude Include="StageManager.h" />
     <ClInclude Include="stdafx_u.h" />
     <ClInclude Include="SwayAnimation.h" />
     <ClInclude Include="TestBehavior.h" />
-    <ClInclude Include="Enemy_Test.h" />
     <ClInclude Include="Text_CountDown.h" />
     <ClInclude Include="Text_GameStart.h" />
     <ClInclude Include="Text_OK.h" />
     <ClInclude Include="TutorialManager.h" />
     <ClInclude Include="UI_FriendCount.h" />
-    <ClInclude Include="UI_GameLevel.h" />
     <ClInclude Include="UI_MakeFriendsCount.h" />
-    <ClInclude Include="UI_RemainTime.h" />
-    <ClInclude Include="UI_Score.h" />
     <ClInclude Include="UI_TutorialText.h" />
   </ItemGroup>
   <ItemGroup>
