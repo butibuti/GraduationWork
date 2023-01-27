@@ -108,6 +108,11 @@ void ButiEngine::FriendHead_PartHitArea::StickPart(Value_weak_ptr<GameObject> ar
 	else if(!m_vwp_part.lock())
 	{
 		m_vwp_part = arg_vwp_part;
+
+		if (m_vwp_guideMarker.lock())
+		{
+			m_vwp_guideMarker.lock()->SetIsRemove(true);
+		}
 	}
 }
 
@@ -140,7 +145,6 @@ std::int32_t ButiEngine::FriendHead_PartHitArea::GetCalcScore()
 void ButiEngine::FriendHead_PartHitArea::RemoveAllComponent()
 {
 	gameObject.lock()->GetGameComponent<TriggerComponent>()->SetIsRemove(true);
-	m_vwp_guideMarker.lock()->SetIsRemove(true);
 	SetIsRemove(true);
 }
 
@@ -174,6 +178,16 @@ bool ButiEngine::FriendHead_PartHitArea::IsExactPos()
 	float diff = partPos - pos;
 
 	return diff >= -m_exactPosBorder;
+}
+
+void ButiEngine::FriendHead_PartHitArea::Dead()
+{
+	if (m_vwp_guideMarker.lock())
+	{
+		m_vwp_guideMarker.lock()->SetIsRemove(true);
+	}
+
+	gameObject.lock()->SetIsRemove(true);
 }
 
 void ButiEngine::FriendHead_PartHitArea::CreateGuideMarker()

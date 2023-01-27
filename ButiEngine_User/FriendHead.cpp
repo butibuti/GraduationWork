@@ -83,15 +83,15 @@ void ButiEngine::FriendHead::OnRemove()
 	}
 	if (m_vwp_eyesHitArea.lock())
 	{
-		m_vwp_eyesHitArea.lock()->SetIsRemove(true);
+		m_vwp_eyesHitAreaComponent.lock()->Dead();
 	}
 	if (m_vwp_noseHitArea.lock())
 	{
-		m_vwp_noseHitArea.lock()->SetIsRemove(true);
+		m_vwp_noseHitAreaComponent.lock()->Dead();
 	}
 	if (m_vwp_mouthHitArea.lock())
 	{
-		m_vwp_mouthHitArea.lock()->SetIsRemove(true);
+		m_vwp_mouthHitAreaComponent.lock()->Dead();
 	}
 }
 

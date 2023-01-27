@@ -54,6 +54,8 @@ namespace ButiEngine {
 		bool IsExact();
 		bool IsExactAngle();
 		bool IsExactPos();
+
+		void Dead();
 	private:
 		void CreateGuideMarker();
 		void SetDefaultPosObject();

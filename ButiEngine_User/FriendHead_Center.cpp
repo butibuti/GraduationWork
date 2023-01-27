@@ -28,6 +28,26 @@ void ButiEngine::FriendHead_Center::OnSet()
 		}
 	);
 
+	gameObject.lock()->AddCollisionStayReaction(
+		[this](ButiBullet::ContactData& arg_other)
+		{
+			if (m_vwp_collisionFriendBody.lock())
+			{
+				return;
+			}
+
+			if (arg_other.vwp_gameObject.lock())
+			{
+				//ƒ^ƒO”»’è
+				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("FriendBody_Neck"))
+				{
+					auto neck = arg_other.vwp_gameObject.lock()->GetGameComponent<FriendBody_Neck>();
+					m_vwp_collisionFriendBody = neck->GetParent();
+				}
+			}
+		}
+	);
+
 	gameObject.lock()->AddCollisionLeaveReaction(
 		[this](ButiBullet::ContactData& arg_other)
 		{
