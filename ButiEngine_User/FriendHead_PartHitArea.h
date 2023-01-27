@@ -55,10 +55,15 @@ namespace ButiEngine {
 		bool IsExactAngle();
 		bool IsExactPos();
 	private:
+		void CreateGuideMarker();
+		void SetDefaultPosObject();
+
 		Value_weak_ptr<GameObject> m_vwp_parent;
 
 		Value_weak_ptr<GameObject> m_vwp_part;
 		std::vector<Value_weak_ptr<GameObject>> m_vec_vwp_dummyParts;
+
+		Value_weak_ptr<GameObject> m_vwp_guideMarker;
 
 		Value_weak_ptr<GameObject> m_vwp_defaultPosObject;
 

@@ -1,0 +1,31 @@
+#pragma once
+#include"Header/GameComponentHeader.h"
+namespace ButiEngine {
+
+	class GuideMarker :public GameComponent
+	{
+	public:
+		std::string GetGameComponentName()const override {
+			return "GuideMarker";
+		}
+		void OnUpdate()override;
+		void OnSet()override;
+		void OnRemove()override;
+		void OnShowUI()override;
+		void Start()override;
+		Value_ptr<GameComponent> Clone()override;
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			ARCHIVE_BUTI(isActive);
+		}
+
+		void SetMarkTarget(Value_weak_ptr<GameObject> arg_markTarget) { m_vwp_markTarget = arg_markTarget; }
+		void SetColor(const Vector4& arg_color) { gameObject.lock()->GetGameComponent<MeshDrawComponent>()->SetColor(arg_color); }
+	private:
+		Value_weak_ptr<GameObject> m_vwp_markTarget;
+	};
+
+}
+
+BUTI_REGIST_GAMECOMPONENT(GuideMarker, true);

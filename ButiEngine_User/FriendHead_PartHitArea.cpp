@@ -3,6 +3,7 @@
 #include "FriendFacePart.h"
 #include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
 #include "SeparateDrawObject.h"
+#include "GuideMarker.h"
 
 void ButiEngine::FriendHead_PartHitArea::OnUpdate()
 {
@@ -74,18 +75,8 @@ void ButiEngine::FriendHead_PartHitArea::Start()
 	m_standardPos = gameObject.lock()->transform->GetLocalPosition();
 	m_standardPos += m_vwp_parent.lock()->transform->GetLocalPosition();
 
-	if (m_type == PartType::Eye)
-	{
-		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Eyes_Default");
-	}
-	else if (m_type == PartType::Nose)
-	{
-		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Nose_Default");
-	}
-	else if (m_type == PartType::Mouth)
-	{
-		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Mouth_Default");
-	}
+	CreateGuideMarker();
+	SetDefaultPosObject();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead_PartHitArea::Clone()
@@ -149,6 +140,7 @@ std::int32_t ButiEngine::FriendHead_PartHitArea::GetCalcScore()
 void ButiEngine::FriendHead_PartHitArea::RemoveAllComponent()
 {
 	gameObject.lock()->GetGameComponent<TriggerComponent>()->SetIsRemove(true);
+	m_vwp_guideMarker.lock()->SetIsRemove(true);
 	SetIsRemove(true);
 }
 
@@ -182,4 +174,38 @@ bool ButiEngine::FriendHead_PartHitArea::IsExactPos()
 	float diff = partPos - pos;
 
 	return diff >= -m_exactPosBorder;
+}
+
+void ButiEngine::FriendHead_PartHitArea::CreateGuideMarker()
+{
+	m_vwp_guideMarker = GetManager().lock()->AddObjectFromCereal("GuideMarker");
+	auto guideMarker = m_vwp_guideMarker.lock()->GetGameComponent<GuideMarker>();
+	guideMarker->SetMarkTarget(gameObject);
+
+	if (m_type == PartType::Eye)
+	{
+	}
+	else if (m_type == PartType::Nose)
+	{
+	}
+	else if (m_type == PartType::Mouth)
+	{
+		guideMarker->SetColor(ButiColor::Red());
+	}
+}
+
+void ButiEngine::FriendHead_PartHitArea::SetDefaultPosObject()
+{
+	if (m_type == PartType::Eye)
+	{
+		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Eyes_Default");
+	}
+	else if (m_type == PartType::Nose)
+	{
+		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Nose_Default");
+	}
+	else if (m_type == PartType::Mouth)
+	{
+		m_vwp_defaultPosObject = GetManager().lock()->GetGameObject("Mouth_Default");
+	}
 }
