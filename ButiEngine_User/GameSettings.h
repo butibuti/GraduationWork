@@ -59,6 +59,8 @@ namespace ButiEngine {
 
 		GameSettingsData m_data;
 
+		float m_headMoveLimit;
+
 		bool m_isDebugMode;
 	};
 

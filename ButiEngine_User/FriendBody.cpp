@@ -12,6 +12,7 @@
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 #include "BonusFriend.h"
 #include "TutorialManager.h"
+#include "FadeOut.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -185,6 +186,8 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	if (m_vwp_guideHead.lock())
 	{
 		m_vwp_guideHead.lock()->SetIsRemove(true);
+		//m_vwp_guideHead.lock()->AddGameComponent<FadeOut>(120);
+		//m_vwp_guideHead.lock()->AddGameComponent<SucideComponent>(120);
 	}
 
 	if (m_vwp_friendBodySpawner.lock())
@@ -417,10 +420,10 @@ void ButiEngine::FriendBody::SaveFriendData()
 	//{
 	//	addCount++;
 	//}
-	//if (headComponent->IsFast())
-	//{
-	//	addCount *= 2;
-	//}
+	if (headComponent->IsFast())
+	{
+		addCount *= 2;
+	}
 	if (IsFront())
 	{
 		addCount *= 2;

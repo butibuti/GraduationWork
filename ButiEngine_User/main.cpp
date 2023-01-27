@@ -91,6 +91,11 @@ std::int32_t APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR arg, std::in
 
 	GameDevice::Initialize();
 	GameDevice::InitializeInput(vlp_app->GetWindow()->GetHandle(), init.isUseVRTracker);
+
+#ifdef DEBUG
+#else
+	GameDevice::GetInput().SetCursorHide(true);
+#endif // !DEBUG
 	vlp_app->PreLoadResources();
 	vlp_app->InitLoadResources();
 	vlp_app->GetSceneManager()->LoadScene_Init(init.initSceneName);

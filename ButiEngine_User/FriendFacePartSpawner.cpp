@@ -147,7 +147,7 @@ void ButiEngine::FriendFacePartSpawner::FirstSpawnFacePart()
 
 void ButiEngine::FriendFacePartSpawner::SpawnFacePart()
 {
-	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
+ 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
 	auto faceParts = GetManager().lock()->GetGameObjects(GameObjectTag("FriendFacePart"));
 	if (faceParts.GetSize() >= m_vec_maxFacePartCounts[gameLevel])
 	{

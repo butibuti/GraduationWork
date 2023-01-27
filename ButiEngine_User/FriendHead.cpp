@@ -121,8 +121,6 @@ void ButiEngine::FriendHead::Start()
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_friendManager = GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>();
 
-	//m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
-
 	m_vwp_headCenter = GetManager().lock()->AddObjectFromCereal("HeadCenter");
 	m_vwp_headCenter.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
 	m_vwp_headCenterComponent = m_vwp_headCenter.lock()->GetGameComponent<FriendHead_Center>();
@@ -292,8 +290,6 @@ void ButiEngine::FriendHead::Control()
 
 	ControlByKeyboard();
 	ControlByGamePad();
-
-	//m_vwp_rigidBodyComponent.lock()->TransformApply();
 }
 
 void ButiEngine::FriendHead::ControlByKeyboard()
@@ -336,14 +332,7 @@ void ButiEngine::FriendHead::ControlByGamePad()
 		direction = leftStick;
 	}
 
-	//Vector2 rightStick = m_vwp_inputManager.lock()->GetRightStick();
-	//if (rightStick.GetLength() != 0.0f)
-	//{
-	//	direction.z = rightStick.y * 0.5f;
-	//}
-
 	direction.x *= -1.0f;
-	//direction.z *= -1.0f;
 	direction.Normalize();
 
 	constexpr float moveSpeed = 0.1f;
@@ -395,16 +384,12 @@ void ButiEngine::FriendHead::SpawnStarFlash()
 
 void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
 {
-	//GetManager().lock()->GetGameObject("ScoreManager").lock()->GetGameComponent<ScoreManager>()->CalcScore(gameObject, arg_vwp_body);
-
 	arg_vwp_body.lock()->GetGameComponent<FriendBody>()->SetHead(gameObject);
 
 	if (!m_isTutorial)
 	{
 		m_vwp_friendManager.lock()->AddFriendCount();
 	}
-
-	//m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 
 	m_isPut = true;
 }
@@ -436,8 +421,6 @@ void ButiEngine::FriendHead::Appear()
 
 		CreatePartHitArea();
 	}
-
-	//m_vwp_rigidBodyComponent.lock()->TransformApply();
 }
 
 void ButiEngine::FriendHead::CalcVelocity()

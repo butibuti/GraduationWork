@@ -1,5 +1,6 @@
 #include "stdafx_u.h"
 #include "GameSettings.h"
+#include "PauseManager.h"
 
 void ButiEngine::GameSettings::OnUpdate()
 {
@@ -8,13 +9,18 @@ void ButiEngine::GameSettings::OnUpdate()
 		GameDevice::GetInput().TriggerKey(ButiInput::Keys::D))
 	{
 		m_isDebugMode = !m_isDebugMode;
+
+		auto pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+
 		if (m_isDebugMode)
 		{
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>()->ReRegist();
+			pauseManager->SetIsPause(true);
 		}
 		else
 		{
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>()->UnRegist();
+			pauseManager->SetIsPause(false);
 		}
 	}
 
@@ -29,7 +35,7 @@ void ButiEngine::GameSettings::OnUpdate()
 	}
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::F))
 	{
-		SetMoveAreaFront();
+		//SetMoveAreaFront();
 	}
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::R))
 	{
@@ -37,7 +43,7 @@ void ButiEngine::GameSettings::OnUpdate()
 	}
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::B))
 	{
-		SetMoveAreaBack();
+		//SetMoveAreaBack();
 	}
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::L))
 	{
@@ -117,6 +123,8 @@ void ButiEngine::GameSettings::Start()
 	InputCereal(m_data, "GameSettings.savedata");
 	GameDevice::GetVRTrackerInput().SetOrigin(m_data.trackerOrigin);
 
+	m_headMoveLimit = GetManager().lock()->GetGameObject("FieldOfView").lock()->transform->GetLocalScale().x;
+
 	m_isDebugMode = false;
 
 	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->UnRegist();
@@ -129,21 +137,11 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameSettings::Clone
 
 float ButiEngine::GameSettings::GetCorrection()
 {
-	Matrix4x4 deviceMatrix;
-	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_data.trackerIndex], deviceMatrix);
-	Vector3 pos = deviceMatrix.GetPosition();
+	float moveArea = abs(m_data.moveAreaFrontRightTop.x - m_data.moveAreaBackLeftBottom.x);
 
-	Vector3 moveAreaSize;
+	float correction = m_headMoveLimit / moveArea;
 
-	moveAreaSize = m_data.moveAreaFrontRightTop - m_data.moveAreaBackLeftBottom;
-	moveAreaSize.x = abs(moveAreaSize.x);
-	moveAreaSize.y = abs(moveAreaSize.y);
-	moveAreaSize.z = abs(moveAreaSize.z);
-
-	Vector3 correction = m_data.headMoveLimit * 2.0f / moveAreaSize;
-
-
-	return correction.x;
+	return correction;
 }
 
 void ButiEngine::GameSettings::SetOrigin()
