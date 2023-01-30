@@ -1,7 +1,7 @@
 #include "stdafx_u.h"
 #include "TutorialManager.h"
 #include "FriendBody.h"
-#include "FriendFacePartSpawner.h"
+#include "RandomFriendFacePartSpawner.h"
 #include "UI_TutorialText.h"
 #include "PauseManager.h"
 
@@ -25,12 +25,12 @@ void ButiEngine::TutorialManager::OnUpdate()
 		if (m_tutorialPhase == 1)
 		{
 			SpawnBody(Vector3(0, -4, 0), 0, 1, 0);
-			GetManager().lock()->GetGameObject("FriendFacePartSpawner").lock()->GetGameComponent<FriendFacePartSpawner>()->FirstSpawnFacePart();
+			GetManager().lock()->GetGameObject("FriendFacePartSpawner").lock()->GetGameComponent<RandomFriendFacePartSpawner>()->FirstSpawnFacePart();
 		}
 		else if (m_tutorialPhase == 2)
 		{
 			SpawnBody(Vector3(0, -4, 0), 0, 0, 0);
-			GetManager().lock()->GetGameObject("FriendFacePartSpawner").lock()->GetGameComponent<FriendFacePartSpawner>()->FirstSpawnFacePart();
+			GetManager().lock()->GetGameObject("FriendFacePartSpawner").lock()->GetGameComponent<RandomFriendFacePartSpawner>()->FirstSpawnFacePart();
 		}
 
 		if (m_isClear)

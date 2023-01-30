@@ -376,7 +376,7 @@
     <ClCompile Include="FriendBody_Neck.cpp" />
     <ClCompile Include="FriendCompleteDirecting.cpp" />
     <ClCompile Include="FriendFacePart.cpp" />
-    <ClCompile Include="FriendFacePartSpawner.cpp" />
+    <ClCompile Include="RandomFriendFacePartSpawner.cpp" />
     <ClCompile Include="FriendHead.cpp" />
     <ClCompile Include="FriendHead_Center.cpp" />
     <ClCompile Include="FriendHead_PartHitArea.cpp" />
@@ -449,7 +449,7 @@
     <ClInclude Include="FriendBody_Neck.h" />
     <ClInclude Include="FriendCompleteDirecting.h" />
     <ClInclude Include="FriendFacePart.h" />
-    <ClInclude Include="FriendFacePartSpawner.h" />
+    <ClInclude Include="RandomFriendFacePartSpawner.h" />
     <ClInclude Include="FriendHead.h" />
     <ClInclude Include="FriendHead_Center.h" />
     <ClInclude Include="FriendHead_PartHitArea.h" />

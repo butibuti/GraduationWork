@@ -7,12 +7,12 @@ namespace ButiEngine {
 	class GameLevelManager;
 	enum class MovePattern;
 
-	class FriendFacePartSpawner :public GameComponent
+	class RandomFriendFacePartSpawner :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "FriendFacePartSpawner";
+			return "RandomFriendFacePartSpawner";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -71,4 +71,4 @@ namespace ButiEngine {
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(FriendFacePartSpawner, true);
+BUTI_REGIST_GAMECOMPONENT(RandomFriendFacePartSpawner, true);

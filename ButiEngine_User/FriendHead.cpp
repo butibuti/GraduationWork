@@ -270,11 +270,15 @@ bool ButiEngine::FriendHead::IsExact()
 		return false;
 	}
 	
-	if (!m_vwp_eyesHitAreaComponent.lock()->IsExact())
+	if (m_vwp_eyesHitArea.lock() && !m_vwp_eyesHitAreaComponent.lock()->IsExact())
 	{
 		return false;
 	}
-	if (!m_vwp_mouthHitAreaComponent.lock()->IsExact())
+	if (m_vwp_noseHitArea.lock() && !m_vwp_noseHitAreaComponent.lock()->IsExact())
+	{
+		return false;
+	}
+	if (m_vwp_mouthHitArea.lock() && !m_vwp_mouthHitAreaComponent.lock()->IsExact())
 	{
 		return false;
 	}

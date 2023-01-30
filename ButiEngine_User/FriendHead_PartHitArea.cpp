@@ -198,9 +198,11 @@ void ButiEngine::FriendHead_PartHitArea::CreateGuideMarker()
 
 	if (m_type == PartType::Eye)
 	{
+		guideMarker->SetColor(ButiColor::White());
 	}
 	else if (m_type == PartType::Nose)
 	{
+		guideMarker->SetColor(Vector4(1.0f, 0.5f, 0.8f, 1.0f));
 	}
 	else if (m_type == PartType::Mouth)
 	{

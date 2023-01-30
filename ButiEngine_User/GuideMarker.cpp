@@ -3,8 +3,8 @@
 
 void ButiEngine::GuideMarker::OnUpdate()
 {
-	Vector3 screenPos = GetCamera("UICamera")->WorldToScreen(m_vwp_markTarget.lock()->transform->GetWorldPosition());
-	screenPos.x *= -1.0f;
+	Vector3 screenPos = GetCamera("main")->WorldToScreen(m_vwp_markTarget.lock()->transform->GetWorldPosition());
+	
 	screenPos.z = gameObject.lock()->transform->GetLocalPosition().z;
 
 	gameObject.lock()->transform->SetLocalPosition(screenPos);
