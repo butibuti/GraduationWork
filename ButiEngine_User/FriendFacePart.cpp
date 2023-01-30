@@ -16,6 +16,7 @@
 std::int32_t ButiEngine::FriendFacePart::g_eyeCount = 0;
 std::int32_t ButiEngine::FriendFacePart::g_noseCount = 0;
 std::int32_t ButiEngine::FriendFacePart::g_mouthCount = 0;
+std::int32_t ButiEngine::FriendFacePart::g_dummyCount = 0;
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
@@ -30,27 +31,15 @@ void ButiEngine::FriendFacePart::OnUpdate()
 		Dead();
 	}
 
-	if (m_vlp_lifeTimer && m_vlp_lifeTimer->Update())
+	if (m_vlp_lifeTimer->Update())
 	{
 		m_vlp_lifeTimer->Stop();
 		Dead();
 	}
 
-	switch (m_state)
+	if (m_state == FacePartState::Move)
 	{
-	case ButiEngine::FacePartState::Move:
-		if (!m_isCollisionHead)
-		{
-			Move();
-		}
-		break;
-	case ButiEngine::FacePartState::Chase:
-		Chase();
-		break;
-	case ButiEngine::FacePartState::Stop:
-		break;
-	default:
-		break;
+		Move();
 	}
 }
 
@@ -82,21 +71,6 @@ void ButiEngine::FriendFacePart::OnSet()
 			}
 		}
 	);
-
-	//gameObject.lock()->AddCollisionLeaveReaction(
-	//	[this](ButiBullet::ContactData& arg_other)
-	//	{
-	//		if (arg_other.vwp_gameObject.lock())
-	//		{
-	//			//タグ判定
-	//			if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("FriendHead"))
-	//			{
-	//				m_isCollisionHead = true;
-	//			}
-	//		}
-	//	}
-	//);
-
 }
 
 void ButiEngine::FriendFacePart::OnRemove()
@@ -105,8 +79,9 @@ void ButiEngine::FriendFacePart::OnRemove()
 
 void ButiEngine::FriendFacePart::OnShowUI()
 {
+	GUI_SetPartParam();
 	std::string typeStr;
-	switch (m_type)
+	switch (m_param.type)
 	{
 	case ButiEngine::PartType::Eye:
 		typeStr = "Eye";
@@ -128,104 +103,22 @@ void ButiEngine::FriendFacePart::OnShowUI()
 
 	if (GUI::Button("Eye"))
 	{
-		m_type = PartType::Eye;
+		m_param.type = PartType::Eye;
 	}
 	GUI::SameLine();
 	if (GUI::Button("Nose"))
 	{
-		m_type = PartType::Nose;
+		m_param.type = PartType::Nose;
 	}
 	GUI::SameLine();
 	if (GUI::Button("Mouth"))
 	{
-		m_type = PartType::Mouth;
+		m_param.type = PartType::Mouth;
 	}
 	GUI::SameLine();
 	if (GUI::Button("Dummy"))
 	{
-		m_type = PartType::Dummy;
-	}
-
-	if (!m_vwp_gameLevelManager.lock())
-	{
-		m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
-	}
-
-	ResizeLevelParameter();
-
-	std::int32_t maxLevel = m_vwp_gameLevelManager.lock()->GetMaxLevel();
-
-	for (std::int32_t i = 1; i < maxLevel + 1; i++)
-	{
-		if (GUI::TreeNode("Level:" + std::to_string(i)))
-		{
-			if (GUI::TreeNode(U8("出現確率")))
-			{
-				GUI::BulletText(U8("その場待機"));
-				GUI::DragFloat("##StayProbability" + std::to_string(i), &m_vec_stayProbabilities[i], 0.1f, 0.0f, 100.0f);
-
-				GUI::BulletText(U8("直線移動"));
-				GUI::DragFloat("##StraightProbability" + std::to_string(i), &m_vec_straightProbabilities[i], 0.1f, 0.0f, 100.0f);
-
-				GUI::BulletText(U8("放物線"));
-				GUI::DragFloat("##ThrowProbability" + std::to_string(i), &m_vec_throwProbabilities[i], 0.1f, 0.0f, 100.0f);
-
-				GUI::TreePop();
-			}
-
-			if (GUI::TreeNode(U8("移動速度")))
-			{
-				if (GUI::TreeNode(U8("直線移動")))
-				{
-					GUI::BulletText(U8("最低速度"));
-					if (GUI::DragFloat("##MinStraightMoveSpeed" + std::to_string(i), &m_vec_minStraightMoveSpeeds[i], 0.01f, 0.0f, 100.0f))
-					{
-						if (m_movePattern == MovePattern::Straight)
-						{
-							m_moveSpeed = ButiRandom::GetRandom(m_vec_minStraightMoveSpeeds[i], m_vec_maxStraightMoveSpeeds[i], 100);
-						}
-					}
-
-					GUI::BulletText(U8("最高速度"));
-					if (GUI::DragFloat("##MaxStraightMoveSpeed" + std::to_string(i), &m_vec_maxStraightMoveSpeeds[i], 0.01f, 0.0f, 100.0f))
-					{
-						if (m_movePattern == MovePattern::Straight)
-						{
-							m_moveSpeed = ButiRandom::GetRandom(m_vec_minStraightMoveSpeeds[i], m_vec_maxStraightMoveSpeeds[i], 100);
-						}
-					}
-
-					GUI::TreePop();
-				}
-
-				if (GUI::TreeNode(U8("放物線")))
-				{
-					GUI::BulletText(U8("最低速度"));
-					if (GUI::DragFloat("##MinThrowMoveSpeed" + std::to_string(i), &m_vec_minThrowMoveSpeeds[i], 0.01f, 0.0f, 100.0f))
-					{
-						if (m_movePattern == MovePattern::Throw)
-						{
-							m_moveSpeed = ButiRandom::GetRandom(m_vec_minThrowMoveSpeeds[i], m_vec_maxThrowMoveSpeeds[i], 100);
-						}
-					}
-
-					GUI::BulletText(U8("最高速度"));
-					if (GUI::DragFloat("##MaxThrowMoveSpeed" + std::to_string(i), &m_vec_maxThrowMoveSpeeds[i], 0.01f, 0.0f, 100.0f))
-					{
-						if (m_movePattern == MovePattern::Throw)
-						{
-							m_moveSpeed = ButiRandom::GetRandom(m_vec_minThrowMoveSpeeds[i], m_vec_maxThrowMoveSpeeds[i], 100);
-						}
-					}
-
-					GUI::TreePop();
-				}
-
-				GUI::TreePop();
-			}
-
-			GUI::TreePop();
-		}
+		m_param.type = PartType::Dummy;
 	}
 }
 
@@ -244,60 +137,31 @@ void ButiEngine::FriendFacePart::Start()
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 
-	//m_vwp_rigidBodyComponent = gameObject.lock()->GetGameComponent<RigidBodyComponent>();
-
-	ResizeLevelParameter();
-
 	m_vlp_deadTimer = ObjectFactory::Create<RelativeTimer>(10);
 	m_vlp_deadTimer->Start();
 
-	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
+	m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(600);
 
+	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
 	if (gameLevel != 0)
 	{
-		m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(600);
 		m_vlp_lifeTimer->Start();
 	}
 
-	m_isCollisionHead = false;
-
-	SetMoveDirection();
-	SetMoveSpeed();
-
-	InitThrow();
-
 	m_state = FacePartState::Move;
-	m_vlp_chaseTimer = ObjectFactory::Create<RelativeTimer>(1);
 
-	switch (m_type)
+	if (m_param.isRandom)
 	{
-	case ButiEngine::PartType::Eye:
-		g_eyeCount++;
-		break;
-	case ButiEngine::PartType::Nose:
-		g_noseCount++;
-		break;
-	case ButiEngine::PartType::Mouth:
-		g_mouthCount++;
-		break;
-	case ButiEngine::PartType::Dummy:
-		break;
-	default:
-		break;
+		SetRandomVelocity();
 	}
+
+	AddPartCount();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clone()
 {
 	auto clone = ObjectFactory::Create<FriendFacePart>();
-	clone->m_type = m_type;
-	clone->m_vec_minStraightMoveSpeeds = m_vec_minStraightMoveSpeeds;
-	clone->m_vec_maxStraightMoveSpeeds = m_vec_maxStraightMoveSpeeds;
-	clone->m_vec_minThrowMoveSpeeds = m_vec_minThrowMoveSpeeds;
-	clone->m_vec_maxThrowMoveSpeeds = m_vec_maxThrowMoveSpeeds;
-	clone->m_vec_stayProbabilities = m_vec_stayProbabilities;
-	clone->m_vec_straightProbabilities = m_vec_straightProbabilities;
-	clone->m_vec_throwProbabilities = m_vec_throwProbabilities;
+	clone->m_param = m_param;
 	return clone;
 }
 
@@ -306,160 +170,38 @@ void ButiEngine::FriendFacePart::Dead()
 	gameObject.lock()->SetIsRemove(true);
 	gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->SetIsRemove(true);
 
-	switch (m_type)
-	{
-	case ButiEngine::PartType::Eye:
-		g_eyeCount--;
-		break;
-	case ButiEngine::PartType::Nose:
-		g_noseCount--;
-		break;
-	case ButiEngine::PartType::Mouth:
-		g_mouthCount--;
-		break;
-	case ButiEngine::PartType::Dummy:
-		break;
-	default:
-		break;
-	}
+	RemovePartCount();
+}
+
+void ButiEngine::FriendFacePart::SetParam_Stay()
+{
+	m_param.isRandom = false;
+	m_param.velocity = Vector3Const::Zero;
 }
 
 void ButiEngine::FriendFacePart::Move()
 {
-	switch (m_movePattern)
-	{
-	case ButiEngine::MovePattern::Stay:
-		MoveStay();
-		break;
-	case ButiEngine::MovePattern::Straight:
-		MoveStraight();
-		break;
-	case ButiEngine::MovePattern::Throw:
-		MoveThrow();
-		break;
-	default:
-		break;
-	}
-}
+	m_param.gravity += m_param.gravityAcceleration * GameDevice::GetWorldSpeed();
+	m_param.velocity += m_param.gravityDirection * m_param.gravity * GameDevice::GetWorldSpeed();
 
-void ButiEngine::FriendFacePart::MoveStay()
-{
-}
-
-void ButiEngine::FriendFacePart::MoveStraight()
-{
-	Vector3 velocity = m_moveDirection * m_moveSpeed;
-	gameObject.lock()->transform->Translate(velocity * GameDevice::GetWorldSpeed());
-	//if (m_vwp_rigidBodyComponent.lock())
-	//{
-	//	m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity);
-	//}
-}
-
-void ButiEngine::FriendFacePart::MoveThrow()
-{
-}
-
-void ButiEngine::FriendFacePart::InitThrow()
-{
-	//if (m_movePattern != MovePattern::Throw)
-	//{
-	//	return;
-	//}
-	//m_vwp_rigidBodyComponent.lock()->SetIsAffectedGravity(true);
-	//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetGravity(Vector3(0.0f, -1.5f, 0.0f));
-	//m_moveDirection.y += 0.5f;
-	//m_moveDirection.Normalize();
-	//Vector3 velocity = m_moveDirection * m_moveSpeed * GameDevice::GetWorldSpeed();
-	//m_vwp_rigidBodyComponent.lock()->GetRigidBody()->SetVelocity(velocity);
-}
-
-void ButiEngine::FriendFacePart::SetMovePattern(const std::int32_t arg_gameLevel)
-{
-	if (arg_gameLevel == 0)
-	{
-		m_movePattern = MovePattern::Stay;
-		return;
-	}
-
-	float random = ButiRandom::GetInt(1, 100);
-	float stayBorder = m_vec_stayProbabilities[arg_gameLevel];
-	float straightBorder = stayBorder + m_vec_straightProbabilities[arg_gameLevel];
-	float throwBorder = straightBorder + m_vec_throwProbabilities[arg_gameLevel];
-
-	if (random <= stayBorder)
-	{
-		m_movePattern = MovePattern::Stay;
-	}
-	else if (random <= straightBorder)
-	{
-		m_movePattern = MovePattern::Straight;
-	}
-	else if (random <= throwBorder)
-	{
-		m_movePattern = MovePattern::Throw;
-	}
-	else
-	{
-		m_movePattern = MovePattern::Straight;
-	}
-}
-
-void ButiEngine::FriendFacePart::SetMoveDirection()
-{
-	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
-	Vector3 centerPos = Vector3Const::Zero;
-	centerPos.z = pos.z;
-
-	Vector3 diff = centerPos - pos;
-	m_moveDirection = diff * Matrix4x4::RollZ(MathHelper::ToRadian(ButiRandom::GetRandom(-20.0f, 20.0f, 10)));
-
-	m_moveDirection.Normalize();
-}
-
-void ButiEngine::FriendFacePart::SetMoveSpeed()
-{
-	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-
-	if (m_movePattern == MovePattern::Straight)
-	{
-		m_moveSpeed = ButiRandom::GetRandom(m_vec_minStraightMoveSpeeds[gameLevel], m_vec_maxStraightMoveSpeeds[gameLevel], 100);
-	}
-	else if(m_movePattern == MovePattern::Throw)
-	{
-		m_moveSpeed = ButiRandom::GetRandom(m_vec_minThrowMoveSpeeds[gameLevel], m_vec_maxThrowMoveSpeeds[gameLevel], 100);
-	}
+	gameObject.lock()->transform->Translate(m_param.velocity * GameDevice::GetWorldSpeed());
 }
 
 void ButiEngine::FriendFacePart::StickToHead()
 {
-	gameObject.lock()->transform->SetLocalPosition(m_vwp_chaseTarget.lock()->transform->GetWorldPosition());
+	RemovePartCount();
 
-	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
-	if (!head.lock())
-	{
-		m_vwp_chaseTarget.lock()->SetIsRemove(true);
-		m_vwp_chaseTarget = Value_weak_ptr<GameObject>();
-		m_state = FacePartState::Move;
-		return;
-	}
+	gameObject.lock()->transform->SetLocalPosition(GetStickPos());
+	gameObject.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
 
-	gameObject.lock()->transform->SetBaseTransform(head.lock()->transform);
+	m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->StickPart(gameObject, m_param.type);
 
-	m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->StickPart(gameObject, m_type);
+	SpawnStickEffect();
 
-	m_vwp_chaseTarget.lock()->SetIsRemove(true);
-	m_vwp_chaseTarget = Value_weak_ptr<GameObject>();
-
-	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart"));
-	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendFacePart_Dummy"));
-
-	StickEffect();
-
-	m_state = FacePartState::Stop;
+	m_state = FacePartState::Stick;
 }
 
-void ButiEngine::FriendFacePart::StickEffect()
+void ButiEngine::FriendFacePart::SpawnStickEffect()
 {
 	auto drawObject = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject();
 	drawObject.lock()->AddGameComponent<PartStickAnimation>();
@@ -477,95 +219,50 @@ void ButiEngine::FriendFacePart::StickEffect()
 	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
 }
 
-void ButiEngine::FriendFacePart::StartChase()
+void ButiEngine::FriendFacePart::SetRandomVelocity()
 {
-	if (m_vwp_chaseTarget.lock())
-	{
-		return;
-	}
+	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
+	Vector3 centerPos = Vector3Const::Zero;
+	centerPos.z = pos.z;
 
-	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
+	Vector3 diff = centerPos - pos;
+	m_param.velocity = diff * Matrix4x4::RollZ(MathHelper::ToRadian(ButiRandom::GetRandom(-20.0f, 20.0f, 10)));
+	m_param.velocity.Normalize();
 
-	m_state = FacePartState::Chase;
-	m_chaseStartPos = gameObject.lock()->transform->GetLocalPosition();
-	Vector3 chaseTargetPos = GetChaseTargetPos();
-	m_vwp_chaseTarget = GetManager().lock()->AddObject(ObjectFactory::Create<Transform>(chaseTargetPos), gameObject.lock()->GetGameObjectName() + "ChaseTarget");
-	m_vwp_chaseTarget.lock()->transform->SetBaseTransform(head.lock()->transform);
-
-	//m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
-
-	auto swayComponent = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->GetGameComponent<SwayAnimation>();
-	if (swayComponent)
-	{
-		swayComponent->SetIsRemove(true);
-	}
-
-	switch (m_type)
-	{
-	case ButiEngine::PartType::Eye:
-		g_eyeCount--;
-		break;
-	case ButiEngine::PartType::Nose:
-		g_noseCount--;
-		break;
-	case ButiEngine::PartType::Mouth:
-		g_mouthCount--;
-		break;
-	case ButiEngine::PartType::Dummy:
-		break;
-	default:
-		break;
-	}
-
-	m_vlp_chaseTimer->Start();
-}
-
-void ButiEngine::FriendFacePart::Chase()
-{
-	if (m_vlp_chaseTimer->IsOn())
-	{
-		Vector3 pos = MathHelper::LerpPosition(m_chaseStartPos, m_vwp_chaseTarget.lock()->transform->GetWorldPosition(), Easing::EaseOutQuart(m_vlp_chaseTimer->GetPercent()));
-		gameObject.lock()->transform->SetLocalPosition(pos);
-	}
-
-	if (m_vlp_chaseTimer->Update())
-	{
-		m_vlp_chaseTimer->Stop();
-
-		gameObject.lock()->transform->SetLocalPosition(m_vwp_chaseTarget.lock()->transform->GetWorldPosition());
-
-		StickToHead();
-	}
+	m_param.velocity *= ButiRandom::GetRandom(m_param.minMoveSpeed, m_param.maxMoveSpeed, 100);
 }
 
 void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea)
 {
 	m_vwp_partHitArea = arg_vwp_partHitArea;
 	auto partHitAreaComponent = arg_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
+	m_vwp_head = partHitAreaComponent->GetParent();
 
-	if (partHitAreaComponent->CanStickPart(m_type))
+	if (partHitAreaComponent->CanStickPart(m_param.type))
 	{
-		if (m_type != PartType::Dummy)
+		if (m_param.type != PartType::Dummy)
 		{
 			partHitAreaComponent->SetCanStickPart(false);
 		}
 
-		//m_vwp_rigidBodyComponent.lock()->SetIsRemove(true);
 		gameObject.lock()->GetGameComponent<TriggerComponent>()->SetIsRemove(true);
 
 		m_vlp_deadTimer->Stop();
-		if (m_vlp_lifeTimer)
+		m_vlp_lifeTimer->Stop();
+
+		auto swayComponent = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->GetGameComponent<SwayAnimation>();
+		if (swayComponent)
 		{
-			m_vlp_lifeTimer->Stop();
+			swayComponent->SetIsRemove(true);
 		}
 
-		StartChase();
+		StickToHead();
 	}
 }
 
 bool ButiEngine::FriendFacePart::CanUpdate()
 {
-	if (m_vwp_stageManager.lock() && !m_vwp_stageManager.lock()->IsGameStart() && m_movePattern != MovePattern::Stay)
+	if (m_vwp_stageManager.lock() && !m_vwp_stageManager.lock()->IsGameStart())
 	{
 		return false;
 	}
@@ -578,24 +275,24 @@ bool ButiEngine::FriendFacePart::CanUpdate()
 	return true;
 }
 
-ButiEngine::Vector3 ButiEngine::FriendFacePart::GetChaseTargetPos()
+ButiEngine::Vector3 ButiEngine::FriendFacePart::GetStickPos()
 {
 	Vector3 rayStartPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
-	if (m_type == PartType::Dummy)
+	if (m_param.type == PartType::Dummy)
 	{
 		rayStartPos = gameObject.lock()->transform->GetLocalPosition();
 	}
 	rayStartPos.z += 50.0f;
 
-	Vector3 chaseTargetPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
-	chaseTargetPos.z = m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->GetStickPos().z;
+	Vector3 stickPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
+	stickPos.z = m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->GetStickPos().z;
 
 	List<ButiBullet::PhysicsRaycastResult> list_rayRes;
 	if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
 		RaycastAllHit(rayStartPos, -Vector3Const::ZAxis, 100.0f, 1, &list_rayRes))
 	{
 		float nearestDistance = 1000.0f;
-		float chaseTargetPosZ = chaseTargetPos.z;
+		float chaseTargetPosZ = stickPos.z;
 
 		for (auto& res : list_rayRes)
 		{
@@ -615,39 +312,59 @@ ButiEngine::Vector3 ButiEngine::FriendFacePart::GetChaseTargetPos()
 		}
 	}
 
-	return chaseTargetPos;
+	return stickPos;
 }
 
-void ButiEngine::FriendFacePart::ResizeLevelParameter()
+void ButiEngine::FriendFacePart::AddPartCount()
 {
-	std::int32_t maxLevel = m_vwp_gameLevelManager.lock()->GetMaxLevel();
+	switch (m_param.type)
+	{
+	case ButiEngine::PartType::Eye:
+		g_eyeCount++;
+		break;
+	case ButiEngine::PartType::Nose:
+		g_noseCount++;
+		break;
+	case ButiEngine::PartType::Mouth:
+		g_mouthCount++;
+		break;
+	case ButiEngine::PartType::Dummy:
+		g_dummyCount++;
+		break;
+	default:
+		break;
+	}
+}
 
-	if (m_vec_minStraightMoveSpeeds.size() != (maxLevel + 1))
+void ButiEngine::FriendFacePart::RemovePartCount()
+{
+	switch (m_param.type)
 	{
-		m_vec_minStraightMoveSpeeds.resize(maxLevel + 1);
+	case ButiEngine::PartType::Eye:
+		g_eyeCount--;
+		break;
+	case ButiEngine::PartType::Nose:
+		g_noseCount--;
+		break;
+	case ButiEngine::PartType::Mouth:
+		g_mouthCount--;
+		break;
+	case ButiEngine::PartType::Dummy:
+		g_dummyCount--;
+		break;
+	default:
+		break;
 	}
-	if (m_vec_maxStraightMoveSpeeds.size() != (maxLevel + 1))
-	{
-		m_vec_maxStraightMoveSpeeds.resize(maxLevel + 1);
-	}
-	if (m_vec_minThrowMoveSpeeds.size() != (maxLevel + 1))
-	{
-		m_vec_minThrowMoveSpeeds.resize(maxLevel + 1);
-	}
-	if (m_vec_maxThrowMoveSpeeds.size() != (maxLevel + 1))
-	{
-		m_vec_maxThrowMoveSpeeds.resize(maxLevel + 1);
-	}
-	if (m_vec_stayProbabilities.size() != (maxLevel + 1))
-	{
-		m_vec_stayProbabilities.resize(maxLevel + 1);
-	}
-	if (m_vec_straightProbabilities.size() != (maxLevel + 1))
-	{
-		m_vec_straightProbabilities.resize(maxLevel + 1);
-	}
-	if (m_vec_throwProbabilities.size() != (maxLevel + 1))
-	{
-		m_vec_throwProbabilities.resize(maxLevel + 1);
-	}
+}
+
+void ButiEngine::FriendFacePart::GUI_SetPartParam()
+{
+}
+
+void ButiEngine::FriendFacePart::GUI_SetPartType()
+{
+}
+
+void ButiEngine::FriendFacePart::GUI_SetMoveSpeed()
+{
 }

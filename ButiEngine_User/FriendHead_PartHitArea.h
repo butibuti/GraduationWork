@@ -33,6 +33,8 @@ namespace ButiEngine {
 			gameObject.lock()->transform->SetBaseTransform(arg_vwp_parent.lock()->transform, true);
 		}
 
+		Value_weak_ptr<GameObject> GetParent() { return m_vwp_parent; }
+
 		Value_weak_ptr<GameObject> GetStickPart() { return m_vwp_part; }
 		std::vector<Value_weak_ptr<GameObject>> GetStickDummyParts() { return m_vec_vwp_dummyParts;}
 

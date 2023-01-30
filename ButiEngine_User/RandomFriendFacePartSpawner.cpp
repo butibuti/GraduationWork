@@ -131,60 +131,48 @@ void ButiEngine::RandomFriendFacePartSpawner::FirstSpawnFacePart()
 {
 	auto eye = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eyes");
 	auto eyePartComponent = eye.lock()->GetGameComponent<FriendFacePart>();
-	eyePartComponent->SetMovePattern(0);
-	eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(eyePartComponent->GetMovePattern(), true));
+	eyePartComponent->SetParam_Stay();
+	eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(false, true));
 
 	auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
 	auto nosePartComponent = nose.lock()->GetGameComponent<FriendFacePart>();
-	nosePartComponent->SetMovePattern(0);
-	nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(nosePartComponent->GetMovePattern(), true));
+	nosePartComponent->SetParam_Stay();
+	nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(false, true));
 
 	auto mouth = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Mouth");
 	auto mouthPartComponent = mouth.lock()->GetGameComponent<FriendFacePart>();
-	mouthPartComponent->SetMovePattern(0);
-	mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(mouthPartComponent->GetMovePattern(), true));
+	mouthPartComponent->SetParam_Stay();
+	mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(false, true));
 }
 
 void ButiEngine::RandomFriendFacePartSpawner::SpawnFacePart()
 {
  	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	auto faceParts = GetManager().lock()->GetGameObjects(GameObjectTag("FriendFacePart"));
-	if (faceParts.GetSize() >= m_vec_maxFacePartCounts[gameLevel])
+	if (FriendFacePart::GetNormalPartCount() >= m_vec_maxFacePartCounts[gameLevel])
 	{
 		return;
 	}
-
-	auto facePart = GetManager().lock()->AddObjectFromCereal(GetRandomSpawnPartName());
-	auto facePartComponent = facePart.lock()->GetGameComponent<FriendFacePart>();
-	facePartComponent->SetMovePattern(gameLevel);
-	facePart.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(facePartComponent->GetMovePattern()));
 
 	std::int32_t minCount = 5;
 	std::int32_t eyeSpawnCount = minCount - FriendFacePart::GetEyeCount();
 	for (std::int32_t i = 0; i < eyeSpawnCount; i++)
 	{
 		auto eye = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eyes");
-		auto eyeFacePartComponent = eye.lock()->GetGameComponent<FriendFacePart>();
-		eyeFacePartComponent->SetMovePattern(gameLevel);
-		eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(eyeFacePartComponent->GetMovePattern()));
+		eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
 	}
 
 	std::int32_t noseSpawnCount = minCount - FriendFacePart::GetNoseCount();
 	for (std::int32_t i = 0; i < noseSpawnCount; i++)
 	{
 		auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
-		auto noseFacePartComponent = nose.lock()->GetGameComponent<FriendFacePart>();
-		noseFacePartComponent->SetMovePattern(gameLevel);
-		nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(noseFacePartComponent->GetMovePattern()));
+		nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
 	}
 
 	std::int32_t mouthSpawnCount = minCount - FriendFacePart::GetMouthCount();
 	for (std::int32_t i = 0; i < mouthSpawnCount; i++)
 	{
 		auto mouth = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Mouth");
-		auto mouthFacePartComponent = mouth.lock()->GetGameComponent<FriendFacePart>();
-		mouthFacePartComponent->SetMovePattern(gameLevel);
-		mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(mouthFacePartComponent->GetMovePattern()));
+		mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
 	}
 }
 
@@ -205,16 +193,14 @@ void ButiEngine::RandomFriendFacePartSpawner::SetSpawnFacePartInterval()
 void ButiEngine::RandomFriendFacePartSpawner::SpawnDummyPart()
 {
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	auto dummyParts = GetManager().lock()->GetGameObjects(GameObjectTag("FriendFacePart_Dummy"));
-	if (dummyParts.GetSize() >= m_vec_maxDummyPartCounts[gameLevel])
+	if (FriendFacePart::GetDummyPartCount() >= m_vec_maxDummyPartCounts[gameLevel])
 	{
 		return;
 	}
 
 	auto dummyPart = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Dummy");
 	auto dummyPartComponent = dummyPart.lock()->GetGameComponent<FriendFacePart>();
-	dummyPartComponent->SetMovePattern(gameLevel);
-	dummyPart.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(dummyPartComponent->GetMovePattern()));
+	dummyPart.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
 }
 
 void ButiEngine::RandomFriendFacePartSpawner::SetSpawnDummyPartInterval()
@@ -231,20 +217,16 @@ void ButiEngine::RandomFriendFacePartSpawner::SetSpawnDummyPartInterval()
 	m_vlp_spawnDummyPartTimer->Reset();
 }
 
-ButiEngine::Vector3 ButiEngine::RandomFriendFacePartSpawner::GetRandomSpawnPartPos(const MovePattern arg_movePattern, bool arg_isFirstSpawn)
+ButiEngine::Vector3 ButiEngine::RandomFriendFacePartSpawner::GetRandomSpawnPartPos(bool arg_isStraight, bool arg_isFirstSpawn)
 {
 	std::string movePatternStr = "Stay";
 	if (arg_isFirstSpawn)
 	{
 		movePatternStr = "Stay_First";
 	}
-	else if (arg_movePattern == MovePattern::Straight)
+	else if (arg_isStraight)
 	{
 		movePatternStr = "Straight";
-	}
-	else if (arg_movePattern == MovePattern::Throw)
-	{
-		movePatternStr = "Throw";
 	}
 
 	std::string tagName = "FriendFacePartSpawnArea_" + movePatternStr;

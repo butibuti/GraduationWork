@@ -13,20 +13,39 @@ namespace ButiEngine {
 	enum class FacePartState
 	{
 		Move,
-		Chase,
-		Stop,
+		Stick,
 	};
 
-	enum class MovePattern
+	struct FacePartParameter
 	{
-		Stay,
-		Straight,
-		Throw,
+		PartType type = PartType::Eye;
+
+		bool isRandom = true;
+
+		Vector3 velocity;
+		float minMoveSpeed = 0.05f;
+		float maxMoveSpeed = 0.075f;
+
+		float gravity = 0.0f;
+		Vector3 gravityDirection = -Vector3Const::YAxis;
+		float gravityAcceleration = 0.0f;
+
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			ARCHIVE_BUTI(type);
+			ARCHIVE_BUTI(isRandom);
+			ARCHIVE_BUTI(velocity);
+			ARCHIVE_BUTI(minMoveSpeed);
+			ARCHIVE_BUTI(maxMoveSpeed);
+			ARCHIVE_BUTI(gravity);
+			ARCHIVE_BUTI(gravityDirection);
+			ARCHIVE_BUTI(gravityAcceleration);
+		}
 	};
 
 	class StageManager;
 	class PauseManager;
-	class RigidBodyComponent;
 	class GameLevelManager;
 
 	class FriendFacePart :public GameComponent
@@ -46,91 +65,65 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_type);
-			ARCHIVE_BUTI(m_vec_minStraightMoveSpeeds);
-			ARCHIVE_BUTI(m_vec_maxStraightMoveSpeeds);
-			ARCHIVE_BUTI(m_vec_minThrowMoveSpeeds);
-			ARCHIVE_BUTI(m_vec_maxThrowMoveSpeeds);
-			ARCHIVE_BUTI(m_vec_stayProbabilities);
-			ARCHIVE_BUTI(m_vec_straightProbabilities);
-			ARCHIVE_BUTI(m_vec_throwProbabilities);
+			ARCHIVE_BUTI(m_param);
 		}
 
-		void SetMovePattern(const std::int32_t arg_gameLevel);
-		MovePattern GetMovePattern() { return m_movePattern; }
-
 		void Dead();
+
+		void SetParam_Stay();
 
 		static void ResetPartCount()
 		{
 			g_eyeCount = 0;
 			g_noseCount = 0;
 			g_mouthCount = 0;
+			g_dummyCount = 0;
 		}
 
 		static std::int32_t GetEyeCount() { return g_eyeCount; }
 		static std::int32_t GetNoseCount() { return g_noseCount; }
 		static std::int32_t GetMouthCount() { return g_mouthCount; }
+		static std::int32_t GetNormalPartCount() { return g_eyeCount + g_noseCount + g_mouthCount; }
+		static std::int32_t GetDummyPartCount() { return g_dummyCount; }
 	private:
 		void Move();
-		void MoveStay();
-		void MoveStraight();
-		void MoveThrow();
-		void InitThrow();
-
-		void SetMoveDirection();
-		void SetMoveSpeed();
 
 		void StickToHead();
-		void StickEffect();
+		void SpawnStickEffect();
 
-		void StartChase();
-		void Chase();
+		void SetRandomVelocity();
 
 		void OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
 
 		bool CanUpdate();
-		Vector3 GetChaseTargetPos();
+		Vector3 GetStickPos();
 
-		void ResizeLevelParameter();
+		void AddPartCount();
+		void RemovePartCount();
+
+		void GUI_SetPartParam();
+		void GUI_SetPartType();
+		void GUI_SetMoveSpeed();
 
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
-		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
-
 		Value_ptr<RelativeTimer> m_vlp_deadTimer;
 		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
 
-		std::vector<float> m_vec_minStraightMoveSpeeds;
-		std::vector<float> m_vec_maxStraightMoveSpeeds;
-		std::vector<float> m_vec_minThrowMoveSpeeds;
-		std::vector<float> m_vec_maxThrowMoveSpeeds;
-		std::vector<float> m_vec_stayProbabilities;
-		std::vector<float> m_vec_straightProbabilities;
-		std::vector<float> m_vec_throwProbabilities;
-
-		PartType m_type = PartType::Eye;
-		
-		MovePattern m_movePattern = MovePattern::Stay;
-
-		bool m_isCollisionHead;
-		Vector3 m_moveDirection;
-		float m_moveSpeed;
-
 		FacePartState m_state;
+		FacePartParameter m_param;
 
+		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_partHitArea;
-		Vector3 m_chaseStartPos;
-		Value_weak_ptr<GameObject> m_vwp_chaseTarget;
-		Value_ptr<RelativeTimer> m_vlp_chaseTimer;
 
 		bool m_isTutorial;
 
 		static std::int32_t g_eyeCount;
 		static std::int32_t g_noseCount;
 		static std::int32_t g_mouthCount;
+		static std::int32_t g_dummyCount;
 	};
 
 }

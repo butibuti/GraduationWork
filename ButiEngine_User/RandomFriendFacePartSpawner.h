@@ -43,7 +43,7 @@ namespace ButiEngine {
 		void SpawnDummyPart();
 		void SetSpawnDummyPartInterval();
 
-		Vector3 GetRandomSpawnPartPos(const MovePattern arg_movePattern, bool arg_isFirstSpawn = false);
+		Vector3 GetRandomSpawnPartPos(bool arg_isStraight = true, bool arg_isFirstSpawn = false);
 		std::string GetRandomSpawnPartName();
 
 		bool CanUpdate();
