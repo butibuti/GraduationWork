@@ -12,6 +12,7 @@
 #include "FriendHead_Center.h"
 #include "StageManager.h"
 #include "TutorialManager.h"
+#include "GameCamera.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
@@ -53,15 +54,7 @@ void ButiEngine::FriendHead::OnUpdate()
 
 	if (!m_isCompleteFace && CanPut())
 	{
-		auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
-		meshDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
-		meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead.mat"), 0);
-		meshDraw->ReRegist();
-
-		m_vlp_completeFaceCountUpTimer->Start();
-		m_vlp_spawnStarFlashIntervalTimer->Start();
-
-		m_isCompleteFace = true;
+		CompleteFace();
 	}
 
 	Control();
@@ -168,21 +161,6 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::FriendHead::GetMo
 	return m_vwp_mouthHitAreaComponent.lock()->GetPart();
 }
 
-std::vector<ButiEngine::Value_weak_ptr<ButiEngine::GameObject>> ButiEngine::FriendHead::GetDummies()
-{
-	std::vector<ButiEngine::Value_weak_ptr<ButiEngine::GameObject>> vec_dummies;
-	
-	auto eyesHitAreaDummyParts = m_vwp_eyesHitAreaComponent.lock()->GetStickDummyParts();
-	auto noseHitAreaDummyParts = m_vwp_noseHitAreaComponent.lock()->GetStickDummyParts();
-	auto mouthHitAreaDummyParts = m_vwp_mouthHitAreaComponent.lock()->GetStickDummyParts();
-
-	vec_dummies.insert(vec_dummies.end(), eyesHitAreaDummyParts.begin(), eyesHitAreaDummyParts.end());
-	vec_dummies.insert(vec_dummies.end(), noseHitAreaDummyParts.begin(), noseHitAreaDummyParts.end());
-	vec_dummies.insert(vec_dummies.end(), mouthHitAreaDummyParts.begin(), mouthHitAreaDummyParts.end());
-
-	return vec_dummies;
-}
-
 std::int32_t ButiEngine::FriendHead::GetEyeScore()
 {
 	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
@@ -222,24 +200,6 @@ std::int32_t ButiEngine::FriendHead::GetMouthScore()
 	}
 
 	return m_vwp_mouthHitAreaComponent.lock()->GetCalcScore();
-}
-
-bool ButiEngine::FriendHead::IsBeautiful()
-{
-	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
-	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
-
-	if (gameLevel == 0)
-	{
-		return false;
-	}
-
-	std::int32_t dummyPartCount = 0;
-	dummyPartCount += m_vwp_eyesHitAreaComponent.lock()->GetDummyPartCount();
-	dummyPartCount += m_vwp_noseHitAreaComponent.lock()->GetDummyPartCount();
-	dummyPartCount += m_vwp_mouthHitAreaComponent.lock()->GetDummyPartCount();
-	
-	return dummyPartCount == 0;
 }
 
 bool ButiEngine::FriendHead::IsFast()
@@ -283,6 +243,44 @@ bool ButiEngine::FriendHead::IsExact()
 		return false;
 	}
 	return true;
+}
+
+bool ButiEngine::FriendHead::IsExistPartStuckArea()
+{
+	return GetPartStuckAreas().size() > 0;
+}
+
+void ButiEngine::FriendHead::LeavePart()
+{
+	if (m_isPut)
+	{
+		return;
+	}
+
+	GetManager().lock()->GetGameObject("CameraParent").lock()->GetGameComponent<GameCamera>()->StartShake(15);
+
+	auto partStuckAreas = GetPartStuckAreas();
+	std::int32_t maxRandom = partStuckAreas.size() - 1;
+	std::int32_t leavePartAreaIndex = ButiRandom::GetInt(0, maxRandom);
+
+	partStuckAreas[leavePartAreaIndex].lock()->LeavePart();
+
+	if (m_isCompleteFace)
+	{
+		auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
+		meshDraw->SetColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+		meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead_Gray.mat"), 0);
+		meshDraw->ReRegist();
+
+		m_vlp_completeFaceCountUpTimer->Reset();
+		m_vlp_completeFaceCountUpTimer->Stop();
+		m_vlp_spawnStarFlashIntervalTimer->Reset();
+		m_vlp_spawnStarFlashIntervalTimer->Stop();
+
+		m_isCompleteFace = false;
+
+		m_isFast = true;
+	}
 }
 
 void ButiEngine::FriendHead::Control()
@@ -396,6 +394,19 @@ void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
 	}
 
 	m_isPut = true;
+}
+
+void ButiEngine::FriendHead::CompleteFace()
+{
+	auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>();
+	meshDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
+	meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead.mat"), 0);
+	meshDraw->ReRegist();
+
+	m_vlp_completeFaceCountUpTimer->Start();
+	m_vlp_spawnStarFlashIntervalTimer->Start();
+
+	m_isCompleteFace = true;
 }
 
 void ButiEngine::FriendHead::Appear()
@@ -515,6 +526,25 @@ bool ButiEngine::FriendHead::CanUpdate()
 	}
 
 	return true;
+}
+
+std::vector<ButiEngine::Value_weak_ptr<ButiEngine::FriendHead_PartHitArea>> ButiEngine::FriendHead::GetPartStuckAreas()
+{
+	std::vector<Value_weak_ptr<FriendHead_PartHitArea>> partStuckAreas;
+	if (m_vwp_eyesHitAreaComponent.lock()->GetStickPart().lock())
+	{
+		partStuckAreas.push_back(m_vwp_eyesHitAreaComponent);
+	}
+	if (m_vwp_noseHitAreaComponent.lock()->GetStickPart().lock())
+	{
+		partStuckAreas.push_back(m_vwp_noseHitAreaComponent);
+	}
+	if (m_vwp_mouthHitAreaComponent.lock()->GetStickPart().lock())
+	{
+		partStuckAreas.push_back(m_vwp_mouthHitAreaComponent);
+	}
+
+	return partStuckAreas;
 }
 
 void ButiEngine::FriendHead::CreatePartHitArea()

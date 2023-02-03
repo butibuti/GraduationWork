@@ -18,11 +18,11 @@ void ButiEngine::RandomFriendFacePartSpawner::OnUpdate()
 		SetSpawnFacePartInterval();
 	}
 
-	/*if (m_vlp_spawnDummyPartTimer->Update())
+	if (m_vlp_spawnDummyPartTimer->Update())
 	{
 		SpawnDummyPart();
 		SetSpawnDummyPartInterval();
-	}*/
+	}
 }
 
 void ButiEngine::RandomFriendFacePartSpawner::OnSet()
@@ -130,18 +130,12 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::RandomFriendFacePar
 void ButiEngine::RandomFriendFacePartSpawner::FirstSpawnFacePart()
 {
 	auto eye = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eyes");
-	auto eyePartComponent = eye.lock()->GetGameComponent<FriendFacePart>();
-	eyePartComponent->SetParam_Stay();
 	eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(false, true));
 
 	auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
-	auto nosePartComponent = nose.lock()->GetGameComponent<FriendFacePart>();
-	nosePartComponent->SetParam_Stay();
 	nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(false, true));
 
 	auto mouth = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Mouth");
-	auto mouthPartComponent = mouth.lock()->GetGameComponent<FriendFacePart>();
-	mouthPartComponent->SetParam_Stay();
 	mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(false, true));
 }
 
@@ -153,12 +147,14 @@ void ButiEngine::RandomFriendFacePartSpawner::SpawnFacePart()
 		return;
 	}
 
-	std::int32_t minCount = 5;
+	std::int32_t minCount = 3;
 	std::int32_t eyeSpawnCount = minCount - FriendFacePart::GetEyeCount();
 	for (std::int32_t i = 0; i < eyeSpawnCount; i++)
 	{
 		auto eye = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eyes");
 		eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
+		auto eyeComponent = eye.lock()->GetGameComponent<FriendFacePart>();
+		eyeComponent->SetRandomParam_Straight();
 	}
 
 	std::int32_t noseSpawnCount = minCount - FriendFacePart::GetNoseCount();
@@ -166,6 +162,8 @@ void ButiEngine::RandomFriendFacePartSpawner::SpawnFacePart()
 	{
 		auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
 		nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
+		auto noseComponent = nose.lock()->GetGameComponent<FriendFacePart>();
+		noseComponent->SetRandomParam_Straight();
 	}
 
 	std::int32_t mouthSpawnCount = minCount - FriendFacePart::GetMouthCount();
@@ -173,6 +171,8 @@ void ButiEngine::RandomFriendFacePartSpawner::SpawnFacePart()
 	{
 		auto mouth = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Mouth");
 		mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
+		auto mouthComponent = mouth.lock()->GetGameComponent<FriendFacePart>();
+		mouthComponent->SetRandomParam_Straight();
 	}
 }
 
@@ -199,8 +199,9 @@ void ButiEngine::RandomFriendFacePartSpawner::SpawnDummyPart()
 	}
 
 	auto dummyPart = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Dummy");
-	auto dummyPartComponent = dummyPart.lock()->GetGameComponent<FriendFacePart>();
 	dummyPart.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
+	auto dummyPartComponent = dummyPart.lock()->GetGameComponent<FriendFacePart>();
+	dummyPartComponent->SetRandomParam_Straight();
 }
 
 void ButiEngine::RandomFriendFacePartSpawner::SetSpawnDummyPartInterval()

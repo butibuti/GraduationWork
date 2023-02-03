@@ -407,13 +407,6 @@ void ButiEngine::FriendBody::SaveFriendData()
 	m_vlp_friendData->vlp_eyeTransform = headComponent->GetEye().lock()->transform->Clone();
 	m_vlp_friendData->vlp_noseTransform = headComponent->GetNose().lock()->transform->Clone();
 	m_vlp_friendData->vlp_mouthTransform = headComponent->GetMouth().lock()->transform->Clone();
-
-	auto vec_dummies = headComponent->GetDummies();
-	auto end = vec_dummies.end();
-	for (auto itr = vec_dummies.begin(); itr != end; ++itr)
-	{
-		m_vlp_friendData->vec_vlp_dummyTransforms.push_back((*itr).lock()->transform->Clone());
-	}
 	
 	std::int32_t addCount = 1;
 	//if (headComponent->IsBeautiful())

@@ -40,7 +40,7 @@ void ButiEngine::Effect_PartHitFlash::Start()
 
 	gameObject.lock()->transform->RollLocalRotationZ_Degrees(ButiRandom::GetInt(0, 359));
 
-	m_vlp_lifeTImer = ObjectFactory::Create<RelativeTimer>(3);
+	m_vlp_lifeTImer = ObjectFactory::Create<RelativeTimer>(6);
 	m_vlp_lifeTImer->Start();
 }
 

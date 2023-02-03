@@ -7,6 +7,13 @@
 
 void ButiEngine::FriendHead_PartHitArea::OnUpdate()
 {
+	if (m_vlp_leaveIntervalTimer->Update())
+	{
+		m_vlp_leaveIntervalTimer->Stop();
+
+		m_canStickPart = true;
+		CreateGuideMarker();
+	}
 }
 
 void ButiEngine::FriendHead_PartHitArea::OnSet()
@@ -75,6 +82,8 @@ void ButiEngine::FriendHead_PartHitArea::Start()
 	m_standardPos = gameObject.lock()->transform->GetLocalPosition();
 	m_standardPos += m_vwp_parent.lock()->transform->GetLocalPosition();
 
+	m_vlp_leaveIntervalTimer = ObjectFactory::Create<RelativeTimer>(30);
+
 	CreateGuideMarker();
 	SetDefaultPosObject();
 }
@@ -103,17 +112,31 @@ void ButiEngine::FriendHead_PartHitArea::StickPart(Value_weak_ptr<GameObject> ar
 {
 	if (arg_type == PartType::Dummy)
 	{
-		m_vec_vwp_dummyParts.push_back(arg_vwp_part);
+		return;
 	}
 	else if(!m_vwp_part.lock())
 	{
 		m_vwp_part = arg_vwp_part;
+		m_canStickPart = false;
 
 		if (m_vwp_guideMarker.lock())
 		{
 			m_vwp_guideMarker.lock()->SetIsRemove(true);
 		}
 	}
+}
+
+void ButiEngine::FriendHead_PartHitArea::LeavePart()
+{
+	if (!m_vwp_part.lock())
+	{
+		return;
+	}
+
+	m_vwp_part.lock()->GetGameComponent<FriendFacePart>()->LeaveHead();
+	m_vwp_part = Value_weak_ptr<GameObject>();
+
+	m_vlp_leaveIntervalTimer->Start();
 }
 
 ButiEngine::Vector3 ButiEngine::FriendHead_PartHitArea::GetStickPos()

@@ -33,22 +33,19 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_fastBorder);
 		}
 
-		Vector3 GetVelocity() { return m_velocity; }
-
-		bool IsHighSpeed() { return m_velocity.z >= 0.075f; }
-
 		Value_weak_ptr<GameObject> GetEye();
 		Value_weak_ptr<GameObject> GetNose();
 		Value_weak_ptr<GameObject> GetMouth();
-		std::vector<Value_weak_ptr<GameObject>> GetDummies();
 
 		std::int32_t GetEyeScore();
 		std::int32_t GetNoseScore();
 		std::int32_t GetMouthScore();
 
-		bool IsBeautiful();
 		bool IsFast();
 		bool IsExact();
+
+		bool IsExistPartStuckArea();
+		void LeavePart();
 	private:
 		void Control();
 		void ControlByKeyboard();
@@ -56,6 +53,7 @@ namespace ButiEngine {
 		void ControlByVRTracker();
 		void SpawnStarFlash();
 		void OnPut(Value_weak_ptr<GameObject> arg_vwp_body);
+		void CompleteFace();
 
 		void Appear();
 		void CalcVelocity();
@@ -64,6 +62,7 @@ namespace ButiEngine {
 		void CheckPut();
 		bool CanPut();
 		bool CanUpdate();
+		std::vector<Value_weak_ptr<FriendHead_PartHitArea>> GetPartStuckAreas();
 
 		void CreatePartHitArea();
 
@@ -72,8 +71,6 @@ namespace ButiEngine {
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_weak_ptr<FriendManager> m_vwp_friendManager;
-
-		Value_weak_ptr<RigidBodyComponent> m_vwp_rigidBodyComponent;
 
 		std::int32_t m_trackerIndex;
 

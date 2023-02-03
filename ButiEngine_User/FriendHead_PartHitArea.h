@@ -36,15 +36,13 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> GetParent() { return m_vwp_parent; }
 
 		Value_weak_ptr<GameObject> GetStickPart() { return m_vwp_part; }
-		std::vector<Value_weak_ptr<GameObject>> GetStickDummyParts() { return m_vec_vwp_dummyParts;}
-
-		std::int32_t GetDummyPartCount() { return m_vec_vwp_dummyParts.size(); }
 
 		bool CanStickPart(const PartType arg_type);
 
 		void SetCanStickPart(const bool arg_canStickPart) { m_canStickPart = arg_canStickPart; }
 
 		void StickPart(Value_weak_ptr<GameObject> arg_vwp_part, const PartType arg_type);
+		void LeavePart();
 
 		Vector3 GetStickPos();
 
@@ -65,11 +63,12 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_parent;
 
 		Value_weak_ptr<GameObject> m_vwp_part;
-		std::vector<Value_weak_ptr<GameObject>> m_vec_vwp_dummyParts;
 
 		Value_weak_ptr<GameObject> m_vwp_guideMarker;
 
 		Value_weak_ptr<GameObject> m_vwp_defaultPosObject;
+
+		Value_ptr<RelativeTimer> m_vlp_leaveIntervalTimer;
 
 		PartType m_type;
 

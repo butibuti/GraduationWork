@@ -42,6 +42,7 @@ void ButiEngine::PartStickAnimation::OnSet()
 
 void ButiEngine::PartStickAnimation::OnRemove()
 {
+	gameObject.lock()->transform->SetLocalScale(m_standardScale);
 }
 
 void ButiEngine::PartStickAnimation::OnShowUI()

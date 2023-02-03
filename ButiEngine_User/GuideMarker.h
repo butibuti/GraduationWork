@@ -20,7 +20,11 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 		}
 
-		void SetMarkTarget(Value_weak_ptr<GameObject> arg_markTarget) { m_vwp_markTarget = arg_markTarget; }
+		void SetMarkTarget(Value_weak_ptr<GameObject> arg_markTarget) 
+		{
+			m_vwp_markTarget = arg_markTarget; 
+			gameObject.lock()->transform->SetWorldPosition(m_vwp_markTarget.lock()->transform->GetWorldPosition());
+		}
 		void SetColor(const Vector4& arg_color) { gameObject.lock()->GetGameComponent<MeshDrawComponent>()->SetColor(arg_color); }
 	private:
 		Value_weak_ptr<GameObject> m_vwp_markTarget;

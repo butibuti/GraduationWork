@@ -20,27 +20,32 @@ namespace ButiEngine {
 	{
 		PartType type = PartType::Eye;
 
-		bool isRandom = true;
+		std::int32_t life = 600;
 
-		Vector3 velocity;
-		float minMoveSpeed = 0.05f;
-		float maxMoveSpeed = 0.075f;
+		Vector3 velocity = Vector3Const::Zero;
+		float moveSpeed = 1.0f;
+		float maxMoveSpeed = 1.0f;
 
+		bool isGravity = false;
 		float gravity = 0.0f;
 		Vector3 gravityDirection = -Vector3Const::YAxis;
-		float gravityAcceleration = 0.0f;
+
+		bool isSway = true;
+		float rotateSpeed = 0.0f;
 
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(type);
-			ARCHIVE_BUTI(isRandom);
+			ARCHIVE_BUTI(life);
 			ARCHIVE_BUTI(velocity);
-			ARCHIVE_BUTI(minMoveSpeed);
+			ARCHIVE_BUTI(moveSpeed);
 			ARCHIVE_BUTI(maxMoveSpeed);
+			ARCHIVE_BUTI(isGravity);
 			ARCHIVE_BUTI(gravity);
 			ARCHIVE_BUTI(gravityDirection);
-			ARCHIVE_BUTI(gravityAcceleration);
+			ARCHIVE_BUTI(isSway);
+			ARCHIVE_BUTI(rotateSpeed);
 		}
 	};
 
@@ -70,7 +75,9 @@ namespace ButiEngine {
 
 		void Dead();
 
-		void SetParam_Stay();
+		void SetRandomParam_Straight();
+
+		void LeaveHead();
 
 		static void ResetPartCount()
 		{
@@ -88,22 +95,26 @@ namespace ButiEngine {
 	private:
 		void Move();
 
-		void StickToHead();
-		void SpawnStickEffect();
+		void StickHead();
 
-		void SetRandomVelocity();
+		void SpawnStickEffect();
+		void SpawnDummyPartHitEffect();
 
 		void OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
 
 		bool CanUpdate();
 		Vector3 GetStickPos();
+		void Blow();
 
 		void AddPartCount();
 		void RemovePartCount();
 
 		void GUI_SetPartParam();
 		void GUI_SetPartType();
-		void GUI_SetMoveSpeed();
+		void GUI_SetLife();
+		void GUI_SetMoveParam();
+		void GUI_SetGravityParam();
+		void GUI_SetRotationParam();
 
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
@@ -117,6 +128,9 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_partHitArea;
+
+		float m_startZ;
+		bool m_isHitHead;
 
 		bool m_isTutorial;
 
