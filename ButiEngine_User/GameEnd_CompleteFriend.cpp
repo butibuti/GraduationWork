@@ -37,7 +37,7 @@ void ButiEngine::GameEnd_CompleteFriend::CreateParts(Value_weak_ptr<FriendData> 
 
 	m_vlp_animationController = ButiRendering::CreateAnimationController(body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
 	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
+		GetModel(body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
 	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
 
 	auto modelDraw = body.lock()->GetGameComponent<ModelDrawComponent>();

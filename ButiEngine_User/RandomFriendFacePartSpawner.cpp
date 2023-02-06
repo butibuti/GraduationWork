@@ -18,11 +18,11 @@ void ButiEngine::RandomFriendFacePartSpawner::OnUpdate()
 		SetSpawnFacePartInterval();
 	}
 
-	if (m_vlp_spawnDummyPartTimer->Update())
-	{
-		SpawnDummyPart();
-		SetSpawnDummyPartInterval();
-	}
+	//if (m_vlp_spawnDummyPartTimer->Update())
+	//{
+	//	SpawnDummyPart();
+	//	SetSpawnDummyPartInterval();
+	//}
 }
 
 void ButiEngine::RandomFriendFacePartSpawner::OnSet()

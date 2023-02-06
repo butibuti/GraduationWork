@@ -16,6 +16,38 @@
 
 void ButiEngine::FriendHead::OnUpdate()
 {
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::G))
+	{
+		m_isShowGuide = !m_isShowGuide;
+		if (m_isShowGuide)
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(1.0f);
+		}
+		else
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(0.0f);
+		}
+	}
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::E))
+	{
+		m_isShowEar = !m_isShowEar;
+		if (m_isShowEar)
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(0.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(4)->GetTransform()->SetLocalScale(1.0f);
+		}
+		else
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(4)->GetTransform()->SetLocalScale(0.0f);
+		}
+	}
+
+
 	if (!CanUpdate())
 	{
 		return;
@@ -136,6 +168,12 @@ void ButiEngine::FriendHead::Start()
 	m_vlp_completeFaceCountUpTimer = ObjectFactory::Create<RelativeTimer>(m_fastBorder);
 
 	m_vlp_spawnStarFlashIntervalTimer = ObjectFactory::Create<RelativeTimer>(3);
+
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(0.0f);
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>(4)->GetTransform()->SetLocalScale(0.0f);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
@@ -272,6 +310,14 @@ void ButiEngine::FriendHead::LeavePart()
 		meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead_Gray.mat"), 0);
 		meshDraw->ReRegist();
 
+		if (m_isShowEar)
+		{
+			auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>(4);
+			meshDraw->SetColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+			meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead_Gray.mat"), 0);
+			meshDraw->ReRegist();
+		}
+
 		m_vlp_completeFaceCountUpTimer->Reset();
 		m_vlp_completeFaceCountUpTimer->Stop();
 		m_vlp_spawnStarFlashIntervalTimer->Reset();
@@ -402,6 +448,14 @@ void ButiEngine::FriendHead::CompleteFace()
 	meshDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
 	meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead.mat"), 0);
 	meshDraw->ReRegist();
+
+	if (m_isShowEar)
+	{
+		auto meshDraw = gameObject.lock()->GetGameComponent<MeshDrawComponent>(4);
+		meshDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
+		meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead.mat"), 0);
+		meshDraw->ReRegist();
+	}
 
 	m_vlp_completeFaceCountUpTimer->Start();
 	m_vlp_spawnStarFlashIntervalTimer->Start();

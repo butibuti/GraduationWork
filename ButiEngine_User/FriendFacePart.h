@@ -10,12 +10,6 @@ namespace ButiEngine {
 		Dummy,
 	};
 
-	enum class FacePartState
-	{
-		Move,
-		Stick,
-	};
-
 	struct FacePartParameter
 	{
 		PartType type = PartType::Eye;
@@ -105,6 +99,8 @@ namespace ButiEngine {
 		bool CanUpdate();
 		Vector3 GetStickPos();
 		void Blow();
+		void CheckExact();
+		void ChangeModel();
 
 		void AddPartCount();
 		void RemovePartCount();
@@ -123,7 +119,7 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_deadTimer;
 		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
 
-		FacePartState m_state;
+		bool m_isMove;
 		FacePartParameter m_param;
 
 		Value_weak_ptr<GameObject> m_vwp_head;
@@ -131,6 +127,10 @@ namespace ButiEngine {
 
 		float m_startZ;
 		bool m_isHitHead;
+
+		bool m_isExact;
+		Vector3 m_beforeBlowPosition;
+		Matrix4x4 m_beforeBlowRotation;
 
 		bool m_isTutorial;
 

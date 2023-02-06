@@ -105,6 +105,9 @@ namespace ButiEngine {
 
 		bool m_isTutorial;
 		Value_weak_ptr<TutorialManager> m_vwp_tutorialManager;
+
+		bool m_isShowGuide;
+		bool m_isShowEar;
 	};
 
 }

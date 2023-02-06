@@ -2,7 +2,6 @@
 #include "FriendHead_PartHitArea.h"
 #include "FriendFacePart.h"
 #include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
-#include "SeparateDrawObject.h"
 #include "GuideMarker.h"
 
 void ButiEngine::FriendHead_PartHitArea::OnUpdate()
@@ -11,7 +10,7 @@ void ButiEngine::FriendHead_PartHitArea::OnUpdate()
 	{
 		m_vlp_leaveIntervalTimer->Stop();
 
-		m_canStickPart = true;
+		gameObject.lock()->GetGameComponent<TriggerComponent>()->Regist();
 		CreateGuideMarker();
 	}
 }
@@ -135,7 +134,9 @@ void ButiEngine::FriendHead_PartHitArea::LeavePart()
 
 	m_vwp_part.lock()->GetGameComponent<FriendFacePart>()->LeaveHead();
 	m_vwp_part = Value_weak_ptr<GameObject>();
+	m_canStickPart = true;
 
+	gameObject.lock()->GetGameComponent<TriggerComponent>()->UnRegist();
 	m_vlp_leaveIntervalTimer->Start();
 }
 
@@ -184,9 +185,8 @@ bool ButiEngine::FriendHead_PartHitArea::IsExactAngle()
 	}
 	
 	float partAngle = m_vwp_part.lock()->transform->GetLocalRotation_Euler().z;
-	float drawObjectAngle = m_vwp_part.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->transform->GetLocalRotation_Euler().z;
 	
-	return abs(partAngle + drawObjectAngle) <= m_exactAngleBorder;
+	return partAngle <= m_exactAngleBorder;
 }
 
 bool ButiEngine::FriendHead_PartHitArea::IsExactPos()

@@ -23,7 +23,7 @@ void ButiEngine::FriendBody::OnUpdate()
 
 	if (m_isDance)
 	{
-		m_vlp_animationController->Update(0.5f);
+		m_vlp_animationController->Update(1.0f);
 	}
 
 	if (m_isRotate)
@@ -96,7 +96,7 @@ void ButiEngine::FriendBody::Start()
 
 	m_vlp_animationController = ButiRendering::CreateAnimationController(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
 	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
+		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
 	m_vlp_animationController->GetCurrentModelAnimation()->SetProgress(0.0f);
 
 	m_vwp_neck = GetManager().lock()->AddObjectFromCereal("FriendBody_Neck");

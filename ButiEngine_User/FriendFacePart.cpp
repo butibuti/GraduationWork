@@ -37,7 +37,7 @@ void ButiEngine::FriendFacePart::OnUpdate()
 		Dead();
 	}
 
-	if (m_state == FacePartState::Move)
+	if (m_isMove)
 	{
 		Move();
 	}
@@ -112,7 +112,11 @@ void ButiEngine::FriendFacePart::Start()
 		m_vlp_lifeTimer->Start();
 	}
 
-	m_state = FacePartState::Move;
+	m_isExact = false;
+	m_beforeBlowPosition = Vector3Const::Zero;
+	m_beforeBlowRotation = Matrix4x4();
+
+	m_isMove = true;
 
 	if (!m_param.isGravity)
 	{
@@ -166,15 +170,10 @@ void ButiEngine::FriendFacePart::LeaveHead()
 	m_vlp_deadTimer->Start();
 	m_vlp_lifeTimer->Start();
 
-	if (m_param.isSway)
-	{
-		gameObject.lock()->AddGameComponent<SwayAnimation>();
-	}
-
 	Blow();
 
-
-	m_state = FacePartState::Move;
+	m_isHitHead = false;
+	m_isMove = true;
 }
 
 void ButiEngine::FriendFacePart::Move()
@@ -217,7 +216,7 @@ void ButiEngine::FriendFacePart::StickHead()
 
 	SpawnStickEffect();
 
-	m_state = FacePartState::Stick;
+	m_isMove = false;
 }
 
 void ButiEngine::FriendFacePart::SpawnStickEffect()
@@ -250,12 +249,12 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 	auto partHitAreaComponent = arg_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 	m_vwp_head = partHitAreaComponent->GetParent();
 
-	if (partHitAreaComponent->CanStickPart(m_param.type))
+	if (!m_isHitHead && (partHitAreaComponent->CanStickPart(m_param.type) || m_isExact))
 	{
 		if (m_param.type == PartType::Dummy)
 		{
 			auto headCompontne = m_vwp_head.lock()->GetGameComponent<FriendHead>();
-			if (!m_isHitHead && headCompontne->IsExistPartStuckArea())
+			if (headCompontne->IsExistPartStuckArea())
 			{
 				SpawnDummyPartHitEffect();
 				headCompontne->LeavePart();
@@ -265,7 +264,13 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 		}
 		else
 		{
+			if (m_isExact)
+			{
+				partHitAreaComponent->LeavePart();
+			}
 			StickHead();
+			CheckExact();
+			m_isHitHead = true;
 		}
 	}
 }
@@ -288,10 +293,6 @@ bool ButiEngine::FriendFacePart::CanUpdate()
 ButiEngine::Vector3 ButiEngine::FriendFacePart::GetStickPos()
 {
 	Vector3 rayStartPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
-	if (m_param.type == PartType::Dummy)
-	{
-		rayStartPos = gameObject.lock()->transform->GetLocalPosition();
-	}
 	rayStartPos.z += 50.0f;
 
 	Vector3 stickPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
@@ -329,6 +330,7 @@ void ButiEngine::FriendFacePart::Blow()
 {
 	m_param.isGravity = true;
 	m_param.gravity = 0.0003f;
+	m_param.isSway = false;
 	m_param.velocity.y = 0.03f;
 
 	Vector3 pos = gameObject.lock()->transform->GetWorldPosition();
@@ -348,6 +350,41 @@ void ButiEngine::FriendFacePart::Blow()
 		direction = rand ? 1.0f : -1.0f;
 	}
 	m_param.velocity.x = force * direction;
+	m_param.rotateSpeed = 10.0f * direction;
+}
+
+void ButiEngine::FriendFacePart::CheckExact()
+{
+	if (m_isExact)
+	{
+		return;
+	}
+
+	m_isExact = m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->IsExact();
+	if (m_isExact)
+	{
+		//m_beforeBlowPosition = gameObject.lock()->transform->GetLocalPosition();
+		//m_beforeBlowRotation = gameObject.lock()->transform->GetLocalRotation();
+	}
+
+	ChangeModel();
+}
+
+void ButiEngine::FriendFacePart::ChangeModel()
+{
+	if (m_param.type == PartType::Eye)
+	{
+		gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(0.0f);
+
+		if (m_isExact)
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
+		}
+		else
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalPosition(1.0f);
+		}
+	}
 }
 
 void ButiEngine::FriendFacePart::AddPartCount()
