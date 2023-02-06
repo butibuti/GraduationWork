@@ -142,37 +142,34 @@ void ButiEngine::RandomFriendFacePartSpawner::FirstSpawnFacePart()
 void ButiEngine::RandomFriendFacePartSpawner::SpawnFacePart()
 {
  	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	if (FriendFacePart::GetNormalPartCount() >= m_vec_maxFacePartCounts[gameLevel])
-	{
-		return;
-	}
+	std::int32_t maxFacePartCount = m_vec_maxFacePartCounts[gameLevel];
 
-	std::int32_t minCount = 3;
-	std::int32_t eyeSpawnCount = minCount - FriendFacePart::GetEyeCount();
+	std::int32_t maxCount = maxFacePartCount;
+	std::int32_t eyeSpawnCount = maxCount - FriendFacePart::GetEyeCount();
 	for (std::int32_t i = 0; i < eyeSpawnCount; i++)
 	{
 		auto eye = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Eyes");
-		eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
+		eye.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(false));
 		auto eyeComponent = eye.lock()->GetGameComponent<FriendFacePart>();
-		eyeComponent->SetRandomParam_Straight();
+		//eyeComponent->SetRandomParam_Straight();
 	}
 
-	std::int32_t noseSpawnCount = minCount - FriendFacePart::GetNoseCount();
+	std::int32_t noseSpawnCount = maxCount - FriendFacePart::GetNoseCount();
 	for (std::int32_t i = 0; i < noseSpawnCount; i++)
 	{
 		auto nose = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Nose");
-		nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
+		nose.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(false));
 		auto noseComponent = nose.lock()->GetGameComponent<FriendFacePart>();
-		noseComponent->SetRandomParam_Straight();
+		//noseComponent->SetRandomParam_Straight();
 	}
 
-	std::int32_t mouthSpawnCount = minCount - FriendFacePart::GetMouthCount();
+	std::int32_t mouthSpawnCount = maxCount - FriendFacePart::GetMouthCount();
 	for (std::int32_t i = 0; i < mouthSpawnCount; i++)
 	{
 		auto mouth = GetManager().lock()->AddObjectFromCereal("FriendFacePart_Mouth");
-		mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos());
+		mouth.lock()->transform->SetLocalPosition(GetRandomSpawnPartPos(false));
 		auto mouthComponent = mouth.lock()->GetGameComponent<FriendFacePart>();
-		mouthComponent->SetRandomParam_Straight();
+		//mouthComponent->SetRandomParam_Straight();
 	}
 }
 

@@ -176,6 +176,15 @@ void ButiEngine::FriendFacePart::LeaveHead()
 	m_isMove = true;
 }
 
+void ButiEngine::FriendFacePart::RemoveStickAnimation()
+{
+	auto partStickAnim = gameObject.lock()->GetGameComponent<PartStickAnimation>();
+	if (partStickAnim)
+	{
+		partStickAnim->SetIsRemove(true);
+	}
+}
+
 void ButiEngine::FriendFacePart::Move()
 {
 	if (m_param.isGravity)
@@ -367,7 +376,7 @@ void ButiEngine::FriendFacePart::CheckExact()
 		//m_beforeBlowRotation = gameObject.lock()->transform->GetLocalRotation();
 	}
 
-	ChangeModel();
+	//ChangeModel();
 }
 
 void ButiEngine::FriendFacePart::ChangeModel()
@@ -382,7 +391,7 @@ void ButiEngine::FriendFacePart::ChangeModel()
 		}
 		else
 		{
-			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalPosition(1.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
 		}
 	}
 }

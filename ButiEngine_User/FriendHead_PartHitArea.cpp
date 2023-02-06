@@ -118,6 +118,19 @@ void ButiEngine::FriendHead_PartHitArea::StickPart(Value_weak_ptr<GameObject> ar
 		m_vwp_part = arg_vwp_part;
 		m_canStickPart = false;
 
+		if (m_type == PartType::Eye)
+		{
+			m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
+		}
+		else if (m_type == PartType::Nose)
+		{
+			m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
+		}
+		else if (m_type == PartType::Mouth)
+		{
+			m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(0.0f);
+		}
+
 		if (m_vwp_guideMarker.lock())
 		{
 			m_vwp_guideMarker.lock()->SetIsRemove(true);
@@ -135,6 +148,19 @@ void ButiEngine::FriendHead_PartHitArea::LeavePart()
 	m_vwp_part.lock()->GetGameComponent<FriendFacePart>()->LeaveHead();
 	m_vwp_part = Value_weak_ptr<GameObject>();
 	m_canStickPart = true;
+
+	if (m_type == PartType::Eye)
+	{
+		m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
+	}
+	else if (m_type == PartType::Nose)
+	{
+		m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
+	}
+	else if (m_type == PartType::Mouth)
+	{
+		m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(1.0f);
+	}
 
 	gameObject.lock()->GetGameComponent<TriggerComponent>()->UnRegist();
 	m_vlp_leaveIntervalTimer->Start();

@@ -73,6 +73,8 @@ namespace ButiEngine {
 
 		void LeaveHead();
 
+		void RemoveStickAnimation();
+
 		static void ResetPartCount()
 		{
 			g_eyeCount = 0;

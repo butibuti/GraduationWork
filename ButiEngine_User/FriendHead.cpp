@@ -13,6 +13,7 @@
 #include "StageManager.h"
 #include "TutorialManager.h"
 #include "GameCamera.h"
+#include "FriendFacePart.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
@@ -432,6 +433,10 @@ void ButiEngine::FriendHead::SpawnStarFlash()
 
 void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
 {
+	m_vwp_eyesHitAreaComponent.lock()->GetPart().lock()->GetGameComponent<FriendFacePart>()->RemoveStickAnimation();
+	m_vwp_noseHitAreaComponent.lock()->GetPart().lock()->GetGameComponent<FriendFacePart>()->RemoveStickAnimation();
+	m_vwp_mouthHitAreaComponent.lock()->GetPart().lock()->GetGameComponent<FriendFacePart>()->RemoveStickAnimation();
+
 	arg_vwp_body.lock()->GetGameComponent<FriendBody>()->SetHead(gameObject);
 
 	if (!m_isTutorial)
