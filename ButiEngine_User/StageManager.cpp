@@ -32,7 +32,7 @@ void ButiEngine::StageManager::OnUpdate()
 		auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/BGM.wav"));
 		GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlayBGM(sound, 0.1f);
 
-		GetManager().lock()->AddObjectFromCereal("Text_GameStart");
+		//GetManager().lock()->AddObjectFromCereal("Text_GameStart");
 
 		auto titleLogo = GetManager().lock()->GetGameObject("TitleLogo");
 		titleLogo.lock()->GetGameComponent<PositionAnimation>()->SetIsActive(true);

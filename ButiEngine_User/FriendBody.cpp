@@ -13,6 +13,8 @@
 #include "BonusFriend.h"
 #include "TutorialManager.h"
 #include "FadeOut.h"
+#include "FriendFacePart.h"
+#include "CompleteFriend.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -407,13 +409,13 @@ void ButiEngine::FriendBody::SaveFriendData()
 	m_vlp_friendData->vlp_eyeTransform = headComponent->GetEye().lock()->transform->Clone();
 	m_vlp_friendData->vlp_noseTransform = headComponent->GetNose().lock()->transform->Clone();
 	m_vlp_friendData->vlp_mouthTransform = headComponent->GetMouth().lock()->transform->Clone();
+
+	m_vlp_friendData->eyeRank = headComponent->GetEye().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
+	m_vlp_friendData->noseRank = headComponent->GetNose().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
+	m_vlp_friendData->mouthRank = headComponent->GetMouth().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
 	
 	std::int32_t addCount = 1;
-	//if (headComponent->IsBeautiful())
-	//{
-	//	addCount++;
-	//}
-	if (headComponent->IsFast())
+	if (headComponent->IsGood())
 	{
 		addCount *= 2;
 	}
@@ -433,8 +435,9 @@ void ButiEngine::FriendBody::SaveFriendData()
 		{
 			Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
 			auto bonusFriend = GetManager().lock()->AddObjectFromCereal("BonusFriend", ObjectFactory::Create<Transform>(pos));
+			bonusFriend.lock()->GetGameComponent<CompleteFriend>()->CreateParts(m_vlp_friendData);
+
 			auto bonusFriendComponent = bonusFriend.lock()->GetGameComponent<BonusFriend>();
-			bonusFriendComponent->CreateParts(m_vlp_friendData);
 			bonusFriendComponent->SetFrontBorder(m_frontBorder);
 			m_vec_bonusFriends.push_back(bonusFriend);
 		}

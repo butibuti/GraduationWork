@@ -2,6 +2,7 @@
 #include "Result_FriendSpawner.h"
 #include "FriendManager.h"
 #include "Result_CompleteFriend.h"
+#include "CompleteFriend.h"
 
 void ButiEngine::Result_FriendSpawner::OnUpdate()
 {
@@ -105,7 +106,7 @@ void ButiEngine::Result_FriendSpawner::SpawnFriends()
 	for (auto friendDataItr = friendDatas.begin(); friendDataItr != friendDataEnd; ++friendDataItr)
 	{
 		auto completeFriend = GetManager().lock()->AddObjectFromCereal("Result_CompleteFriend");
-		completeFriend.lock()->GetGameComponent<Result_CompleteFriend>()->CreateParts((*friendDataItr));
+		completeFriend.lock()->GetGameComponent<CompleteFriend>()->CreateParts((*friendDataItr));
 
 		completeFriend.lock()->transform->SetLocalPosition(GetFriendSpawnPos(friendDataIndex));
 

@@ -5,17 +5,13 @@
 #include "Header/GameObjects/DefaultGameComponent/PositionAnimationComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
 #include "PauseManager.h"
+#include "CompleteFriend.h"
 
 void ButiEngine::BonusFriend::OnUpdate()
 {
 	if (m_vwp_pauseManager.lock()->IsPause())
 	{
 		return;
-	}
-
-	if (m_isDance)
-	{
-		m_vlp_animationController->Update(1.0f);
 	}
 
 	if (m_isRotate)
@@ -50,60 +46,15 @@ void ButiEngine::BonusFriend::Start()
 	m_isMoveBack = false;
 	m_isRotate = false;
 	m_isStopRotate = false;
-	m_isDance = false;
+
+	auto completeFriendComponent = gameObject.lock()->GetGameComponent<CompleteFriend>();
+	m_vwp_head = completeFriendComponent->GetHead();
+	m_vwp_body = completeFriendComponent->GetBody();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::BonusFriend::Clone()
 {
 	return ObjectFactory::Create<BonusFriend>();
-}
-
-void ButiEngine::BonusFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_friendData)
-{
-	m_vwp_body = GetManager().lock()->AddObjectFromCereal("Result_FriendBody", arg_vwp_friendData.lock()->vlp_bodyTransform);
-	m_vwp_body.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
-	m_vwp_body.lock()->transform->SetLocalPosition(Vector3Const::Zero);
-
-	m_vlp_animationController = ButiRendering::CreateAnimationController(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
-	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
-	m_vlp_animationController->GetCurrentModelAnimation()->SetProgress(0);
-
-	auto modelDraw = m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>();
-	auto heartBone = modelDraw->GetBone()->searchBoneByName("Heart");
-	auto heart = GetManager().lock()->AddObjectFromCereal("FriendHeart");
-	heart.lock()->transform->SetLocalPosition(Vector3Const::Zero);
-	heart.lock()->transform->SetBaseTransform(heartBone->transform, true);
-
-	m_vwp_head = GetManager().lock()->AddObjectFromCereal("Result_FriendHead", arg_vwp_friendData.lock()->vlp_headTransform);
-	auto bone = m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetBone()->searchBoneByName("head");
-	m_vwp_head.lock()->transform->SetBaseTransform(m_vwp_body.lock()->transform, true);
-	m_vwp_head.lock()->transform->SetBaseTransform(bone->transform);
-
-	auto eye = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Eyes", arg_vwp_friendData.lock()->vlp_eyeTransform);
-	eye.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
-
-	auto nose = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Nose", arg_vwp_friendData.lock()->vlp_noseTransform);
-	nose.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
-
-	auto mouth = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Mouth", arg_vwp_friendData.lock()->vlp_mouthTransform);
-	mouth.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
-
-	auto vec_dummyTransforms = arg_vwp_friendData.lock()->vec_vlp_dummyTransforms;
-	auto end = vec_dummyTransforms.end();
-	for (auto itr = vec_dummyTransforms.begin(); itr != end; ++itr)
-	{
-		auto dummy = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Dummy", (*itr));
-		dummy.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
-	}
-}
-
-void ButiEngine::BonusFriend::StartDance()
-{
-	m_isDance = true;
-	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
-	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
 }
 
 void ButiEngine::BonusFriend::MoveBack()
@@ -223,7 +174,7 @@ void ButiEngine::BonusFriend::Appear(const std::int32_t arg_friendNum)
 
 void ButiEngine::BonusFriend::StartMoveBack()
 {
-	StartDance();
+	gameObject.lock()->GetGameComponent<CompleteFriend>()->StartDance();
 
 	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
 

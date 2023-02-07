@@ -1,8 +1,8 @@
 #include "stdafx_u.h"
 #include "GameEnd_FriendSpawner.h"
 #include "FriendManager.h"
-#include "GameEnd_CompleteFriend.h"
 #include "FriendAligner.h"
+#include "CompleteFriend.h"
 
 void ButiEngine::GameEnd_FriendSpawner::OnUpdate()
 {
@@ -58,7 +58,9 @@ void ButiEngine::GameEnd_FriendSpawner::SpawnFriends()
 	for (auto friendDataItr = friendDatas.begin(); friendDataItr != friendDataEnd; ++friendDataItr)
 	{
 		auto completeFriend = GetManager().lock()->AddObjectFromCereal("GameEnd_CompleteFriend");
-		completeFriend.lock()->GetGameComponent<GameEnd_CompleteFriend>()->CreateParts((*friendDataItr));
+		auto completeFriendComponent = completeFriend.lock()->GetGameComponent<CompleteFriend>();
+		completeFriendComponent->CreateParts((*friendDataItr));
+		completeFriendComponent->StartDance();
 
 		completeFriend.lock()->transform->SetLocalPosition(friendAligner->GetCalcFriendPos(friendDataIndex));
 

@@ -32,8 +32,8 @@ void ButiEngine::GameTimer::OnUpdate()
 		m_prevRemainSecond = remainSecond;
 		if (remainSecond <= 5)
 		{
-			auto countDown = GetManager().lock()->AddObjectFromCereal("Text_CountDown");
-			countDown.lock()->GetGameComponent<Text_CountDown>()->SetNumber(remainSecond);
+			//auto countDown = GetManager().lock()->AddObjectFromCereal("Text_CountDown");
+			//countDown.lock()->GetGameComponent<Text_CountDown>()->SetNumber(remainSecond);
 		}
 	}
 }

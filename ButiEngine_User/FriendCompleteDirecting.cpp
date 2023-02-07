@@ -103,7 +103,7 @@ void ButiEngine::FriendCompleteDirecting::OnSet()
 	auto headComponent = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead")).lock()->GetGameComponent<FriendHead>();
 	auto bodyComponent = gameObject.lock()->GetGameComponent<FriendBody>();
 
-	if (headComponent->IsExact() && bodyComponent->IsFront())
+	if (headComponent->IsGood() && bodyComponent->IsFront())
 	{
 		m_isSpecialDirecting = true;
 	}
@@ -205,7 +205,7 @@ void ButiEngine::FriendCompleteDirecting::SetHukidashiParameter()
 	//	m_vec_hukidashiNames.push_back("Effect_Hukidashi_Beautiful");
 	//}
 	
-	if (headComponent->IsExact())
+	if (headComponent->IsGood())
 	{
 		m_vec_hukidashiNames.push_back("Effect_Hukidashi_Fast");
 	}

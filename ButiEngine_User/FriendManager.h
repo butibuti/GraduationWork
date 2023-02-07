@@ -2,14 +2,19 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	enum class PartRank;
+
 	struct FriendData
 	{
 		Value_ptr<Transform> vlp_headTransform;
 		Value_ptr<Transform> vlp_eyeTransform;
 		Value_ptr<Transform> vlp_noseTransform;
 		Value_ptr<Transform> vlp_mouthTransform;
-		std::vector<Value_ptr<Transform>> vec_vlp_dummyTransforms;
 		Value_ptr<Transform> vlp_bodyTransform;
+
+		PartRank eyeRank;
+		PartRank noseRank;
+		PartRank mouthRank;
 	};
 
 	class GameLevelManager;

@@ -42,7 +42,7 @@ namespace ButiEngine {
 		std::int32_t GetMouthScore();
 
 		bool IsFast();
-		bool IsExact();
+		bool IsGood();
 
 		bool IsExistPartStuckArea();
 		void LeavePartRandom();

@@ -66,6 +66,9 @@
     <ClCompile Include="FlashAnimation.cpp" />
     <ClCompile Include="FadeOut.cpp" />
     <ClCompile Include="GuideMarker.cpp" />
+    <ClCompile Include="NumberDraw.cpp" />
+    <ClCompile Include="Result_FallFriend.cpp" />
+    <ClCompile Include="CompleteFriend.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -131,6 +134,9 @@
     <ClInclude Include="FlashAnimation.h" />
     <ClInclude Include="FadeOut.h" />
     <ClInclude Include="GuideMarker.h" />
+    <ClInclude Include="NumberDraw.h" />
+    <ClInclude Include="Result_FallFriend.h" />
+    <ClInclude Include="CompleteFriend.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

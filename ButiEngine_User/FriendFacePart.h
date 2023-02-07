@@ -10,6 +10,13 @@ namespace ButiEngine {
 		Dummy,
 	};
 
+	enum class PartRank
+	{
+		Bad,
+		Normal,
+		Good,
+	};
+
 	struct FacePartParameter
 	{
 		PartType type = PartType::Eye;
@@ -65,6 +72,7 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_param);
+			ARCHIVE_BUTI(g_goodAngleBorder);
 		}
 
 		void Dead();
@@ -74,6 +82,17 @@ namespace ButiEngine {
 		void LeaveHead();
 
 		void RemoveStickAnimation();
+
+		std::int32_t GetCalcScore();
+		std::int32_t GetCalcAngleScore();
+		std::int32_t GetCalcPosScore();
+
+		PartRank GetCalcPartRank();
+		PartRank GetPartRank() { return m_rank; }
+
+		bool IsGood() { return IsGoodAngle() && IsGoodPos(); }
+		bool IsGoodAngle();
+		bool IsGoodPos();
 
 		static void ResetPartCount()
 		{
@@ -102,11 +121,19 @@ namespace ButiEngine {
 		bool CanUpdate();
 		Vector3 GetStickPos();
 		void Blow();
-		void CheckExact();
+		void CheckRank();
 		void ChangeModel();
+
+		void Appear();
+		void Disappear();
+		void OnAppear();
+		void OnDisappear();
+		void AddScaleAnimation(const Vector3& arg_targetScale, Easing::EasingType arg_easeType);
 
 		void AddPartCount();
 		void RemovePartCount();
+
+		bool IsBetterRank();
 
 		void GUI_SetPartParam();
 		void GUI_SetPartType();
@@ -122,6 +149,9 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_deadTimer;
 		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
 
+		bool m_isAppear;
+		bool m_isDisappear;
+
 		bool m_isMove;
 		FacePartParameter m_param;
 
@@ -132,7 +162,8 @@ namespace ButiEngine {
 
 		float m_startZ;
 
-		bool m_isExact;
+		PartRank m_rank;
+		static Vector3 g_goodAngleBorder;
 
 		bool m_isTutorial;
 

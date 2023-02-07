@@ -1,22 +1,22 @@
 #include "stdafx_u.h"
 #include "FriendFacePart.h"
-#include "Header/GameObjects/DefaultGameComponent/RigidBodyComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
-#include "FriendHead.h"
 #include "ButiBulletWrap/ButiBulletWrap/PhysicsManager.h"
 #include "ButiBulletWrap/ButiBulletWrap/PhysicsWorld.h"
+#include "FriendHead.h"
 #include "PauseManager.h"
 #include "StageManager.h"
-#include "SeparateDrawObject.h"
 #include "PartStickAnimation.h"
 #include "FriendHead_PartHitArea.h"
 #include "GameLevelManager.h"
 #include "SwayAnimation.h"
+#include "Header/GameObjects/DefaultGameComponent/ScaleAnimationComponent.h"
 
 std::int32_t ButiEngine::FriendFacePart::g_eyeCount = 0;
 std::int32_t ButiEngine::FriendFacePart::g_noseCount = 0;
 std::int32_t ButiEngine::FriendFacePart::g_mouthCount = 0;
 std::int32_t ButiEngine::FriendFacePart::g_dummyCount = 0;
+ButiEngine::Vector3 ButiEngine::FriendFacePart::g_goodAngleBorder;
 
 void ButiEngine::FriendFacePart::OnUpdate()
 {
@@ -25,16 +25,28 @@ void ButiEngine::FriendFacePart::OnUpdate()
 		return;
 	}
 
+	if (m_isAppear)
+	{
+		OnAppear();
+		return;
+	}
+
+	if (m_isDisappear)
+	{
+		OnDisappear();
+		return;
+	}
+
 	if (m_vlp_deadTimer->Update())
 	{
 		m_vlp_deadTimer->Stop();
-		Dead();
+		Disappear();
 	}
 
 	if (m_vlp_lifeTimer->Update())
 	{
 		m_vlp_lifeTimer->Stop();
-		Dead();
+		Disappear();
 	}
 
 	if (m_vlp_leaveIntervalTimer->Update())
@@ -89,6 +101,9 @@ void ButiEngine::FriendFacePart::OnRemove()
 void ButiEngine::FriendFacePart::OnShowUI()
 {
 	GUI_SetPartParam();
+
+	GUI::BulletText("GoodAngleBorder");
+	GUI::DragFloat3("##goodAngleBorder", &g_goodAngleBorder.x, 0.1f, 0.0f, 180.0f);
 }
 
 void ButiEngine::FriendFacePart::Start()
@@ -107,6 +122,9 @@ void ButiEngine::FriendFacePart::Start()
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 
+	m_isAppear = false;
+	m_isDisappear = false;
+
 	m_startZ = gameObject.lock()->transform->GetLocalPosition().z;
 
 	m_vlp_deadTimer = ObjectFactory::Create<RelativeTimer>(10);
@@ -122,7 +140,7 @@ void ButiEngine::FriendFacePart::Start()
 
 	m_vlp_leaveIntervalTimer = ObjectFactory::Create<RelativeTimer>(30);
 
-	m_isExact = false;
+	m_rank = PartRank::Normal;
 
 	m_isMove = true;
 
@@ -132,18 +150,16 @@ void ButiEngine::FriendFacePart::Start()
 		m_param.velocity *= m_param.moveSpeed;
 	}
 
-	if (m_param.isSway)
-	{
-		gameObject.lock()->AddGameComponent<SwayAnimation>();
-	}
-
 	AddPartCount();
+
+	Appear();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clone()
 {
 	auto clone = ObjectFactory::Create<FriendFacePart>();
 	clone->m_param = m_param;
+	clone->g_goodAngleBorder = g_goodAngleBorder;
 	return clone;
 }
 
@@ -193,6 +209,115 @@ void ButiEngine::FriendFacePart::RemoveStickAnimation()
 	}
 }
 
+std::int32_t ButiEngine::FriendFacePart::GetCalcScore()
+{
+	return GetCalcAngleScore() + GetCalcPosScore();
+}
+
+std::int32_t ButiEngine::FriendFacePart::GetCalcAngleScore()
+{
+	std::int32_t angleScore = 0;
+
+	float partAngle = abs(gameObject.lock()->transform->GetLocalRotation_Euler().z);
+	std::int32_t exactScore = 45;
+	if (IsGoodAngle())
+	{
+		float progress = 1.0f - (partAngle / g_goodAngleBorder.z);
+		progress = MathHelper::Clamp(progress, 0.0f, 1.0f);
+
+		std::int32_t maxScore = 50 - exactScore;
+		angleScore = exactScore + MathHelper::Lerp(0, maxScore, progress);
+	}
+	else
+	{
+		float progress = 1.0f - (partAngle / 180.0f);
+		progress = MathHelper::Clamp(progress, 0.0f, 1.0f);
+
+		std::int32_t maxScore = exactScore - 1;
+		angleScore = MathHelper::Lerp(0, maxScore, progress);
+	}
+
+	return angleScore;
+}
+
+std::int32_t ButiEngine::FriendFacePart::GetCalcPosScore()
+{
+	std::int32_t posScore = 0;
+
+	float partAngleX = abs(gameObject.lock()->transform->GetLocalRotation_Euler().x);
+	float partAngleY = abs(gameObject.lock()->transform->GetLocalRotation_Euler().y);
+	std::int32_t exactScoreX = 18;
+	std::int32_t exactScoreY = 27;
+	if (IsGoodPos())
+	{
+		float progressX = 1.0f - (partAngleX / g_goodAngleBorder.x);
+		progressX = MathHelper::Clamp(progressX, 0.0f, 1.0f);
+
+		std::int32_t maxScoreX = 20 - exactScoreX;
+		posScore += exactScoreX + MathHelper::Lerp(0, maxScoreX, progressX);
+
+		float progressY = 1.0f - (partAngleY / g_goodAngleBorder.x);
+		progressY = MathHelper::Clamp(progressY, 0.0f, 1.0f);
+
+		std::int32_t maxScoreY = 30 - exactScoreY;
+		posScore += exactScoreY + MathHelper::Lerp(0, maxScoreY, progressY);
+	}
+	else
+	{
+		float progressX = 1.0f - (partAngleX / 180.0f);
+		progressX = MathHelper::Clamp(progressX, 0.0f, 1.0f);
+
+		std::int32_t maxScoreX = exactScoreX - 1;
+		posScore += MathHelper::Lerp(0, maxScoreX, progressX);
+
+		float progressY = 1.0f - (partAngleY / 180.0f);
+		progressY = MathHelper::Clamp(progressY, 0.0f, 1.0f);
+
+		std::int32_t maxScoreY = exactScoreY - 1;
+		posScore += MathHelper::Lerp(0, maxScoreY, progressY);
+	}
+
+	return posScore;
+}
+
+ButiEngine::PartRank ButiEngine::FriendFacePart::GetCalcPartRank()
+{
+	PartRank rank;
+	std::int32_t score = GetCalcScore();
+
+	std::int32_t normalBorder = 60;
+	std::int32_t goodBorder = 90;
+	if (score >= goodBorder)
+	{
+		rank = PartRank::Good;
+	}
+	else if (score >= normalBorder)
+	{
+		rank = PartRank::Normal;
+	}
+	else
+	{
+		rank = PartRank::Bad;
+	}
+
+	return rank;
+}
+
+bool ButiEngine::FriendFacePart::IsGoodAngle()
+{
+	float partAngle = abs(gameObject.lock()->transform->GetLocalRotation_Euler().z);
+
+	return partAngle <= g_goodAngleBorder.z;
+}
+
+bool ButiEngine::FriendFacePart::IsGoodPos()
+{
+	float partAngleX = abs(gameObject.lock()->transform->GetLocalRotation_Euler().x);
+	float partAngleY = abs(gameObject.lock()->transform->GetLocalRotation_Euler().y);
+
+	return partAngleX <= g_goodAngleBorder.x && partAngleY <= g_goodAngleBorder.y;
+}
+
 void ButiEngine::FriendFacePart::Move()
 {
 	if (m_param.isGravity)
@@ -239,7 +364,7 @@ void ButiEngine::FriendFacePart::StickHead()
 	gameObject.lock()->transform->SetLocalPosition(GetStickPos());
 	gameObject.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
 
-	if (m_isExact)
+	if (IsBetterRank())
 	{
 		m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->OverWrite(gameObject);
 	}
@@ -283,7 +408,7 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 	auto partHitAreaComponent = arg_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 	m_vwp_head = partHitAreaComponent->GetParent();
 
-	if (partHitAreaComponent->CanStickPart(m_param.type) || m_isExact)
+	if (partHitAreaComponent->CanStickPart(m_param.type) || IsBetterRank())
 	{
 		if (m_param.type == PartType::Dummy)
 		{
@@ -298,17 +423,17 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 		else
 		{
 			StickHead();
-			CheckExact();
+			CheckRank();
 		}
 	}
 }
 
 bool ButiEngine::FriendFacePart::CanUpdate()
 {
-	if (m_vwp_stageManager.lock() && !m_vwp_stageManager.lock()->IsGameStart())
-	{
-		return false;
-	}
+	//if (m_vwp_stageManager.lock() && !m_vwp_stageManager.lock()->IsGameStart())
+	//{
+	//	return false;
+	//}
 
 	if (m_vwp_pauseManager.lock()->IsPause())
 	{
@@ -320,36 +445,37 @@ bool ButiEngine::FriendFacePart::CanUpdate()
 
 ButiEngine::Vector3 ButiEngine::FriendFacePart::GetStickPos()
 {
-	Vector3 rayStartPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
-	rayStartPos.z += 50.0f;
-
 	Vector3 stickPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
 	stickPos.z = m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->GetStickPos().z;
 
-	//List<ButiBullet::PhysicsRaycastResult> list_rayRes;
-	//if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
-	//	RaycastAllHit(rayStartPos, -Vector3Const::ZAxis, 100.0f, 1, &list_rayRes))
-	//{
-	//	float nearestDistance = 1000.0f;
-	//	float chaseTargetPosZ = stickPos.z;
+	Vector3 rayStartPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
+	rayStartPos.z += 50.0f;
 
-	//	for (auto& res : list_rayRes)
-	//	{
-	//		auto obj= Value_weak_ptr<GameObject>();
-	//		obj = res.physicsObject->GetOwnerData();
-	//		
+	List<ButiBullet::PhysicsRaycastResult> list_rayRes;
+	if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
+		RaycastAllHit(rayStartPos, -Vector3Const::ZAxis, 100.0f, 1, &list_rayRes))
+	{
+		float nearestDistance = 1000.0f;
+		float stickPosZ = stickPos.z;
 
-	//		if (obj.lock()->HasGameObjectTag("FriendHead"))
-	//		{
-	//			float distance = abs(res.point.z - rayStartPos.z);
-	//			if (distance <= nearestDistance)
-	//			{
-	//				nearestDistance = distance;
-	//				chaseTargetPosZ = res.point.z;
-	//			}
-	//		}
-	//	}
-	//}
+		for (auto& res : list_rayRes)
+		{
+			auto obj= Value_weak_ptr<GameObject>();
+			obj = res.physicsObject->GetOwnerData();
+			
+
+			if (obj.lock()->HasGameObjectTag("FriendHead"))
+			{
+				float distance = abs(res.point.z - rayStartPos.z);
+				if (distance <= nearestDistance)
+				{
+					nearestDistance = distance;
+					stickPosZ = res.point.z;
+				}
+			}
+		}
+		stickPos.z = stickPosZ;
+	}
 
 	return stickPos;
 }
@@ -381,38 +507,111 @@ void ButiEngine::FriendFacePart::Blow()
 	m_param.rotateSpeed = 10.0f * direction;
 }
 
-void ButiEngine::FriendFacePart::CheckExact()
+void ButiEngine::FriendFacePart::CheckRank()
 {
-	if (m_isExact)
+	if (m_rank == PartRank::Good)
 	{
 		return;
 	}
 
-	m_isExact = m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->IsExact();
-	if (m_isExact)
+	PartRank newRank = GetCalcPartRank();
+	if (static_cast<std::int32_t>(newRank) <= static_cast<std::int32_t>(m_rank))
 	{
-		//m_beforeBlowPosition = gameObject.lock()->transform->GetLocalPosition();
-		//m_beforeBlowRotation = gameObject.lock()->transform->GetLocalRotation();
+		return;
 	}
+	m_rank = newRank;
 
-	//ChangeModel();
+	ChangeModel();
 }
 
 void ButiEngine::FriendFacePart::ChangeModel()
 {
 	if (m_param.type == PartType::Eye)
 	{
-		gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(0.0f);
-
-		if (m_isExact)
+		if (m_rank == PartRank::Good)
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
+		}
+		else if (m_rank == PartRank::Normal)
 		{
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
 		}
-		else
+		else if (m_rank == PartRank::Bad)
 		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
 		}
 	}
+	else if (m_param.type == PartType::Nose || m_param.type == PartType::Mouth)
+	{
+		if (m_rank == PartRank::Good)
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(0.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
+		}
+		else if (m_rank == PartRank::Normal)
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
+		}
+		else if(m_rank == PartRank::Bad)
+		{
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(0.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
+			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
+		}
+	}
+}
+
+void ButiEngine::FriendFacePart::Appear()
+{
+	m_isAppear = true;
+	gameObject.lock()->GetGameComponent<TriggerComponent>()->UnRegist();
+	AddScaleAnimation(1.0f, Easing::EasingType::EaseOutBack);
+}
+
+void ButiEngine::FriendFacePart::Disappear()
+{
+	m_isDisappear = true;
+	gameObject.lock()->GetGameComponent<TriggerComponent>()->UnRegist();
+	AddScaleAnimation(0.0f, Easing::EasingType::EaseInBack);
+}
+
+void ButiEngine::FriendFacePart::OnAppear()
+{
+	auto anim = gameObject.lock()->GetGameComponent<ScaleAnimation>();
+	if (!anim)
+	{
+		m_isAppear = false;
+		gameObject.lock()->GetGameComponent<TriggerComponent>()->Regist();
+		if (m_param.isSway)
+		{
+			gameObject.lock()->AddGameComponent<SwayAnimation>();
+		}
+	}
+}
+
+void ButiEngine::FriendFacePart::OnDisappear()
+{
+	auto anim = gameObject.lock()->GetGameComponent<ScaleAnimation>();
+	if (!anim)
+	{
+		m_isDisappear = false;
+		Dead();
+	}
+}
+
+void ButiEngine::FriendFacePart::AddScaleAnimation(const Vector3& arg_targetScale, Easing::EasingType arg_easeType)
+{
+	auto anim = gameObject.lock()->AddGameComponent<ScaleAnimation>();
+	anim->SetInitScale(gameObject.lock()->transform->GetLocalScale());
+	anim->SetTargetScale(arg_targetScale);
+	anim->SetSpeed(1.0f / 30);
+	anim->SetEaseType(arg_easeType);
 }
 
 void ButiEngine::FriendFacePart::AddPartCount()
@@ -455,6 +654,19 @@ void ButiEngine::FriendFacePart::RemovePartCount()
 	default:
 		break;
 	}
+}
+
+bool ButiEngine::FriendFacePart::IsBetterRank()
+{
+	auto havePart = m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->GetPart();
+	if (!havePart.lock())
+	{
+		return true;
+	}
+
+	PartRank havePartRank = havePart.lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
+
+	return static_cast<std::int32_t>(m_rank) >= static_cast<std::int32_t>(havePartRank);
 }
 
 void ButiEngine::FriendFacePart::GUI_SetPartParam()

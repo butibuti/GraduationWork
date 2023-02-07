@@ -47,14 +47,9 @@ namespace ButiEngine {
 
 		Vector3 GetStickPos();
 
-		std::int32_t GetCalcScore();
 		Value_weak_ptr<GameObject> GetPart() { return m_vwp_part; }
 
 		void RemoveAllComponent();
-
-		bool IsExact();
-		bool IsExactAngle();
-		bool IsExactPos();
 
 		void Dead();
 	private:
@@ -71,7 +66,8 @@ namespace ButiEngine {
 
 		PartType m_type;
 
-		std::int32_t m_score;
+		std::int32_t m_angleScore;
+		std::int32_t m_posScore;
 
 		Vector3 m_standardPos;
 

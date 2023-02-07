@@ -68,7 +68,8 @@ void ButiEngine::FriendHead_PartHitArea::OnShowUI()
 
 void ButiEngine::FriendHead_PartHitArea::Start()
 {
-	m_score = -1;
+	m_angleScore = -1;
+	m_posScore = -1;
 	m_canStickPart = true;
 
 	m_standardPos = gameObject.lock()->transform->GetLocalPosition();
@@ -171,62 +172,10 @@ ButiEngine::Vector3 ButiEngine::FriendHead_PartHitArea::GetStickPos()
 	return m_vwp_defaultPosObject.lock()->transform->GetWorldPosition();
 }
 
-std::int32_t ButiEngine::FriendHead_PartHitArea::GetCalcScore()
-{
-	if (m_score >= 0)
-	{
-		return m_score;
-	}
-
-	m_score = 0;
-
-	Vector3 partPos = m_vwp_part.lock()->transform->GetLocalPosition();
-	float distance = partPos.Distance(m_standardPos);
-
-	float progress = 1.0f - (distance / m_partFurthest);
-	progress = MathHelper::Clamp(progress, 0.0f, 1.0f);
-
-	std::int32_t addScore = MathHelper::Lerp(0, 25, progress);
-	m_score += addScore;
-
-	return m_score;
-}
-
 void ButiEngine::FriendHead_PartHitArea::RemoveAllComponent()
 {
 	gameObject.lock()->GetGameComponent<TriggerComponent>()->SetIsRemove(true);
 	SetIsRemove(true);
-}
-
-bool ButiEngine::FriendHead_PartHitArea::IsExact()
-{
-	return IsExactAngle() && IsExactPos();
-}
-
-bool ButiEngine::FriendHead_PartHitArea::IsExactAngle()
-{
-	if (!m_vwp_part.lock())
-	{
-		return false;
-	}
-	
-	float partAngle = m_vwp_part.lock()->transform->GetLocalRotation_Euler().z;
-	
-	return partAngle <= m_exactAngleBorder;
-}
-
-bool ButiEngine::FriendHead_PartHitArea::IsExactPos()
-{
-	if (!m_vwp_part.lock())
-	{
-		return false;
-	}
-
-	float pos = m_vwp_defaultPosObject.lock()->transform->GetLocalPosition().z;
-	float partPos = m_vwp_part.lock()->transform->GetLocalPosition().z;
-	float diff = partPos - pos;
-
-	return diff >= -m_exactPosBorder;
 }
 
 void ButiEngine::FriendHead_PartHitArea::Dead()

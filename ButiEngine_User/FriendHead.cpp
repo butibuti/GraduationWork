@@ -211,7 +211,7 @@ std::int32_t ButiEngine::FriendHead::GetEyeScore()
 	}
 
 	std::int32_t score = 0;
-	score += m_vwp_eyesHitAreaComponent.lock()->GetCalcScore();
+	//score += m_vwp_eyesHitAreaComponent.lock()->GetCalcScore();
 	return score;
 }
 
@@ -225,7 +225,7 @@ std::int32_t ButiEngine::FriendHead::GetNoseScore()
 		return 0;
 	}
 
-	return m_vwp_noseHitAreaComponent.lock()->GetCalcScore();
+	return 0;// m_vwp_noseHitAreaComponent.lock()->GetCalcScore();
 }
 
 std::int32_t ButiEngine::FriendHead::GetMouthScore()
@@ -238,7 +238,7 @@ std::int32_t ButiEngine::FriendHead::GetMouthScore()
 		return 0;
 	}
 
-	return m_vwp_mouthHitAreaComponent.lock()->GetCalcScore();
+	return 0;// m_vwp_mouthHitAreaComponent.lock()->GetCalcScore();
 }
 
 bool ButiEngine::FriendHead::IsFast()
@@ -260,7 +260,7 @@ bool ButiEngine::FriendHead::IsFast()
 	return false;
 }
 
-bool ButiEngine::FriendHead::IsExact()
+bool ButiEngine::FriendHead::IsGood()
 {
 	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
@@ -270,15 +270,15 @@ bool ButiEngine::FriendHead::IsExact()
 		return false;
 	}
 	
-	if (m_vwp_eyesHitArea.lock() && !m_vwp_eyesHitAreaComponent.lock()->IsExact())
+	if (GetEye().lock()->GetGameComponent<FriendFacePart>()->GetPartRank() != PartRank::Good)
 	{
 		return false;
 	}
-	if (m_vwp_noseHitArea.lock() && !m_vwp_noseHitAreaComponent.lock()->IsExact())
+	if (GetNose().lock()->GetGameComponent<FriendFacePart>()->GetPartRank() != PartRank::Good)
 	{
 		return false;
 	}
-	if (m_vwp_mouthHitArea.lock() && !m_vwp_mouthHitAreaComponent.lock()->IsExact())
+	if (GetMouth().lock()->GetGameComponent<FriendFacePart>()->GetPartRank() != PartRank::Good)
 	{
 		return false;
 	}

@@ -2,7 +2,6 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	struct FriendData;
 	class PauseManager;
 
 	class BonusFriend :public GameComponent
@@ -26,11 +25,9 @@ namespace ButiEngine {
 		
 		void SetFrontBorder(const float arg_border) { m_frontBorder = arg_border; }
 
-		void CreateParts(Value_weak_ptr<FriendData> arg_vwp_friendData);
 		void Appear(const std::int32_t arg_friendNum);
 		void StartMoveBack();
 	private:
-		void StartDance();
 		void MoveBack();
 		void Rotate();
 		void StopRotate();
@@ -44,13 +41,11 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_body;
-		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
 
 		float m_frontBorder;
 		bool m_isMoveBack;
 		bool m_isRotate;
 		bool m_isStopRotate;
-		bool m_isDance;
 
 		Vector3 m_moveBackStartPos;
 		Vector3 m_moveBackTargetPos;

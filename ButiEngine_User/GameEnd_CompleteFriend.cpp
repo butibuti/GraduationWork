@@ -59,12 +59,4 @@ void ButiEngine::GameEnd_CompleteFriend::CreateParts(Value_weak_ptr<FriendData> 
 
 	auto mouth = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Mouth", arg_vwp_friendData.lock()->vlp_mouthTransform);
 	mouth.lock()->transform->SetBaseTransform(head.lock()->transform, true);
-
-	auto vec_dummyTransforms = arg_vwp_friendData.lock()->vec_vlp_dummyTransforms;
-	auto end = vec_dummyTransforms.end();
-	for (auto itr = vec_dummyTransforms.begin(); itr != end; ++itr)
-	{
-		auto dummy = GetManager().lock()->AddObjectFromCereal("Result_FriendFacePart_Dummy", (*itr));
-		dummy.lock()->transform->SetBaseTransform(head.lock()->transform, true);
-	}
 }
