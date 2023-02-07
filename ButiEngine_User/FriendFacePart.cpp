@@ -37,9 +37,18 @@ void ButiEngine::FriendFacePart::OnUpdate()
 		Dead();
 	}
 
+	if (m_vlp_leaveIntervalTimer->Update())
+	{
+		m_vlp_leaveIntervalTimer->Stop();
+		m_vlp_deadTimer->Start();
+		m_vlp_lifeTimer->Start();
+		gameObject.lock()->GetGameComponent<TriggerComponent>()->Regist();
+	}
+
 	if (m_isMove)
 	{
 		Move();
+		Rotate();
 	}
 }
 
@@ -99,7 +108,6 @@ void ButiEngine::FriendFacePart::Start()
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 
 	m_startZ = gameObject.lock()->transform->GetLocalPosition().z;
-	m_isHitHead = false;
 
 	m_vlp_deadTimer = ObjectFactory::Create<RelativeTimer>(10);
 	m_vlp_deadTimer->Start();
@@ -112,9 +120,9 @@ void ButiEngine::FriendFacePart::Start()
 		m_vlp_lifeTimer->Start();
 	}
 
+	m_vlp_leaveIntervalTimer = ObjectFactory::Create<RelativeTimer>(30);
+
 	m_isExact = false;
-	m_beforeBlowPosition = Vector3Const::Zero;
-	m_beforeBlowRotation = Matrix4x4();
 
 	m_isMove = true;
 
@@ -163,17 +171,17 @@ void ButiEngine::FriendFacePart::LeaveHead()
 	AddPartCount();
 
 	gameObject.lock()->transform->SetBaseTransform(nullptr);
+	
+	float rotation = gameObject.lock()->transform->GetLocalRotation_Euler().z;
+	gameObject.lock()->transform->RollIdentity();
+	gameObject.lock()->transform->SetLocalRotationZ_Degrees(rotation);
 	gameObject.lock()->transform->SetLocalPositionZ(m_startZ);
-
-	gameObject.lock()->GetGameComponent<TriggerComponent>()->Regist();
-
-	m_vlp_deadTimer->Start();
-	m_vlp_lifeTimer->Start();
 
 	Blow();
 
-	m_isHitHead = false;
 	m_isMove = true;
+
+	m_vlp_leaveIntervalTimer->Start();
 }
 
 void ButiEngine::FriendFacePart::RemoveStickAnimation()
@@ -201,6 +209,16 @@ void ButiEngine::FriendFacePart::Move()
 	gameObject.lock()->transform->Translate(m_param.velocity * GameDevice::GetWorldSpeed());
 }
 
+void ButiEngine::FriendFacePart::Rotate()
+{
+	if (m_param.isSway)
+	{
+		return;
+	}
+
+	gameObject.lock()->transform->RollLocalRotationZ_Degrees(m_param.rotateSpeed * GameDevice::GetWorldSpeed());
+}
+
 void ButiEngine::FriendFacePart::StickHead()
 {
 	RemovePartCount();
@@ -221,7 +239,14 @@ void ButiEngine::FriendFacePart::StickHead()
 	gameObject.lock()->transform->SetLocalPosition(GetStickPos());
 	gameObject.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform);
 
-	m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->StickPart(gameObject, m_param.type);
+	if (m_isExact)
+	{
+		m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->OverWrite(gameObject);
+	}
+	else
+	{
+		m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->StickPart(gameObject);
+	}
 
 	SpawnStickEffect();
 
@@ -258,28 +283,22 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 	auto partHitAreaComponent = arg_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 	m_vwp_head = partHitAreaComponent->GetParent();
 
-	if (!m_isHitHead && (partHitAreaComponent->CanStickPart(m_param.type) || m_isExact))
+	if (partHitAreaComponent->CanStickPart(m_param.type) || m_isExact)
 	{
 		if (m_param.type == PartType::Dummy)
 		{
-			auto headCompontne = m_vwp_head.lock()->GetGameComponent<FriendHead>();
-			if (headCompontne->IsExistPartStuckArea())
+			auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
+			if (headComponent->IsExistPartStuckArea())
 			{
 				SpawnDummyPartHitEffect();
-				headCompontne->LeavePart();
+				headComponent->LeavePartRandom();
 				Dead();
-				m_isHitHead = true;
 			}
 		}
 		else
 		{
-			if (m_isExact)
-			{
-				partHitAreaComponent->LeavePart();
-			}
 			StickHead();
 			CheckExact();
-			m_isHitHead = true;
 		}
 	}
 }
@@ -307,30 +326,30 @@ ButiEngine::Vector3 ButiEngine::FriendFacePart::GetStickPos()
 	Vector3 stickPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
 	stickPos.z = m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->GetStickPos().z;
 
-	List<ButiBullet::PhysicsRaycastResult> list_rayRes;
-	if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
-		RaycastAllHit(rayStartPos, -Vector3Const::ZAxis, 100.0f, 1, &list_rayRes))
-	{
-		float nearestDistance = 1000.0f;
-		float chaseTargetPosZ = stickPos.z;
+	//List<ButiBullet::PhysicsRaycastResult> list_rayRes;
+	//if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
+	//	RaycastAllHit(rayStartPos, -Vector3Const::ZAxis, 100.0f, 1, &list_rayRes))
+	//{
+	//	float nearestDistance = 1000.0f;
+	//	float chaseTargetPosZ = stickPos.z;
 
-		for (auto& res : list_rayRes)
-		{
-			auto obj= Value_weak_ptr<GameObject>();
-			obj = res.physicsObject->GetOwnerData();
-			
+	//	for (auto& res : list_rayRes)
+	//	{
+	//		auto obj= Value_weak_ptr<GameObject>();
+	//		obj = res.physicsObject->GetOwnerData();
+	//		
 
-			if (obj.lock()->HasGameObjectTag("FriendHead"))
-			{
-				float distance = abs(res.point.z - rayStartPos.z);
-				if (distance <= nearestDistance)
-				{
-					nearestDistance = distance;
-					chaseTargetPosZ = res.point.z;
-				}
-			}
-		}
-	}
+	//		if (obj.lock()->HasGameObjectTag("FriendHead"))
+	//		{
+	//			float distance = abs(res.point.z - rayStartPos.z);
+	//			if (distance <= nearestDistance)
+	//			{
+	//				nearestDistance = distance;
+	//				chaseTargetPosZ = res.point.z;
+	//			}
+	//		}
+	//	}
+	//}
 
 	return stickPos;
 }
@@ -343,7 +362,7 @@ void ButiEngine::FriendFacePart::Blow()
 	m_param.velocity.y = 0.03f;
 
 	Vector3 pos = gameObject.lock()->transform->GetWorldPosition();
-	float force = 0.02f;
+	float force = 0.01f;
 	float direction = 1.0f;
 	if (pos.x > 2.0f)
 	{

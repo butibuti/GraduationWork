@@ -6,13 +6,6 @@
 
 void ButiEngine::FriendHead_PartHitArea::OnUpdate()
 {
-	if (m_vlp_leaveIntervalTimer->Update())
-	{
-		m_vlp_leaveIntervalTimer->Stop();
-
-		gameObject.lock()->GetGameComponent<TriggerComponent>()->Regist();
-		CreateGuideMarker();
-	}
 }
 
 void ButiEngine::FriendHead_PartHitArea::OnSet()
@@ -81,8 +74,6 @@ void ButiEngine::FriendHead_PartHitArea::Start()
 	m_standardPos = gameObject.lock()->transform->GetLocalPosition();
 	m_standardPos += m_vwp_parent.lock()->transform->GetLocalPosition();
 
-	m_vlp_leaveIntervalTimer = ObjectFactory::Create<RelativeTimer>(30);
-
 	CreateGuideMarker();
 	SetDefaultPosObject();
 }
@@ -107,35 +98,45 @@ bool ButiEngine::FriendHead_PartHitArea::CanStickPart(const PartType arg_type)
 	return m_canStickPart;
 }
 
-void ButiEngine::FriendHead_PartHitArea::StickPart(Value_weak_ptr<GameObject> arg_vwp_part, const PartType arg_type)
+void ButiEngine::FriendHead_PartHitArea::StickPart(Value_weak_ptr<GameObject> arg_vwp_part)
 {
-	if (arg_type == PartType::Dummy)
+	if (m_vwp_part.lock())
 	{
 		return;
 	}
-	else if(!m_vwp_part.lock())
+
+	m_vwp_part = arg_vwp_part;
+	m_canStickPart = false;
+
+	if (m_type == PartType::Eye)
 	{
-		m_vwp_part = arg_vwp_part;
-		m_canStickPart = false;
-
-		if (m_type == PartType::Eye)
-		{
-			m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
-		}
-		else if (m_type == PartType::Nose)
-		{
-			m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
-		}
-		else if (m_type == PartType::Mouth)
-		{
-			m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(0.0f);
-		}
-
-		if (m_vwp_guideMarker.lock())
-		{
-			m_vwp_guideMarker.lock()->SetIsRemove(true);
-		}
+		m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
 	}
+	else if (m_type == PartType::Nose)
+	{
+		m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
+	}
+	else if (m_type == PartType::Mouth)
+	{
+		m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(0.0f);
+	}
+
+	if (m_vwp_guideMarker.lock())
+	{
+		m_vwp_guideMarker.lock()->SetIsRemove(true);
+	}
+}
+
+void ButiEngine::FriendHead_PartHitArea::OverWrite(Value_weak_ptr<GameObject> arg_vwp_part)
+{
+	if (!m_vwp_part.lock())
+	{
+		StickPart(arg_vwp_part);
+		return;
+	}
+
+	m_vwp_part.lock()->GetGameComponent<FriendFacePart>()->LeaveHead();
+	m_vwp_part = arg_vwp_part;
 }
 
 void ButiEngine::FriendHead_PartHitArea::LeavePart()
@@ -162,8 +163,7 @@ void ButiEngine::FriendHead_PartHitArea::LeavePart()
 		m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(1.0f);
 	}
 
-	gameObject.lock()->GetGameComponent<TriggerComponent>()->UnRegist();
-	m_vlp_leaveIntervalTimer->Start();
+	CreateGuideMarker();
 }
 
 ButiEngine::Vector3 ButiEngine::FriendHead_PartHitArea::GetStickPos()

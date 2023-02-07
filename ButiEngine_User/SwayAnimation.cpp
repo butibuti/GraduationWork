@@ -29,7 +29,7 @@ void ButiEngine::SwayAnimation::OnSet()
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 
 	m_startAngle = 0.0f;
-	m_targetAngle = ButiRandom::GetRandom(10.0f, 30.0f);
+	m_targetAngle = ButiRandom::GetRandom(30.0f, 50.0f);
 	if (ButiRandom::GetInt(0, 1))
 	{
 		m_targetAngle *= -1.0f;

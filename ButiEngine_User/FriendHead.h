@@ -45,7 +45,7 @@ namespace ButiEngine {
 		bool IsExact();
 
 		bool IsExistPartStuckArea();
-		void LeavePart();
+		void LeavePartRandom();
 	private:
 		void Control();
 		void ControlByKeyboard();

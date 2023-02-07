@@ -90,6 +90,7 @@ namespace ButiEngine {
 		static std::int32_t GetDummyPartCount() { return g_dummyCount; }
 	private:
 		void Move();
+		void Rotate();
 
 		void StickHead();
 
@@ -127,12 +128,11 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_partHitArea;
 
+		Value_ptr<RelativeTimer> m_vlp_leaveIntervalTimer;
+
 		float m_startZ;
-		bool m_isHitHead;
 
 		bool m_isExact;
-		Vector3 m_beforeBlowPosition;
-		Matrix4x4 m_beforeBlowRotation;
 
 		bool m_isTutorial;
 

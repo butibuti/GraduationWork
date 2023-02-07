@@ -64,26 +64,26 @@ void ButiEngine::FriendHead::OnUpdate()
 	if (m_vlp_completeFaceCountUpTimer->Update())
 	{
 		m_vlp_completeFaceCountUpTimer->Stop();
-		m_isFast = false;
+		//m_isFast = false;
 	}
 
-	if (m_isFast)
-	{
-		if (m_isTutorial)
-		{
-			if (m_vlp_spawnStarFlashIntervalTimer->Update())
-			{
-				SpawnStarFlash();
-			}
-		}
-		else if (m_vwp_stageManager.lock()->IsGameStart())
-		{
-			if (m_vlp_spawnStarFlashIntervalTimer->Update())
-			{
-				SpawnStarFlash();
-			}
-		}
-	}
+	//if (m_isFast)
+	//{
+	//	if (m_isTutorial)
+	//	{
+	//		if (m_vlp_spawnStarFlashIntervalTimer->Update())
+	//		{
+	//			SpawnStarFlash();
+	//		}
+	//	}
+	//	else if (m_vwp_stageManager.lock()->IsGameStart())
+	//	{
+	//		if (m_vlp_spawnStarFlashIntervalTimer->Update())
+	//		{
+	//			SpawnStarFlash();
+	//		}
+	//	}
+	//}
 
 	if (!m_isCompleteFace && CanPut())
 	{
@@ -160,11 +160,11 @@ void ButiEngine::FriendHead::Start()
 
 	m_isPut = false;
 
-	m_isFast = true;
-	if (m_isTutorial && m_vwp_tutorialManager.lock()->GetTutorialPhase() != 2)
-	{
-		m_isFast = false;
-	}
+	//m_isFast = true;
+	//if (m_isTutorial && m_vwp_tutorialManager.lock()->GetTutorialPhase() != 2)
+	//{
+	//	m_isFast = false;
+	//}
 
 	m_vlp_completeFaceCountUpTimer = ObjectFactory::Create<RelativeTimer>(m_fastBorder);
 
@@ -243,20 +243,21 @@ std::int32_t ButiEngine::FriendHead::GetMouthScore()
 
 bool ButiEngine::FriendHead::IsFast()
 {
-	if (!m_isFast)
-	{
-		return false;
-	}
+	//if (!m_isFast)
+	//{
+	//	return false;
+	//}
 
-	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
-	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
+	//auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+	//std::int32_t gameLevel = gameLevelManager->GetGameLevel();
 
-	if (!m_isTutorial && gameLevel == 0)
-	{
-		return false;
-	}
+	//if (!m_isTutorial && gameLevel == 0)
+	//{
+	//	return false;
+	//}
 
-	return m_isFast;
+	//return m_isFast;
+	return false;
 }
 
 bool ButiEngine::FriendHead::IsExact()
@@ -289,7 +290,7 @@ bool ButiEngine::FriendHead::IsExistPartStuckArea()
 	return GetPartStuckAreas().size() > 0;
 }
 
-void ButiEngine::FriendHead::LeavePart()
+void ButiEngine::FriendHead::LeavePartRandom()
 {
 	if (m_isPut)
 	{
@@ -326,7 +327,7 @@ void ButiEngine::FriendHead::LeavePart()
 
 		m_isCompleteFace = false;
 
-		m_isFast = true;
+		//m_isFast = true;
 	}
 }
 
