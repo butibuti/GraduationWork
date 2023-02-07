@@ -12,6 +12,7 @@
 #include "FriendHead_PartHitArea.h"
 #include "GameLevelManager.h"
 #include "SwayAnimation.h"
+#include"PartRespawnPoint.h"
 
 std::int32_t ButiEngine::FriendFacePart::g_eyeCount = 0;
 std::int32_t ButiEngine::FriendFacePart::g_noseCount = 0;
@@ -79,7 +80,12 @@ void ButiEngine::FriendFacePart::OnRemove()
 
 void ButiEngine::FriendFacePart::OnShowUI()
 {
-	GUI_SetPartParam();
+	m_param.GUI_SetPartType();
+	m_param.GUI_SetLife();
+	m_param.GUI_SetMoveParam();
+	m_param.GUI_SetGravityParam();
+	m_param.GUI_SetRotationParam();
+
 }
 
 void ButiEngine::FriendFacePart::Start()
@@ -143,7 +149,9 @@ void ButiEngine::FriendFacePart::Dead()
 {
 	gameObject.lock()->SetIsRemove(true);
 	//gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject().lock()->SetIsRemove(true);
-
+	if (m_vwp_respawnPoint.lock()) {
+		m_vwp_respawnPoint.lock()->Failed();
+	}
 	RemovePartCount();
 }
 
@@ -217,6 +225,9 @@ void ButiEngine::FriendFacePart::StickHead()
 	SpawnStickEffect();
 
 	m_isMove = false;
+	if (m_vwp_respawnPoint.lock()) {
+		m_vwp_respawnPoint.lock()->Success();
+	}
 }
 
 void ButiEngine::FriendFacePart::SpawnStickEffect()
@@ -429,19 +440,12 @@ void ButiEngine::FriendFacePart::RemovePartCount()
 	}
 }
 
-void ButiEngine::FriendFacePart::GUI_SetPartParam()
-{
-	GUI_SetPartType();
-	GUI_SetGravityParam();
-	GUI_SetMoveParam();
-	GUI_SetLife();
-	GUI_SetRotationParam();
-}
 
-void ButiEngine::FriendFacePart::GUI_SetPartType()
+bool ButiEngine::FacePartParameter::GUI_SetPartType()
 {
+	bool ret = false;
 	std::string typeStr;
-	switch (m_param.type)
+	switch (type)
 	{
 	case ButiEngine::PartType::Eye:
 		typeStr = "Eye";
@@ -463,72 +467,85 @@ void ButiEngine::FriendFacePart::GUI_SetPartType()
 
 	if (GUI::Button("Eye"))
 	{
-		m_param.type = PartType::Eye;
+		type = PartType::Eye;
+		ret |= true;
 	}
 	GUI::SameLine();
 	if (GUI::Button("Nose"))
 	{
-		m_param.type = PartType::Nose;
+		type = PartType::Nose;
+		ret |= true;
 	}
 	GUI::SameLine();
 	if (GUI::Button("Mouth"))
 	{
-		m_param.type = PartType::Mouth;
+		type = PartType::Mouth;
+		ret |= true;
 	}
 	GUI::SameLine();
 	if (GUI::Button("Dummy"))
 	{
-		m_param.type = PartType::Dummy;
+		type = PartType::Dummy;
+		ret |= true;
 	}
+	return ret;
 }
 
-void ButiEngine::FriendFacePart::GUI_SetLife()
+bool ButiEngine::FacePartParameter::GUI_SetLife()
 {
+	bool ret = false;
 	GUI::BulletText("Life");
-	GUI::DragInt("##life", m_param.life, 1.0f, 0, 1000);
+	ret |= GUI::DragInt("##life", life, 1.0f, 0, 1000);
+	return ret;
 }
 
-void ButiEngine::FriendFacePart::GUI_SetMoveParam()
+bool ButiEngine::FacePartParameter::GUI_SetMoveParam()
 {
-	if (m_param.isGravity)
+	bool ret = false;
+	if (isGravity)
 	{
 		GUI::BulletText("Velocity");
-		GUI::DragFloat3("##velocity", &m_param.velocity.x, 0.01f, -100.0f, 100.0f, "%.7f");
+		ret |= GUI::DragFloat3("##velocity", &velocity.x, 0.01f, -100.0f, 100.0f, "%.7f");
 
 		GUI::BulletText("MaxMoveSpeed");
-		GUI::DragFloat("##maxMoveSpeed", m_param.maxMoveSpeed, 0.01f, 0.0f, 100.0f);
+		ret |= GUI::DragFloat("##maxMoveSpeed", maxMoveSpeed, 0.01f, 0.0f, 100.0f);
 	}
 	else
 	{
 		GUI::BulletText("MoveDirection");
-		GUI::DragFloat3("##velocity", &m_param.velocity.x, 0.01f, -100.0f, 100.0f);
+		ret |= GUI::DragFloat3("##velocity", &velocity.x, 0.01f, -100.0f, 100.0f);
 
 		GUI::BulletText("MoveSpeed");
-		GUI::DragFloat("##moveSpeed", m_param.moveSpeed, 0.01f, 0.0f, 100.0f);
+		ret |= GUI::DragFloat("##moveSpeed", moveSpeed, 0.01f, 0.0f, 100.0f);
 	}
+	return ret;
 }
 
-void ButiEngine::FriendFacePart::GUI_SetGravityParam()
+bool ButiEngine::FacePartParameter::GUI_SetGravityParam()
 {
-	GUI::Checkbox("isGravity", m_param.isGravity);
+	bool ret = false;
+	ret |= GUI::Checkbox("isGravity", isGravity);
 
-	if (m_param.isGravity)
+	if (isGravity)
 	{
 		GUI::BulletText("Gravity");
-		GUI::DragFloat("##gravity", m_param.gravity, 0.01f, 0.0f, 100.0f, "%.7f");
+		ret |= GUI::DragFloat("##gravity", gravity, 0.01f, 0.0f, 100.0f, "%.7f");
 
 		GUI::BulletText("GravityDirection");
-		GUI::DragFloat3("##gravityDirection", &m_param.gravityDirection.x, 0.01f, -1.0f, 1.0f);
+		ret |= GUI::DragFloat3("##gravityDirection", &gravityDirection.x, 0.01f, -1.0f, 1.0f);
 	}
+	return ret;
 }
 
-void ButiEngine::FriendFacePart::GUI_SetRotationParam()
+bool ButiEngine::FacePartParameter::GUI_SetRotationParam()
 {
-	GUI::Checkbox("isSway", m_param.isSway);
+	bool ret = false;
+	ret |= GUI::Checkbox("isSway", isSway);
 
-	if (!m_param.isSway)
+	if (!isSway)
 	{
 		GUI::BulletText("RotateSpeed");
-		GUI::DragFloat("##rotateSpeed", m_param.rotateSpeed, 0.1f, -100.0f, 100.0f);
+		ret|= GUI::DragFloat("##rotateSpeed", rotateSpeed, 0.1f, -100.0f, 100.0f);
 	}
+	return ret;
 }

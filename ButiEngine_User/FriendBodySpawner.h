@@ -5,7 +5,7 @@ namespace ButiEngine {
 	class StageManager;
 	class PauseManager;
 	class GameLevelManager;
-
+	class FacePartSpawner;
 	class FriendBodySpawner :public GameComponent
 	{
 	public:
@@ -54,7 +54,7 @@ namespace ButiEngine {
 
 		std::int32_t m_spawnPatternOrderCounter;
 		bool m_isPlayPattern;
-
+		Value_weak_ptr<FacePartSpawner> m_vwp_facePartSpawner;
 	};
 }
 

@@ -353,6 +353,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BonusFriend.cpp" />
+    <ClCompile Include="FacePartSpawner.cpp" />
     <ClCompile Include="GuideMarker.cpp" />
     <ClCompile Include="Effect_HeartSpawner.cpp" />
     <ClCompile Include="FadeOut.cpp" />
@@ -360,6 +361,8 @@
     <ClCompile Include="GameEndManager.cpp" />
     <ClCompile Include="GameEnd_CompleteFriend.cpp" />
     <ClCompile Include="GameEnd_FriendSpawner.cpp" />
+    <ClCompile Include="LevelEditor.cpp" />
+    <ClCompile Include="PartRespawnPoint.cpp" />
     <ClCompile Include="SpriteAnimation_DestroyOwn.cpp" />
     <ClCompile Include="Effect_ConcentratedLine.cpp" />
     <ClCompile Include="Debug_Camera.cpp" />
@@ -427,6 +430,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BonusFriend.h" />
+    <ClInclude Include="FacePartSpawner.h" />
     <ClInclude Include="GuideMarker.h" />
     <ClInclude Include="Effect_HeartSpawner.h" />
     <ClInclude Include="FadeOut.h" />
@@ -434,6 +438,8 @@
     <ClInclude Include="GameEndManager.h" />
     <ClInclude Include="GameEnd_CompleteFriend.h" />
     <ClInclude Include="GameEnd_FriendSpawner.h" />
+    <ClInclude Include="LevelEditor.h" />
+    <ClInclude Include="PartRespawnPoint.h" />
     <ClInclude Include="SpriteAnimation_DestroyOwn.h" />
     <ClInclude Include="Effect_ConcentratedLine.h" />
     <ClInclude Include="Debug_Camera.h" />
