@@ -48,11 +48,18 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isSway);
 			ARCHIVE_BUTI(rotateSpeed);
 		}
+
+		bool GUI_SetPartType();
+		bool GUI_SetLife();
+		bool GUI_SetMoveParam();
+		bool GUI_SetGravityParam();
+		bool GUI_SetRotationParam();
 	};
 
 	class StageManager;
 	class PauseManager;
 	class GameLevelManager;
+	class PartRespawnPoint;
 
 	class FriendFacePart :public GameComponent
 	{
@@ -107,6 +114,8 @@ namespace ButiEngine {
 		static std::int32_t GetMouthCount() { return g_mouthCount; }
 		static std::int32_t GetNormalPartCount() { return g_eyeCount + g_noseCount + g_mouthCount; }
 		static std::int32_t GetDummyPartCount() { return g_dummyCount; }
+		void SetRespawnPoint(Value_weak_ptr<PartRespawnPoint> arg_vwp_respawnPoint) { m_vwp_respawnPoint = arg_vwp_respawnPoint; }
+		void SetParam(const FacePartParameter& arg_param) { m_param = arg_param; }
 	private:
 		void Move();
 		void Rotate();
@@ -135,19 +144,14 @@ namespace ButiEngine {
 
 		bool IsBetterRank();
 
-		void GUI_SetPartParam();
-		void GUI_SetPartType();
-		void GUI_SetLife();
-		void GUI_SetMoveParam();
-		void GUI_SetGravityParam();
-		void GUI_SetRotationParam();
 
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
-		Value_ptr<RelativeTimer> m_vlp_deadTimer;
-		Value_ptr<RelativeTimer> m_vlp_lifeTimer;
+		Value_ptr<RelativeTimer> m_vlp_deadTimer, m_vlp_lifeTimer;
+
+		Value_weak_ptr<PartRespawnPoint> m_vwp_respawnPoint;
 
 		bool m_isAppear;
 		bool m_isDisappear;

@@ -4,6 +4,7 @@
 #include "StageManager.h"
 #include "GameLevelManager.h"
 #include "FriendBody.h"
+#include"FacePartSpawner.h"
 
 void ButiEngine::FriendBodySpawner::OnUpdate()
 {
@@ -65,7 +66,7 @@ void ButiEngine::FriendBodySpawner::Start()
 	m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
-
+	m_vwp_facePartSpawner = GetManager().lock()->GetGameObject("FacePartSpawner").lock()->GetGameComponent<FacePartSpawner>();
 	ResizeLevelParameter();
 
 	m_vlp_spawnTimer = ObjectFactory::Create<RelativeTimer>(120);
@@ -265,7 +266,10 @@ void ButiEngine::FriendBodySpawner::UpdateSpawnPattern()
 void ButiEngine::FriendBodySpawner::StartNextSpawnPattern()
 {
 	m_spawnPatternOrderCounter += 1;
-	StartSpawnPattern();	
+	if (m_vwp_facePartSpawner.lock()) {
+		m_vwp_facePartSpawner.lock()->LevelIncrement();
+	}
+	StartSpawnPattern();
 	
 }
 

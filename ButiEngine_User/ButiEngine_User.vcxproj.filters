@@ -66,6 +66,9 @@
     <ClCompile Include="FlashAnimation.cpp" />
     <ClCompile Include="FadeOut.cpp" />
     <ClCompile Include="GuideMarker.cpp" />
+    <ClCompile Include="LevelEditor.cpp" />
+    <ClCompile Include="FacePartSpawner.cpp" />
+    <ClCompile Include="PartRespawnPoint.cpp" />
     <ClCompile Include="NumberDraw.cpp" />
     <ClCompile Include="Result_FallFriend.cpp" />
     <ClCompile Include="CompleteFriend.cpp" />
@@ -134,6 +137,9 @@
     <ClInclude Include="FlashAnimation.h" />
     <ClInclude Include="FadeOut.h" />
     <ClInclude Include="GuideMarker.h" />
+    <ClInclude Include="LevelEditor.h" />
+    <ClInclude Include="FacePartSpawner.h" />
+    <ClInclude Include="PartRespawnPoint.h" />
     <ClInclude Include="NumberDraw.h" />
     <ClInclude Include="Result_FallFriend.h" />
     <ClInclude Include="CompleteFriend.h" />
