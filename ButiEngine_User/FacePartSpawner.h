@@ -25,6 +25,8 @@ public:
 	void serialize(Archive& archive)
 	{
 		ARCHIVE_BUTI(isActive);
+		ARCHIVE_BUTI(m_randomSelectLevelMin);
+		ARCHIVE_BUTI(m_randomSelectLevelMax);
 	}
 
 	void Clear();

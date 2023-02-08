@@ -100,6 +100,8 @@ void ButiEngine::FacePartSpawner::SetLevel(const std::int32_t arg_level)
 {
 	Clear();
 	m_currentEditLevelIndex =max(arg_level,0);
-	if (m_currentEditLevelIndex >= m_currentData.list_data.GetSize()) { m_isRandomLevelSelect = true; }
+	if (m_currentEditLevelIndex >= m_currentData.list_data.GetSize()) {
+		m_isRandomLevelSelect = true; m_currentEditLevelIndex= 0;
+	}
 	CreatePartArrangement();
 }
