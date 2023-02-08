@@ -53,11 +53,15 @@ void ButiEngine::LevelEditor::OnShowUI()
 		RecreatePreview();
 	}
 	if (m_currentEditLevelIndex < 0) { return; }
-	std::int32_t l_index=0;
+	std::int32_t l_index=0,l_removeIndex=-1;
 	bool l_isEdited=false;
-	GUI::Checkbox("IsContinue", m_currentData.list_data[m_currentEditLevelIndex].isContinue);
+	l_isEdited|=GUI::Checkbox("IsContinue", m_currentData.list_data[m_currentEditLevelIndex].isContinue);
 	for (auto& data : m_currentData.list_data[m_currentEditLevelIndex].list_data) {
 		if (GUI::TreeNode(std::to_string(l_index))) {
+			GUI::SameLine();
+			if (GUI::Button("Remove##" + std::to_string(l_index))) {
+				l_removeIndex = l_index;
+			}
 			l_isEdited |=GUI::Edit(*data.transform);
 			l_isEdited |= data.faceParam.GUI_SetMoveParam();
 			l_isEdited |= data.faceParam.GUI_SetLife();
@@ -73,6 +77,13 @@ void ButiEngine::LevelEditor::OnShowUI()
 		}
 		l_index++;
 	}
+
+	if (l_removeIndex >= 0) {
+		auto remItr = m_currentData.list_data[m_currentEditLevelIndex].list_data.begin() + l_removeIndex;
+		m_currentData.list_data[m_currentEditLevelIndex].list_data.erase(remItr);
+		l_isEdited |= true;
+	}
+
 	if (GUI::Button("Add")) {
 		m_currentData.list_data[m_currentEditLevelIndex].list_data.Add({ FacePartParameter(), ObjectFactory::Create<Transform>(Vector3(0,0,5))});
 		l_isEdited |= true;

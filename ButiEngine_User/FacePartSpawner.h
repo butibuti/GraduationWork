@@ -29,7 +29,7 @@ public:
 
 	void Clear();
 	void LevelIncrement();
-	void Failed() { m_remainPart--; }
+	void DecreaseParts() { m_remainPart--; }
 private:
 	void CreatePartArrangement();
 
@@ -38,7 +38,6 @@ private:
 	Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 	SceneData m_currentData;
 	std::int32_t m_currentEditLevelIndex = -1,m_remainPart=0,m_successPart=0;
-	List<Value_weak_ptr<GameObject>> m_list_spawnPoint;
 };
 
 }
