@@ -138,15 +138,10 @@ void ButiEngine::FriendFacePart::Start()
 	m_startZ = gameObject.lock()->transform->GetLocalPosition().z;
 
 	m_vlp_deadTimer = ObjectFactory::Create<RelativeTimer>(10);
-	m_vlp_deadTimer->Start();
 
 	m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(m_param.life);
 
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	if (gameLevel != 0)
-	{
-		m_vlp_lifeTimer->Start();
-	}
 
 	m_vlp_leaveIntervalTimer = ObjectFactory::Create<RelativeTimer>(30);
 
@@ -603,6 +598,8 @@ void ButiEngine::FriendFacePart::OnAppear()
 	{
 		m_isAppear = false;
 		gameObject.lock()->GetGameComponent<TriggerComponent>()->Regist();
+		m_vlp_deadTimer->Start();
+		m_vlp_lifeTimer->Start();
 		if (m_param.isSway)
 		{
 			gameObject.lock()->AddGameComponent<SwayAnimation>();

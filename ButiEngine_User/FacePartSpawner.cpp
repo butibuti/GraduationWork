@@ -4,7 +4,9 @@
 #include"PartRespawnPoint.h"
 void ButiEngine::FacePartSpawner::OnUpdate()
 {
-	if (!m_remainPart && m_currentEditLevelIndex>=0&& m_currentData.list_data[m_currentEditLevelIndex].isContinue) {
+	if (!m_remainPart&&(m_successPart!= m_currentData.list_data[m_currentEditLevelIndex].list_data.GetSize())
+		&&( m_currentEditLevelIndex >= 0) && 
+		m_currentData.list_data[m_currentEditLevelIndex].isContinue) {
 		LevelIncrement();
 	}
 }
@@ -19,6 +21,35 @@ void ButiEngine::FacePartSpawner::OnRemove()
 
 void ButiEngine::FacePartSpawner::OnShowUI()
 {
+
+	if (GUI::ArrowButton("##sub_min", GUI::GuiDir_Left)) {
+		m_randomSelectLevelMin--;
+		m_randomSelectLevelMin = max(m_randomSelectLevelMin, -1);
+	}GUI::SameLine();
+	GUI::Text(m_randomSelectLevelMin);
+	GUI::SameLine();
+	if (GUI::ArrowButton("##plus_min", GUI::GuiDir_Right)) {
+		if (m_randomSelectLevelMin >= m_currentData.list_data.GetSize()) {
+
+		}
+		else {
+			m_randomSelectLevelMin++;
+		}
+	}
+
+
+	if (GUI::ArrowButton("##sub_max", GUI::GuiDir_Left)) {
+		m_randomSelectLevelMax--;
+		m_randomSelectLevelMax = max(m_randomSelectLevelMax, -1);
+	}GUI::SameLine();
+	GUI::Text(m_randomSelectLevelMax);
+	GUI::SameLine();
+	if (GUI::ArrowButton("##plus_max", GUI::GuiDir_Right)) {
+		if (m_randomSelectLevelMax >= m_currentData.list_data.GetSize()) {	}
+		else {
+			m_randomSelectLevelMax++;
+		}
+	}
 }
 
 void ButiEngine::FacePartSpawner::Start()
@@ -59,8 +90,16 @@ void ButiEngine::FacePartSpawner::Clear()
 
 void ButiEngine::FacePartSpawner::LevelIncrement()
 {
+	if (m_isRandomLevelSelect) {
+
+	}
+	SetLevel(m_currentEditLevelIndex+1);
+}
+
+void ButiEngine::FacePartSpawner::SetLevel(const std::int32_t arg_level)
+{
 	Clear();
-	m_currentEditLevelIndex++;
-	if (m_currentEditLevelIndex >= m_currentData.list_data.GetSize()) { m_currentEditLevelIndex = 0; }
+	m_currentEditLevelIndex =max(arg_level,0);
+	if (m_currentEditLevelIndex >= m_currentData.list_data.GetSize()) { m_isRandomLevelSelect = true; }
 	CreatePartArrangement();
 }
