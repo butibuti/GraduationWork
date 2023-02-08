@@ -417,12 +417,12 @@ void ButiEngine::FriendBody::SaveFriendData()
 	std::int32_t addCount = 1;
 	if (headComponent->IsGood())
 	{
-		addCount *= 2;
+		addCount++;
 	}
-	if (IsFront())
-	{
-		addCount *= 2;
-	}
+	//if (IsFront())
+	//{
+	//	addCount++;
+	//}
 
 	for (std::int32_t i = 0; i < addCount; i++)
 	{

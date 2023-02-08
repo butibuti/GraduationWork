@@ -3,6 +3,7 @@
 namespace ButiEngine {
 
 	class NumberDraw;
+	enum class Rank;
 
 	class UI_PartEvaluation :public GameComponent
 	{
@@ -23,16 +24,21 @@ namespace ButiEngine {
 		}
 
 		void SetScore(const std::int32_t arg_score) { m_score = arg_score; }
+		void SetRank(const Rank arg_rank);
 	private:
 		void CheckLevelUp(const std::int32_t arg_score);
 		void LevelUpNormal();
 		void LevelUpGood();
 		void SetColor(const Vector4& arg_color);
+		void PlayRankSound();
 
 		Value_weak_ptr<NumberDraw> m_vwp_numberDraw;
 
+
 		std::int32_t m_score;
+		Rank m_rank;
 		Value_ptr<RelativeTimer> m_vlp_timer;
+		Value_ptr<RelativeTimer> m_vlp_waitDisappearTimer;
 
 		bool m_isLevelUpNormal;
 		bool m_isLevelUpGood;

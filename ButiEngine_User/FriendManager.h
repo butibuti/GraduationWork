@@ -2,7 +2,7 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	enum class PartRank;
+	enum class Rank;
 
 	struct FriendData
 	{
@@ -12,9 +12,9 @@ namespace ButiEngine {
 		Value_ptr<Transform> vlp_mouthTransform;
 		Value_ptr<Transform> vlp_bodyTransform;
 
-		PartRank eyeRank;
-		PartRank noseRank;
-		PartRank mouthRank;
+		Rank eyeRank;
+		Rank noseRank;
+		Rank mouthRank;
 	};
 
 	class GameLevelManager;

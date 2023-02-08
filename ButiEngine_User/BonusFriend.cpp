@@ -41,7 +41,7 @@ void ButiEngine::BonusFriend::Start()
 {
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 
-	m_vlp_moveBackTimer = ObjectFactory::Create<RelativeTimer>(30);
+	m_vlp_moveBackTimer = ObjectFactory::Create<RelativeTimer>(90);
 
 	m_isMoveBack = false;
 	m_isRotate = false;
