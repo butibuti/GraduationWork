@@ -520,6 +520,13 @@ void ButiEngine::FriendFacePart::Blow()
 
 void ButiEngine::FriendFacePart::CheckRank()
 {
+	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
+	if (gameLevel == 0)
+	{
+		m_rank = Rank::Normal;
+		return;
+	}
+
 	if (m_rank == Rank::Good)
 	{
 		return;

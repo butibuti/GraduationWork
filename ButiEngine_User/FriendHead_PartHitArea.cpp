@@ -190,6 +190,11 @@ void ButiEngine::FriendHead_PartHitArea::Dead()
 
 void ButiEngine::FriendHead_PartHitArea::CreateGuideMarker()
 {
+	if (m_type == PartType::Dummy)
+	{
+		return;
+	}
+
 	m_vwp_guideMarker = GetManager().lock()->AddObjectFromCereal("GuideMarker");
 	auto guideMarker = m_vwp_guideMarker.lock()->GetGameComponent<GuideMarker>();
 	guideMarker->SetMarkTarget(gameObject);
@@ -200,7 +205,7 @@ void ButiEngine::FriendHead_PartHitArea::CreateGuideMarker()
 	}
 	else if (m_type == PartType::Nose)
 	{
-		guideMarker->SetColor(Vector4(1.0f, 0.5f, 0.8f, 1.0f));
+		guideMarker->SetColor(ButiColor::Orange());
 	}
 	else if (m_type == PartType::Mouth)
 	{

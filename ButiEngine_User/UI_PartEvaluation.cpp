@@ -61,7 +61,7 @@ void ButiEngine::UI_PartEvaluation::Start()
 {
 	m_vwp_numberDraw = gameObject.lock()->GetGameComponent<NumberDraw>();
 
-	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(30);
+	m_vlp_timer = ObjectFactory::Create<RelativeTimer>(45);
 	m_vlp_timer->Start();
 
 	m_vlp_waitDisappearTimer = ObjectFactory::Create<RelativeTimer>(30);

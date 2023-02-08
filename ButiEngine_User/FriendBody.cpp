@@ -388,6 +388,12 @@ void ButiEngine::FriendBody::CheckTotalRank()
 
 void ButiEngine::FriendBody::CreateBonusFriend()
 {
+	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
+	if (gameLevel == 0)
+	{
+		return;
+	}
+
 	std::int32_t createCount = 0;
 	if (m_totalRank == Rank::Bad)
 	{

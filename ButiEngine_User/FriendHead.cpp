@@ -119,6 +119,10 @@ void ButiEngine::FriendHead::OnRemove()
 	{
 		m_vwp_mouthHitAreaComponent.lock()->Dead();
 	}
+	if (m_vwp_dummyHitArea.lock())
+	{
+		m_vwp_dummyHitAreaComponent.lock()->Dead();
+	}
 }
 
 void ButiEngine::FriendHead::OnShowUI()
@@ -612,14 +616,17 @@ void ButiEngine::FriendHead::CreatePartHitArea()
 	m_vwp_eyesHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Eyes");
 	m_vwp_noseHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Nose");
 	m_vwp_mouthHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Mouth");
+	m_vwp_dummyHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Dummy");
 
 	m_vwp_eyesHitAreaComponent = m_vwp_eyesHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 	m_vwp_noseHitAreaComponent = m_vwp_noseHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 	m_vwp_mouthHitAreaComponent = m_vwp_mouthHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
+	m_vwp_dummyHitAreaComponent = m_vwp_dummyHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 
 	m_vwp_eyesHitAreaComponent.lock()->SetParent(gameObject);
 	m_vwp_noseHitAreaComponent.lock()->SetParent(gameObject);
 	m_vwp_mouthHitAreaComponent.lock()->SetParent(gameObject);
+	m_vwp_dummyHitAreaComponent.lock()->SetParent(gameObject);
 
 	auto eyesDefault = GetManager().lock()->GetGameObject("Eyes_Default");
 	eyesDefault.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);

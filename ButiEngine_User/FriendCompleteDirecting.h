@@ -37,6 +37,7 @@ namespace ButiEngine {
 		Value_ptr<RelativeTimer> m_vlp_waitZoomOutTimer;
 
 		bool m_isSpecialDirecting;
+		bool m_isNoAppearEvaluation;
 
 		Value_ptr<RelativeTimer> m_vlp_spawnHukidashiIntervalTimer;
 		std::vector<std::string> m_vec_hukidashiNames;

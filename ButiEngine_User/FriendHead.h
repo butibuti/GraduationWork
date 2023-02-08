@@ -86,10 +86,12 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_eyesHitArea;
 		Value_weak_ptr<GameObject> m_vwp_noseHitArea;
 		Value_weak_ptr<GameObject> m_vwp_mouthHitArea;
+		Value_weak_ptr<GameObject> m_vwp_dummyHitArea;
 
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_eyesHitAreaComponent;
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_noseHitAreaComponent;
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_mouthHitAreaComponent;
+		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_dummyHitAreaComponent;
 
 		Value_ptr<RelativeTimer> m_vlp_appearTimer;
 

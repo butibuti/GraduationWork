@@ -9,6 +9,8 @@
 #include "BonusFriend.h"
 #include "TutorialManager.h"
 #include "FriendFacePart.h"
+#include "UI_TotalEvaluation.h"
+#include "GameLevelManager.h"
 
 void ButiEngine::FriendCompleteDirecting::OnUpdate()
 {
@@ -48,6 +50,11 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 		//m_vlp_spawnHukidashiIntervalTimer->Start();
 		//SpawnHukidashi();
 
+		if (!m_isNoAppearEvaluation)
+		{
+			GetManager().lock()->GetGameObject("UI_TotalEvaluation").lock()->GetGameComponent<UI_TotalEvaluation>()->Appear();
+		}
+
 		auto concentratedLine = GetManager().lock()->AddObjectFromCereal("Effect_ConcentratedLine");
 
 		GetManager().lock()->GetGameObject(GameObjectTag("FriendHead")).lock()->GetGameComponent<FriendHead>()->SetIsRemove(true);
@@ -59,6 +66,11 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 		{
 			m_vwp_belt_left.lock()->GetGameComponent<Effect_Belt>()->Disappear(8);
 			m_vwp_belt_right.lock()->GetGameComponent<Effect_Belt>()->Disappear(8);
+		}
+
+		if (!m_isNoAppearEvaluation)
+		{
+			GetManager().lock()->GetGameObject("UI_TotalEvaluation").lock()->GetGameComponent<UI_TotalEvaluation>()->Disappear();
 		}
 
 		m_vwp_pauseManager.lock()->SetIsPause(false);
@@ -100,14 +112,31 @@ void ButiEngine::FriendCompleteDirecting::OnSet()
 	m_vwp_pauseManager.lock()->SetIsPause(true);
 
 	m_isSpecialDirecting = false;
+	m_isNoAppearEvaluation = false;
 	
 	auto headComponent = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead")).lock()->GetGameComponent<FriendHead>();
 	auto bodyComponent = gameObject.lock()->GetGameComponent<FriendBody>();
 
-	if (bodyComponent->GetTotalRank() == Rank::Good)
+	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
+	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
+
+	if (gameLevel != 0 && bodyComponent->GetTotalRank() == Rank::Good)
 	{
 		m_isSpecialDirecting = true;
 	}
+
+	if (gameLevel == 0)
+	{
+		m_isNoAppearEvaluation = true;
+	}
+
+	Rank eyeRank = headComponent->GetEye().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
+	Rank noseRank = headComponent->GetNose().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
+	Rank mouthRank = headComponent->GetMouth().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
+
+	auto totalEvaluation = GetManager().lock()->GetGameObject("UI_TotalEvaluation").lock()->GetGameComponent<UI_TotalEvaluation>();
+	totalEvaluation->SetTotalRank(bodyComponent->GetTotalRank());
+	totalEvaluation->SetPartRank(eyeRank, noseRank, mouthRank);
 
 	SetGameCameraParameter();
 	//SetHukidashiParameter();

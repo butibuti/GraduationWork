@@ -28,9 +28,12 @@ namespace ButiEngine {
 		void SetTotalRank(const Rank arg_rank);
 		void SetPartRank(const Rank arg_eyeRank, const Rank arg_noseRank, const Rank arg_mouthRank);
 	private:
-		void AddPositionAnimation(const Vector3& arg_targetPos, Easing::EasingType arg_easeType, const std::int32_t arg_animFrame);
+		void AddPositionAnimation(const float arg_targetPosX, Easing::EasingType arg_easeType, const std::int32_t arg_animFrame, const std::int32_t arg_index);
 
 		std::vector<Value_weak_ptr<GameObject>> m_vec_vwp_texts;
+
+		Value_ptr<RelativeTimer> m_vlp_appearIntervalTimer;
+		std::int32_t m_appearIndex;
 	};
 
 }
