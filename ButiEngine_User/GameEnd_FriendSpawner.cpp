@@ -85,9 +85,9 @@ void ButiEngine::GameEnd_FriendSpawner::SpawnFriends(const std::int32_t arg_spaw
 		data->vlp_eyeTransform = eyesHitArea.lock()->transform->Clone();
 		data->vlp_noseTransform = noseHitArea.lock()->transform->Clone();
 		data->vlp_mouthTransform = mouthHitArea.lock()->transform->Clone();
-		data->eyeRank = PartRank::Normal;
-		data->noseRank = PartRank::Normal;
-		data->mouthRank = PartRank::Normal;
+		data->eyeRank = Rank::Normal;
+		data->noseRank = Rank::Normal;
+		data->mouthRank = Rank::Normal;
 
 		friendDatas.push_back(data);
 	}

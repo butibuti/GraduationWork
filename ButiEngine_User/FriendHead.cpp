@@ -270,15 +270,15 @@ bool ButiEngine::FriendHead::IsGood()
 		return false;
 	}
 	
-	if (GetEye().lock()->GetGameComponent<FriendFacePart>()->GetPartRank() != PartRank::Good)
+	if (GetEye().lock()->GetGameComponent<FriendFacePart>()->GetPartRank() != Rank::Good)
 	{
 		return false;
 	}
-	if (GetNose().lock()->GetGameComponent<FriendFacePart>()->GetPartRank() != PartRank::Good)
+	if (GetNose().lock()->GetGameComponent<FriendFacePart>()->GetPartRank() != Rank::Good)
 	{
 		return false;
 	}
-	if (GetMouth().lock()->GetGameComponent<FriendFacePart>()->GetPartRank() != PartRank::Good)
+	if (GetMouth().lock()->GetGameComponent<FriendFacePart>()->GetPartRank() != Rank::Good)
 	{
 		return false;
 	}

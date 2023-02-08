@@ -28,6 +28,8 @@ namespace ButiEngine {
 	private:
 		std::vector<Value_weak_ptr<MeshDrawComponent>> m_vec_vwp_meshDrawComponents;
 		std::vector<Value_weak_ptr<SpriteAnimationComponent>> m_vec_vwp_spriteAnimationComponents;
+
+		Vector3 m_defaultScale;
 	};
 
 }

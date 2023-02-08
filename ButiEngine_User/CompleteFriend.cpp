@@ -59,41 +59,41 @@ void ButiEngine::CompleteFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_
 	auto eye = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Eyes", arg_vwp_friendData.lock()->vlp_eyeTransform);
 	eye.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
 
-	if (arg_vwp_friendData.lock()->eyeRank == PartRank::Normal)
+	if (arg_vwp_friendData.lock()->eyeRank == Rank::Normal)
 	{
 		eye.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
 	}
-	else if (arg_vwp_friendData.lock()->eyeRank == PartRank::Bad)
+	else if (arg_vwp_friendData.lock()->eyeRank == Rank::Bad)
 	{
 		eye.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
 	}
 
 	auto nose = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Nose", arg_vwp_friendData.lock()->vlp_noseTransform);
 	nose.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
-	if (arg_vwp_friendData.lock()->noseRank == PartRank::Good)
+	if (arg_vwp_friendData.lock()->noseRank == Rank::Good)
 	{
 		nose.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
 	}
-	else if(arg_vwp_friendData.lock()->noseRank == PartRank::Normal)
+	else if(arg_vwp_friendData.lock()->noseRank == Rank::Normal)
 	{
 		nose.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
 	}
-	else if (arg_vwp_friendData.lock()->noseRank == PartRank::Bad)
+	else if (arg_vwp_friendData.lock()->noseRank == Rank::Bad)
 	{
 		eye.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
 	}
 
 	auto mouth = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Mouth", arg_vwp_friendData.lock()->vlp_mouthTransform);
 	mouth.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
-	if (arg_vwp_friendData.lock()->mouthRank == PartRank::Good)
+	if (arg_vwp_friendData.lock()->mouthRank == Rank::Good)
 	{
 		mouth.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
 	}
-	else if(arg_vwp_friendData.lock()->mouthRank == PartRank::Normal)
+	else if(arg_vwp_friendData.lock()->mouthRank == Rank::Normal)
 	{
 		mouth.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
 	}
-	else if (arg_vwp_friendData.lock()->mouthRank == PartRank::Bad)
+	else if (arg_vwp_friendData.lock()->mouthRank == Rank::Bad)
 	{
 		eye.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
 	}

@@ -12,6 +12,7 @@
 #include "SwayAnimation.h"
 #include "Header/GameObjects/DefaultGameComponent/ScaleAnimationComponent.h"
 #include"PartRespawnPoint.h"
+#include "UI_PartEvaluation.h"
 
 std::int32_t ButiEngine::FriendFacePart::g_eyeCount = 0;
 std::int32_t ButiEngine::FriendFacePart::g_noseCount = 0;
@@ -150,7 +151,7 @@ void ButiEngine::FriendFacePart::Start()
 
 	m_vlp_leaveIntervalTimer = ObjectFactory::Create<RelativeTimer>(30);
 
-	m_rank = PartRank::NoRank;
+	m_rank = Rank::NoRank;
 
 	m_isMove = true;
 
@@ -292,24 +293,24 @@ std::int32_t ButiEngine::FriendFacePart::GetCalcPosScore()
 	return posScore;
 }
 
-ButiEngine::PartRank ButiEngine::FriendFacePart::GetCalcPartRank()
+ButiEngine::Rank ButiEngine::FriendFacePart::GetCalcPartRank()
 {
-	PartRank rank;
+	Rank rank;
 	std::int32_t score = GetCalcScore();
 
 	std::int32_t normalBorder = 60;
 	std::int32_t goodBorder = 90;
 	if (score >= goodBorder)
 	{
-		rank = PartRank::Good;
+		rank = Rank::Good;
 	}
 	else if (score >= normalBorder)
 	{
-		rank = PartRank::Normal;
+		rank = Rank::Normal;
 	}
 	else
 	{
-		rank = PartRank::Bad;
+		rank = Rank::Bad;
 	}
 
 	return rank;
@@ -524,17 +525,19 @@ void ButiEngine::FriendFacePart::Blow()
 
 void ButiEngine::FriendFacePart::CheckRank()
 {
-	if (m_rank == PartRank::Good)
+	if (m_rank == Rank::Good)
 	{
 		return;
 	}
 
-	PartRank newRank = GetCalcPartRank();
+	Rank newRank = GetCalcPartRank();
 	if (static_cast<std::int32_t>(newRank) <= static_cast<std::int32_t>(m_rank))
 	{
 		return;
 	}
 	m_rank = newRank;
+
+	CreateEvaluationObject();
 
 	ChangeModel();
 }
@@ -543,17 +546,17 @@ void ButiEngine::FriendFacePart::ChangeModel()
 {
 	if (m_param.type == PartType::Eye)
 	{
-		if (m_rank == PartRank::Good)
+		if (m_rank == Rank::Good)
 		{
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
 		}
-		else if (m_rank == PartRank::Normal)
+		else if (m_rank == Rank::Normal)
 		{
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
 		}
-		else if (m_rank == PartRank::Bad)
+		else if (m_rank == Rank::Bad)
 		{
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
@@ -561,19 +564,19 @@ void ButiEngine::FriendFacePart::ChangeModel()
 	}
 	else if (m_param.type == PartType::Nose || m_param.type == PartType::Mouth)
 	{
-		if (m_rank == PartRank::Good)
+		if (m_rank == Rank::Good)
 		{
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(0.0f);
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
 		}
-		else if (m_rank == PartRank::Normal)
+		else if (m_rank == Rank::Normal)
 		{
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
 		}
-		else if(m_rank == PartRank::Bad)
+		else if(m_rank == Rank::Bad)
 		{
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(0.0f);
 			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
@@ -679,9 +682,24 @@ bool ButiEngine::FriendFacePart::IsBetterRank()
 		return true;
 	}
 
-	PartRank havePartRank = havePart.lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
+	Rank havePartRank = havePart.lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
 
 	return static_cast<std::int32_t>(m_rank) >= static_cast<std::int32_t>(havePartRank);
+}
+
+void ButiEngine::FriendFacePart::CreateEvaluationObject()
+{
+	auto evaluation = GetManager().lock()->AddObjectFromCereal("UI_PartEvaluation");
+	Vector3 pos = gameObject.lock()->transform->GetWorldPosition();
+	Vector3 screenPos = GetCamera("main")->WorldToScreen(pos);
+	screenPos.x += 300.0f;
+	if (pos.x < 0.0f)
+	{
+		screenPos.x -= 600.0f;
+	}
+	evaluation.lock()->transform->SetLocalPosition(screenPos);
+	evaluation.lock()->GetGameComponent<UI_PartEvaluation>()->SetScore(GetCalcScore());
+	evaluation.lock()->GetGameComponent<UI_PartEvaluation>()->SetRank(m_rank);
 }
 
 

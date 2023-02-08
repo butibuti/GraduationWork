@@ -10,7 +10,7 @@ namespace ButiEngine {
 		Dummy,
 	};
 
-	enum class PartRank
+	enum class Rank
 	{
 		NoRank,
 		Bad,
@@ -95,8 +95,8 @@ namespace ButiEngine {
 		std::int32_t GetCalcAngleScore();
 		std::int32_t GetCalcPosScore();
 
-		PartRank GetCalcPartRank();
-		PartRank GetPartRank() { return m_rank; }
+		Rank GetCalcPartRank();
+		Rank GetPartRank() { return m_rank; }
 
 		bool IsGood() { return IsGoodAngle() && IsGoodPos(); }
 		bool IsGoodAngle();
@@ -148,6 +148,7 @@ namespace ButiEngine {
 		void RemovePartCount();
 
 		bool IsBetterRank();
+		void CreateEvaluationObject();
 
 
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
@@ -171,7 +172,7 @@ namespace ButiEngine {
 
 		float m_startZ;
 
-		PartRank m_rank;
+		Rank m_rank;
 		static Vector3 g_goodAngleBorder;
 
 		bool m_isTutorial;
