@@ -4,11 +4,8 @@
 #include"PartRespawnPoint.h"
 void ButiEngine::FacePartSpawner::OnUpdate()
 {
-	if (!m_remainPart) {
-		Clear();
-		m_currentEditLevelIndex++;
-		if (m_currentEditLevelIndex >= m_currentData.list_data.GetSize()) { m_currentEditLevelIndex = 0; }
-		CreatePartArrangement();
+	if (!m_remainPart && m_currentEditLevelIndex>=0&& m_currentData.list_data[m_currentEditLevelIndex].isContinue) {
+		LevelIncrement();
 	}
 }
 
@@ -27,7 +24,7 @@ void ButiEngine::FacePartSpawner::OnShowUI()
 void ButiEngine::FacePartSpawner::Start()
 {
 	InputCereal(m_currentData, "Scene/" + GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName() + "/levelData.lvd");
-	CreatePartArrangement();
+	LevelIncrement();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FacePartSpawner::Clone()
@@ -46,6 +43,7 @@ void ButiEngine::FacePartSpawner::CreatePartArrangement()
 		auto respawnPointComponent = respawnPoint.lock()->GetGameComponent<PartRespawnPoint>();
 		respawnPointComponent->SetSpawner(GetThis<FacePartSpawner>());
 		respawnPointComponent->SetParam(data.faceParam);
+		respawnPointComponent->SetIsContinue(m_currentData.list_data[m_currentEditLevelIndex].isContinue);
 		m_remainPart++;
 	}
 	
@@ -53,8 +51,9 @@ void ButiEngine::FacePartSpawner::CreatePartArrangement()
 
 void ButiEngine::FacePartSpawner::Clear()
 {
-	for (auto spawnPoint: m_list_spawnPoint) {
-		spawnPoint.lock()->SetIsRemove(true);
+	auto spawnpoints = GetManager().lock()->GetGameObjects(GameObjectTag("RespawnPoint"));
+	for (auto spawnPoint: spawnpoints) {
+		spawnPoint->SetIsRemove(true);
 	}
 }
 

@@ -9,17 +9,18 @@ void ButiEngine::PartRespawnPoint::OnUpdate()
 
 void ButiEngine::PartRespawnPoint::Failed()
 {
-	if (m_isContinue) {
+	if (!m_isContinue) {
 		SpawnFacePart();
 	}
 	else {
-		m_vwp_spawner.lock()->Failed();
+		m_vwp_spawner.lock()->DecreaseParts();
 	}
 }
 
 void ButiEngine::PartRespawnPoint::Success()
 {
 	gameObject.lock()->SetIsRemove(true);
+	m_vwp_spawner.lock()->DecreaseParts();
 }
 
 void ButiEngine::PartRespawnPoint::Start()
