@@ -430,6 +430,7 @@
     <ClCompile Include="UI_FriendCount.cpp" />
     <ClCompile Include="UI_MakeFriendsCount.cpp" />
     <ClCompile Include="UI_PartEvaluation.cpp" />
+    <ClCompile Include="UI_TotalEvaluation.cpp" />
     <ClCompile Include="UI_TutorialText.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -502,6 +503,7 @@
     <ClInclude Include="UI_FriendCount.h" />
     <ClInclude Include="UI_MakeFriendsCount.h" />
     <ClInclude Include="UI_PartEvaluation.h" />
+    <ClInclude Include="UI_TotalEvaluation.h" />
     <ClInclude Include="UI_TutorialText.h" />
   </ItemGroup>
   <ItemGroup>

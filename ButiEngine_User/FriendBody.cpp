@@ -138,6 +138,8 @@ void ButiEngine::FriendBody::Start()
 	m_vlp_pullUpTimer->Start();
 
 	m_offsetPos = gameObject.lock()->transform->GetLocalPosition();
+
+	m_totalRank = Rank::NoRank;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
@@ -169,6 +171,8 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	m_vwp_head.lock()->transform->SetWorldPosition(headPos);
 
 	SaveFriendData();
+	CheckTotalRank();
+	CreateBonusFriend();
 
 	m_isMoveHorizontal = false;
 	gameObject.lock()->AddGameComponent<FriendCompleteDirecting>();
@@ -357,6 +361,64 @@ void ButiEngine::FriendBody::StopRotate()
 	anim->SetEaseType(Easing::EasingType::EaseOutQuad);
 }
 
+void ButiEngine::FriendBody::CheckTotalRank()
+{
+	std::int32_t score = 0;
+	score += static_cast<std::int32_t>(m_vlp_friendData->eyeRank);
+	score += static_cast<std::int32_t>(m_vlp_friendData->noseRank);
+	score += static_cast<std::int32_t>(m_vlp_friendData->mouthRank);
+	score /= 3.0f;
+
+	float goodBorder = 0.5f;
+	float normalBorder = -0.5f;
+
+	if (score > goodBorder)
+	{
+		m_totalRank = Rank::Good;
+	}
+	else if (score >= normalBorder)
+	{
+		m_totalRank = Rank::Normal;
+	}
+	else
+	{
+		m_totalRank = Rank::Bad;
+	}
+}
+
+void ButiEngine::FriendBody::CreateBonusFriend()
+{
+	std::int32_t createCount = 0;
+	if (m_totalRank == Rank::Bad)
+	{
+		createCount = 0;
+	}
+	else if (m_totalRank == Rank::Normal)
+	{
+		createCount = 1;
+	}
+	else if (m_totalRank == Rank::Good)
+	{
+		createCount = 2;
+	}
+
+	for (std::int32_t i = 0; i < createCount; i++)
+	{
+		if (!m_isTutorial)
+		{
+			GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
+		}
+
+		Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
+		auto bonusFriend = GetManager().lock()->AddObjectFromCereal("BonusFriend", ObjectFactory::Create<Transform>(pos));
+		bonusFriend.lock()->GetGameComponent<CompleteFriend>()->CreateParts(m_vlp_friendData);
+
+		auto bonusFriendComponent = bonusFriend.lock()->GetGameComponent<BonusFriend>();
+		bonusFriendComponent->SetFrontBorder(m_frontBorder);
+		m_vec_bonusFriends.push_back(bonusFriend);
+	}
+}
+
 bool ButiEngine::FriendBody::IsFrontHead()
 {
 	if (!m_vwp_head.lock())
@@ -413,34 +475,10 @@ void ButiEngine::FriendBody::SaveFriendData()
 	m_vlp_friendData->eyeRank = headComponent->GetEye().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
 	m_vlp_friendData->noseRank = headComponent->GetNose().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
 	m_vlp_friendData->mouthRank = headComponent->GetMouth().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
-	
-	std::int32_t addCount = 1;
-	if (headComponent->IsGood())
+
+	if (!m_isTutorial)
 	{
-		addCount++;
-	}
-	//if (IsFront())
-	//{
-	//	addCount++;
-	//}
-
-	for (std::int32_t i = 0; i < addCount; i++)
-	{
-		if (!m_isTutorial)
-		{
-			GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
-		}
-
-		if (i != 0)
-		{
-			Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
-			auto bonusFriend = GetManager().lock()->AddObjectFromCereal("BonusFriend", ObjectFactory::Create<Transform>(pos));
-			bonusFriend.lock()->GetGameComponent<CompleteFriend>()->CreateParts(m_vlp_friendData);
-
-			auto bonusFriendComponent = bonusFriend.lock()->GetGameComponent<BonusFriend>();
-			bonusFriendComponent->SetFrontBorder(m_frontBorder);
-			m_vec_bonusFriends.push_back(bonusFriend);
-		}
+		GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
 	}
 }
 

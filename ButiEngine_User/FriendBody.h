@@ -8,6 +8,7 @@ namespace ButiEngine {
 	class FriendBodySpawner;
 	class TutorialManager;
 	struct FriendData;
+	enum class Rank;
 
 	class FriendBody :public GameComponent
 	{
@@ -31,6 +32,8 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_vec_moveHorizontalFrame);
 		}
 
+		Rank GetTotalRank() { return m_totalRank; }
+
 		Value_weak_ptr<GameObject> GetNeck() { return m_vwp_neck; }
 
 		std::vector<Value_weak_ptr<GameObject>> GetBonusFriens() { return m_vec_bonusFriends; }
@@ -53,6 +56,9 @@ namespace ButiEngine {
 		void SpawnNewHead();
 
 		void StopRotate();
+
+		void CheckTotalRank();
+		void CreateBonusFriend();
 
 		bool IsFrontHead();
 		float GetDifferenceFromHeadFront();
@@ -104,6 +110,8 @@ namespace ButiEngine {
 
 		bool m_isTutorial = false;
 		Value_weak_ptr<TutorialManager> m_vwp_tutorialManager;
+
+		Rank m_totalRank;
 	};
 
 }

@@ -8,13 +8,14 @@
 #include "Effect_CompleteFriend.h"
 #include "BonusFriend.h"
 #include "TutorialManager.h"
+#include "FriendFacePart.h"
 
 void ButiEngine::FriendCompleteDirecting::OnUpdate()
 {
-	if (m_vlp_spawnHukidashiIntervalTimer->Update())
-	{
-		SpawnHukidashi();
-	}
+	//if (m_vlp_spawnHukidashiIntervalTimer->Update())
+	//{
+	//	SpawnHukidashi();
+	//}
 
 	if (m_vlp_waitZoomInTimer->Update())
 	{
@@ -44,8 +45,8 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 			index++;
 		}
 
-		m_vlp_spawnHukidashiIntervalTimer->Start();
-		SpawnHukidashi();
+		//m_vlp_spawnHukidashiIntervalTimer->Start();
+		//SpawnHukidashi();
 
 		auto concentratedLine = GetManager().lock()->AddObjectFromCereal("Effect_ConcentratedLine");
 
@@ -103,13 +104,13 @@ void ButiEngine::FriendCompleteDirecting::OnSet()
 	auto headComponent = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead")).lock()->GetGameComponent<FriendHead>();
 	auto bodyComponent = gameObject.lock()->GetGameComponent<FriendBody>();
 
-	if (headComponent->IsGood() && bodyComponent->IsFront())
+	if (bodyComponent->GetTotalRank() == Rank::Good)
 	{
 		m_isSpecialDirecting = true;
 	}
 
 	SetGameCameraParameter();
-	SetHukidashiParameter();
+	//SetHukidashiParameter();
 
 	m_vlp_directingTimer = ObjectFactory::Create<RelativeTimer>(m_waitZoomInFrame + m_waitZoomOutFrame);
 	m_vlp_directingTimer->Start();

@@ -73,6 +73,7 @@
     <ClCompile Include="Result_FallFriend.cpp" />
     <ClCompile Include="CompleteFriend.cpp" />
     <ClCompile Include="UI_PartEvaluation.cpp" />
+    <ClCompile Include="UI_TotalEvaluation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="Result_FallFriend.h" />
     <ClInclude Include="CompleteFriend.h" />
     <ClInclude Include="UI_PartEvaluation.h" />
+    <ClInclude Include="UI_TotalEvaluation.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

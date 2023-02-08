@@ -153,11 +153,11 @@ void ButiEngine::BonusFriend::Appear(const std::int32_t arg_friendNum)
 	Vector3 targetPos = pos;
 	if (arg_friendNum == 0)
 	{
-		targetPos.x += -2.0f;
+		targetPos.x -= 2.0f;
 	}
 	else if (arg_friendNum == 1)
 	{
-		targetPos.x -= 2.0f;
+		targetPos.x += 2.0f;
 	}
 	else if (arg_friendNum == 2)
 	{

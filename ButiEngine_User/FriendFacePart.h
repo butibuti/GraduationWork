@@ -12,10 +12,10 @@ namespace ButiEngine {
 
 	enum class Rank
 	{
-		NoRank,
-		Bad,
-		Normal,
-		Good,
+		NoRank = -2,
+		Bad = -1,
+		Normal = 0,
+		Good = 1,
 	};
 
 	struct FacePartParameter
