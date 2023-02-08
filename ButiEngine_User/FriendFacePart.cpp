@@ -138,7 +138,6 @@ void ButiEngine::FriendFacePart::Start()
 	m_startZ = gameObject.lock()->transform->GetLocalPosition().z;
 
 	m_vlp_deadTimer = ObjectFactory::Create<RelativeTimer>(10);
-	m_vlp_deadTimer->Start();
 
 	m_vlp_lifeTimer = ObjectFactory::Create<RelativeTimer>(m_param.life);
 
