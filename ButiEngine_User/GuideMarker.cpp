@@ -33,15 +33,6 @@ void ButiEngine::GuideMarker::OnShowUI()
 void ButiEngine::GuideMarker::Start()
 {
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
-
-	if (m_vwp_markTarget.lock())
-	{
-		Vector3 screenPos = GetCamera("main")->WorldToScreen(m_vwp_markTarget.lock()->transform->GetWorldPosition());
-
-		screenPos.z = gameObject.lock()->transform->GetLocalPosition().z;
-
-		gameObject.lock()->transform->SetLocalPosition(screenPos);
-	}
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GuideMarker::Clone()
