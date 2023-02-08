@@ -23,6 +23,7 @@ namespace ButiEngine {
 		}
 
 		void SetNumber(const std::int32_t arg_number);
+		void SetColor(const Vector4& arg_color);
 
 	private:
 		std::vector<Value_weak_ptr<MeshDrawComponent>> m_vec_vwp_meshDrawComponents;

@@ -115,6 +115,10 @@ namespace ButiEngine {
 		static std::int32_t GetMouthCount() { return g_mouthCount; }
 		static std::int32_t GetNormalPartCount() { return g_eyeCount + g_noseCount + g_mouthCount; }
 		static std::int32_t GetDummyPartCount() { return g_dummyCount; }
+
+		static std::int32_t GetGoodScoreBorder() { return g_goodScoreBorder; }
+		static std::int32_t GetNormalScoreBorder() { return g_normalScoreBorder; }
+
 		void SetRespawnPoint(Value_weak_ptr<PartRespawnPoint> arg_vwp_respawnPoint) { m_vwp_respawnPoint = arg_vwp_respawnPoint; }
 		void SetParam(const FacePartParameter& arg_param) { m_param = arg_param; }
 	private:
@@ -176,6 +180,9 @@ namespace ButiEngine {
 		static std::int32_t g_noseCount;
 		static std::int32_t g_mouthCount;
 		static std::int32_t g_dummyCount;
+
+		static std::int32_t g_normalScoreBorder;
+		static std::int32_t g_goodScoreBorder;
 	};
 
 }
