@@ -22,39 +22,44 @@ void ButiEngine::FacePartSpawner::OnRemove()
 void ButiEngine::FacePartSpawner::OnShowUI()
 {
 
-	if (GUI::ArrowButton("##sub_min", GUI::GuiDir_Left)) {
-		m_randomSelectLevelMin--;
-		m_randomSelectLevelMin = max(m_randomSelectLevelMin, -1);
-	}GUI::SameLine();
-	GUI::Text(m_randomSelectLevelMin);
-	GUI::SameLine();
-	if (GUI::ArrowButton("##plus_min", GUI::GuiDir_Right)) {
-		if (m_randomSelectLevelMin >= m_currentData.list_data.GetSize()) {
+	GUI::BulletText("currentLevel:"+std::to_string(m_currentEditLevelIndex));
 
-		}
-		else {
+	if (GUI::TreeNode("Random")) {
+
+		GUI::BulletText("Random_min");
+		if (GUI::ArrowButton("##sub_min", GUI::GuiDir_Left)) {
+			m_randomSelectLevelMin--;
+			m_randomSelectLevelMin = max(m_randomSelectLevelMin, 0);
+		}GUI::SameLine();
+		GUI::Text(m_randomSelectLevelMin);
+		GUI::SameLine();
+		if (GUI::ArrowButton("##plus_min", GUI::GuiDir_Right)) {
+
 			m_randomSelectLevelMin++;
 		}
-	}
 
+		GUI::BulletText("Random_max");
 
-	if (GUI::ArrowButton("##sub_max", GUI::GuiDir_Left)) {
-		m_randomSelectLevelMax--;
-		m_randomSelectLevelMax = max(m_randomSelectLevelMax, -1);
-	}GUI::SameLine();
-	GUI::Text(m_randomSelectLevelMax);
-	GUI::SameLine();
-	if (GUI::ArrowButton("##plus_max", GUI::GuiDir_Right)) {
-		if (m_randomSelectLevelMax >= m_currentData.list_data.GetSize()) {	}
-		else {
+		if (GUI::ArrowButton("##sub_max", GUI::GuiDir_Left)) {
+			m_randomSelectLevelMax--;
+			m_randomSelectLevelMax = max(m_randomSelectLevelMax, 0);
+		}GUI::SameLine();
+		GUI::Text(m_randomSelectLevelMax);
+		GUI::SameLine();
+		if (GUI::ArrowButton("##plus_max", GUI::GuiDir_Right)) {
+
 			m_randomSelectLevelMax++;
 		}
+		GUI::TreePop();
 	}
 }
 
 void ButiEngine::FacePartSpawner::Start()
 {
 	InputCereal(m_currentData, "Scene/" + GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName() + "/levelData.lvd");
+
+	m_randomSelectLevelMin = min(m_randomSelectLevelMin, m_currentData.list_data.GetSize()-1);
+	m_randomSelectLevelMax = min(m_randomSelectLevelMax, m_currentData.list_data.GetSize()-1);
 	LevelIncrement();
 }
 
@@ -84,16 +89,15 @@ void ButiEngine::FacePartSpawner::Clear()
 {
 	auto spawnpoints = GetManager().lock()->GetGameObjects(GameObjectTag("RespawnPoint"));
 	for (auto spawnPoint: spawnpoints) {
+		spawnPoint->GetGameComponent<PartRespawnPoint>()->Clear();
 		spawnPoint->SetIsRemove(true);
 	}
 }
 
 void ButiEngine::FacePartSpawner::LevelIncrement()
 {
-	if (m_isRandomLevelSelect) {
 
-	}
-	SetLevel(m_currentEditLevelIndex+1);
+	SetLevel(m_isRandomLevelSelect? ButiRandom::GetInt(m_randomSelectLevelMin, m_randomSelectLevelMax): m_currentEditLevelIndex + 1);
 }
 
 void ButiEngine::FacePartSpawner::SetLevel(const std::int32_t arg_level)
@@ -101,7 +105,8 @@ void ButiEngine::FacePartSpawner::SetLevel(const std::int32_t arg_level)
 	Clear();
 	m_currentEditLevelIndex =max(arg_level,0);
 	if (m_currentEditLevelIndex >= m_currentData.list_data.GetSize()) {
-		m_isRandomLevelSelect = true; m_currentEditLevelIndex= 0;
+		m_isRandomLevelSelect = true;
+		m_currentEditLevelIndex = ButiRandom::GetInt(m_randomSelectLevelMin, m_randomSelectLevelMax);
 	}
 	CreatePartArrangement();
 }

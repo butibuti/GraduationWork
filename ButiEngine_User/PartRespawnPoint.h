@@ -25,9 +25,11 @@ public:
 	void SetIsContinue(const bool arg_isContinue) { m_isContinue = arg_isContinue; }
 	void SetParam(const FacePartParameter& arg_param) { m_param = arg_param; }
 	const FacePartParameter& GetParam()const { return m_param; }
+	void Clear();
 private:
 	void SpawnFacePart();
 	Value_weak_ptr<FacePartSpawner> m_vwp_spawner;
+	Value_weak_ptr<GameObject> m_vwp_part;
 	bool m_isContinue=false;
 	FacePartParameter m_param;
 };
