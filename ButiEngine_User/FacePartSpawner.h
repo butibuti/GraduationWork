@@ -29,7 +29,11 @@ public:
 
 	void Clear();
 	void LevelIncrement();
+	void SetLevel(const std::int32_t arg_level);
 	void DecreaseParts() { m_remainPart--; }
+	void Success() { m_successPart++; }
+	void SetIsRandom(const bool arg_isRandom) { m_isRandomLevelSelect = arg_isRandom; }
+	bool GetIsRandom ()const { return m_isRandomLevelSelect; }
 private:
 	void CreatePartArrangement();
 
@@ -38,6 +42,8 @@ private:
 	Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 	SceneData m_currentData;
 	std::int32_t m_currentEditLevelIndex = -1,m_remainPart=0,m_successPart=0;
+	bool m_isRandomLevelSelect=false;
+	std::int32_t m_randomSelectLevelMin=0, m_randomSelectLevelMax=0;
 };
 
 }
