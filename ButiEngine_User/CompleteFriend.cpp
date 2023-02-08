@@ -2,9 +2,16 @@
 #include "CompleteFriend.h"
 #include "FriendManager.h"
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
+#include "FriendFacePart.h"
+#include "PauseManager.h"
 
 void ButiEngine::CompleteFriend::OnUpdate()
 {
+	if (m_vwp_pauseManager.lock()->IsPause())
+	{
+		return;
+	}
+
 	m_vlp_animationController->Update();
 }
 
@@ -22,6 +29,7 @@ void ButiEngine::CompleteFriend::OnShowUI()
 
 void ButiEngine::CompleteFriend::Start()
 {
+	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::CompleteFriend::Clone()
@@ -48,34 +56,47 @@ void ButiEngine::CompleteFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_
 	m_vwp_head.lock()->transform->SetBaseTransform(m_vwp_body.lock()->transform, true);
 	m_vwp_head.lock()->transform->SetBaseTransform(bone->transform);
 
-	//auto eye = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Eyes", arg_vwp_friendData.lock()->vlp_eyeTransform);
-	//eye.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
-	//if (!arg_vwp_friendData.lock()->isExact_Eye)
-	//{
-	//	eye.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
-	//}
+	auto eye = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Eyes", arg_vwp_friendData.lock()->vlp_eyeTransform);
+	eye.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
 
-	//auto nose = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Nose", arg_vwp_friendData.lock()->vlp_noseTransform);
-	//nose.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
-	//if (arg_vwp_friendData.lock()->isExact_Nose)
-	//{
-	//	nose.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
-	//}
-	//else
-	//{
-	//	nose.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
-	//}
+	if (arg_vwp_friendData.lock()->eyeRank == PartRank::Normal)
+	{
+		eye.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
+	}
+	else if (arg_vwp_friendData.lock()->eyeRank == PartRank::Bad)
+	{
+		eye.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
+	}
 
-	//auto mouth = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Mouth", arg_vwp_friendData.lock()->vlp_mouthTransform);
-	//mouth.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
-	//if (arg_vwp_friendData.lock()->isExact_Mouth)
-	//{
-	//	mouth.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
-	//}
-	//else
-	//{
-	//	mouth.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
-	//}
+	auto nose = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Nose", arg_vwp_friendData.lock()->vlp_noseTransform);
+	nose.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
+	if (arg_vwp_friendData.lock()->noseRank == PartRank::Good)
+	{
+		nose.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
+	}
+	else if(arg_vwp_friendData.lock()->noseRank == PartRank::Normal)
+	{
+		nose.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
+	}
+	else if (arg_vwp_friendData.lock()->noseRank == PartRank::Bad)
+	{
+		eye.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
+	}
+
+	auto mouth = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Mouth", arg_vwp_friendData.lock()->vlp_mouthTransform);
+	mouth.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
+	if (arg_vwp_friendData.lock()->mouthRank == PartRank::Good)
+	{
+		mouth.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
+	}
+	else if(arg_vwp_friendData.lock()->mouthRank == PartRank::Normal)
+	{
+		mouth.lock()->GetGameComponent<MeshDrawComponent>(0)->GetTransform()->SetLocalScale(1.0f);
+	}
+	else if (arg_vwp_friendData.lock()->mouthRank == PartRank::Bad)
+	{
+		eye.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
+	}
 }
 
 void ButiEngine::CompleteFriend::StartDance()

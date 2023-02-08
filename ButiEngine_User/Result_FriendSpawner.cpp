@@ -3,6 +3,7 @@
 #include "FriendManager.h"
 #include "Result_CompleteFriend.h"
 #include "CompleteFriend.h"
+#include "FriendFacePart.h"
 
 void ButiEngine::Result_FriendSpawner::OnUpdate()
 {
@@ -130,6 +131,9 @@ void ButiEngine::Result_FriendSpawner::SpawnFriends(const std::int32_t arg_spawn
 		data->vlp_eyeTransform = eyesHitArea.lock()->transform->Clone();
 		data->vlp_noseTransform = noseHitArea.lock()->transform->Clone();
 		data->vlp_mouthTransform = mouthHitArea.lock()->transform->Clone();
+		data->eyeRank = PartRank::Normal;
+		data->noseRank = PartRank::Normal;
+		data->mouthRank = PartRank::Normal;
 
 		friendDatas.push_back(data);
 	}

@@ -146,7 +146,7 @@ void ButiEngine::FriendFacePart::Start()
 
 	m_vlp_leaveIntervalTimer = ObjectFactory::Create<RelativeTimer>(30);
 
-	m_rank = PartRank::Normal;
+	m_rank = PartRank::NoRank;
 
 	m_isMove = true;
 

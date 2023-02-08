@@ -2,6 +2,8 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	class PauseManager;
+
 	class GuideMarker :public GameComponent
 	{
 	public:
@@ -28,6 +30,8 @@ namespace ButiEngine {
 		void SetColor(const Vector4& arg_color) { gameObject.lock()->GetGameComponent<MeshDrawComponent>()->SetColor(arg_color); }
 	private:
 		Value_weak_ptr<GameObject> m_vwp_markTarget;
+
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 	};
 
 }

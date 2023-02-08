@@ -3,6 +3,7 @@
 namespace ButiEngine {
 
 	struct FriendData;
+	class PauseManager;
 
 	class CompleteFriend :public GameComponent
 	{
@@ -32,6 +33,8 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_body;
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
+
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 	};
 
 }

@@ -12,6 +12,7 @@ namespace ButiEngine {
 
 	enum class PartRank
 	{
+		NoRank,
 		Bad,
 		Normal,
 		Good,
