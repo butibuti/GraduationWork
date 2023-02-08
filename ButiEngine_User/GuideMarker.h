@@ -26,6 +26,12 @@ namespace ButiEngine {
 		{
 			m_vwp_markTarget = arg_markTarget; 
 			gameObject.lock()->transform->SetWorldPosition(m_vwp_markTarget.lock()->transform->GetWorldPosition());
+
+			Vector3 screenPos = GetCamera("main")->WorldToScreen(m_vwp_markTarget.lock()->transform->GetWorldPosition());
+
+			screenPos.z = gameObject.lock()->transform->GetLocalPosition().z;
+
+			gameObject.lock()->transform->SetLocalPosition(screenPos);
 		}
 		void SetColor(const Vector4& arg_color) { gameObject.lock()->GetGameComponent<MeshDrawComponent>()->SetColor(arg_color); }
 	private:

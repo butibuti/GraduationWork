@@ -17,6 +17,10 @@ std::int32_t ButiEngine::FriendFacePart::g_eyeCount = 0;
 std::int32_t ButiEngine::FriendFacePart::g_noseCount = 0;
 std::int32_t ButiEngine::FriendFacePart::g_mouthCount = 0;
 std::int32_t ButiEngine::FriendFacePart::g_dummyCount = 0;
+
+std::int32_t ButiEngine::FriendFacePart::g_normalScoreBorder = 60;
+std::int32_t ButiEngine::FriendFacePart::g_goodScoreBorder = 90;
+
 ButiEngine::Vector3 ButiEngine::FriendFacePart::g_goodAngleBorder;
 
 void ButiEngine::FriendFacePart::OnUpdate()

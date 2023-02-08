@@ -21,8 +21,8 @@ void ButiEngine::NumberDraw::Start()
 {
 	for (std::int32_t i = 0; i < 3; i++)
 	{
-		m_vec_vwp_meshDrawComponents.push_back(gameObject.lock()->GetGameComponent<MeshDrawComponent>(i));
-		m_vec_vwp_spriteAnimationComponents.push_back(gameObject.lock()->GetGameComponent<SpriteAnimationComponent>(i));
+		m_vec_vwp_meshDrawComponents.push_back(gameObject.lock()->GetGameComponent<MeshDrawComponent>(i + 1));
+		m_vec_vwp_spriteAnimationComponents.push_back(gameObject.lock()->GetGameComponent<SpriteAnimationComponent>(i + 1));
 	}
 }
 
@@ -52,5 +52,14 @@ void ButiEngine::NumberDraw::SetNumber(const std::int32_t arg_number)
 	else
 	{
 		m_vec_vwp_meshDrawComponents[1].lock()->Regist();
+	}
+}
+
+void ButiEngine::NumberDraw::SetColor(const Vector4& arg_color)
+{
+	auto end = m_vec_vwp_meshDrawComponents.end();
+	for (auto itr = m_vec_vwp_meshDrawComponents.begin(); itr != end; ++itr)
+	{
+		(*itr).lock()->SetColor(arg_color);
 	}
 }
