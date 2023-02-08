@@ -10,15 +10,18 @@ void ButiEngine::PartRespawnPoint::OnUpdate()
 void ButiEngine::PartRespawnPoint::Failed()
 {
 	if (!m_isContinue) {
+		m_vwp_part = nullptr;
 		SpawnFacePart();
 	}
 	else {
 		m_vwp_spawner.lock()->DecreaseParts();
+		m_vwp_part = nullptr;
 	}
 }
 
 void ButiEngine::PartRespawnPoint::Success()
 {
+	m_vwp_part = nullptr;
 	gameObject.lock()->SetIsRemove(true);
 	m_vwp_spawner.lock()->DecreaseParts();
 	m_vwp_spawner.lock()->Success();
@@ -32,6 +35,13 @@ void ButiEngine::PartRespawnPoint::Start()
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::PartRespawnPoint::Clone()
 {
 	return ObjectFactory::Create<PartRespawnPoint>();
+}
+
+void ButiEngine::PartRespawnPoint::Clear()
+{
+	if (m_vwp_part.lock()) {
+		m_vwp_part.lock()->SetIsRemove(true);
+	}
 }
 
 void ButiEngine::PartRespawnPoint::SpawnFacePart()
@@ -55,7 +65,8 @@ void ButiEngine::PartRespawnPoint::SpawnFacePart()
 		break;
 	}
 
-	auto gameobj = GetManager().lock()->AddObjectFromCereal(objectName, gameObject.lock()->transform);
-	gameobj.lock()->GetGameComponent<FriendFacePart>()->SetRespawnPoint(GetThis<PartRespawnPoint>());
-	gameobj.lock()->GetGameComponent<FriendFacePart>()->SetParam(m_param);
+
+	m_vwp_part =  GetManager().lock()->AddObjectFromCereal(objectName, gameObject.lock()->transform);
+	m_vwp_part.lock()->GetGameComponent<FriendFacePart>()->SetRespawnPoint(GetThis<PartRespawnPoint>());
+	m_vwp_part.lock()->GetGameComponent<FriendFacePart>()->SetParam(m_param);
 }
