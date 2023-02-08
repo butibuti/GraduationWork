@@ -44,7 +44,6 @@ void ButiEngine::LevelEditor::OnShowUI()
 	}GUI::SameLine();
 	GUI::Text(m_currentEditLevelIndex);
 	GUI::SameLine();
-
 	if (GUI::ArrowButton("##plus", GUI::GuiDir_Right)) {
 		m_currentEditLevelIndex++;
 		if (m_currentEditLevelIndex >= m_currentData.list_data.GetSize()) {
@@ -91,6 +90,28 @@ void ButiEngine::LevelEditor::OnShowUI()
 
 	if (GUI::Button("Clear")) {
 		m_currentData.list_data[m_currentEditLevelIndex].list_data.Clear();
+		l_isEdited |= true;
+	}
+
+	static std::int32_t srcIndex = 0;
+	if (GUI::ArrowButton("##sub_cpy", GUI::GuiDir_Left)) {
+		srcIndex--;
+		srcIndex = max(srcIndex, -1);
+	}GUI::SameLine();
+	GUI::Text(srcIndex);
+	GUI::SameLine();
+	if (GUI::ArrowButton("##plus_cpy", GUI::GuiDir_Right)) {
+		srcIndex++;
+		srcIndex = min(srcIndex, m_currentData.list_data.GetSize()-1);
+	}
+
+
+	if (GUI::Button("Copy")) {
+		m_currentData.list_data[m_currentEditLevelIndex].list_data.Clear();
+		for (auto data : m_currentData.list_data[srcIndex].list_data) {
+			data.transform = data.transform->Clone();
+			m_currentData.list_data[m_currentEditLevelIndex].list_data.Add(data);
+		}
 		l_isEdited |= true;
 	}
 
