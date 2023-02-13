@@ -1,14 +1,38 @@
 #include "stdafx_u.h"
 #include "BlowFriend.h"
+#include "FriendBody.h"
+#include "BonusFriend.h"
+#include "CompleteFriend.h"
+#include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
 
 void ButiEngine::BlowFriend::OnUpdate()
 {
-	Vector3 pos = gameObject.lock()->transform->GetWorldPosition();
+	m_velocity.y += -m_gravity * GameDevice::GetWorldSpeed();
+	Vector3 pos = gameObject.lock()->transform->Translate(m_velocity * GameDevice::GetWorldSpeed());
 
+	if (pos.y <= -30.0f)
+	{
+		gameObject.lock()->GetGameComponent<CompleteFriend>()->Dead();
+	}
 }
 
 void ButiEngine::BlowFriend::OnSet()
 {
+	gameObject.lock()->GetGameComponent<CompleteFriend>()->StopDance();
+
+	auto friendBody = gameObject.lock()->GetGameComponent<FriendBody>();
+	if (friendBody)
+	{
+		friendBody->SetIsRemove(true);
+	}
+
+	auto bonusFriend = gameObject.lock()->GetGameComponent<BonusFriend>();
+	if (bonusFriend)
+	{
+		bonusFriend->SetIsRemove(true);
+	}
+
+	SetBlowParam();
 }
 
 void ButiEngine::BlowFriend::OnRemove()
@@ -26,4 +50,44 @@ void ButiEngine::BlowFriend::Start()
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::BlowFriend::Clone()
 {
 	return ObjectFactory::Create<BlowFriend>();
+}
+
+void ButiEngine::BlowFriend::SetBlowParam()
+{
+	m_velocity = Vector3(0.0f, 1.4f, 0.0f);
+	m_gravity = 0.18f;
+
+	Vector3 pos = gameObject.lock()->transform->GetWorldPosition();
+	float force = 0.3f;
+	float direction = 1.0f;
+	if (pos.x > 2.0f)
+	{
+		direction = -1.0f;
+	}
+	else if (pos.x < -2.0f)
+	{
+		direction = 1.0f;
+	}
+	else
+	{
+		std::int32_t rand = ButiRandom::GetInt(0, 1);
+		direction = rand ? 1.0f : -1.0f;
+	}
+	m_velocity.x = force * direction;
+
+	float rollAngle = ButiRandom::GetRandom(30.0f, 60.0f, 10);
+	rollAngle *= direction;
+	gameObject.lock()->transform->RollWorldRotation(Quat(Vector3Const::ZAxis, MathHelper::ToRadian(-rollAngle)));
+}
+
+void ButiEngine::BlowFriend::AddRollAnimation(float arg_angle)
+{
+	auto target = gameObject.lock()->transform->Clone();
+	target->RollWorldRotation(Quat(-Vector3Const::ZAxis, MathHelper::ToRadian(arg_angle)));
+
+	auto anim = gameObject.lock()->AddGameComponent<RotationAnimation>();
+	anim->SetInitRotate(gameObject.lock()->transform->GetWorldRotation());
+	anim->SetTargetRotate(target->GetWorldRotation());
+	anim->SetSpeed(1.0f / 5);
+	anim->SetEaseType(Easing::EasingType::EaseOutExpo);
 }

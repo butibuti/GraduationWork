@@ -25,7 +25,7 @@ void ButiEngine::FriendBody::OnUpdate()
 
 	if (m_isDance)
 	{
-		m_vlp_animationController->Update(1.0f);
+		//m_vlp_animationController->Update(1.0f);
 	}
 
 	if (m_isRotate)
@@ -201,7 +201,8 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 		m_vwp_friendBodySpawner.lock()->DecreaceBodiesNumber();
 	}
 	StartMoveBack();
-	StartDance();
+	gameObject.lock()->GetGameComponent<CompleteFriend>()->StartDance();
+	//StartDance();
 }
 
 bool ButiEngine::FriendBody::IsFront()
@@ -474,9 +475,14 @@ void ButiEngine::FriendBody::SaveFriendData()
 	m_vlp_friendData->vlp_bodyTransform = bodyTransform;
 
 	auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
-	m_vlp_friendData->vlp_eyeTransform = headComponent->GetEye().lock()->transform->Clone();
-	m_vlp_friendData->vlp_noseTransform = headComponent->GetNose().lock()->transform->Clone();
-	m_vlp_friendData->vlp_mouthTransform = headComponent->GetMouth().lock()->transform->Clone();
+	auto eye = headComponent->GetEye();
+	m_vlp_friendData->vlp_eyeTransform = eye.lock()->transform->Clone();
+
+	auto nose = headComponent->GetNose();
+	m_vlp_friendData->vlp_noseTransform = nose.lock()->transform->Clone();
+
+	auto mouth = headComponent->GetMouth();
+	m_vlp_friendData->vlp_mouthTransform = mouth.lock()->transform->Clone();
 
 	m_vlp_friendData->eyeRank = headComponent->GetEye().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
 	m_vlp_friendData->noseRank = headComponent->GetNose().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
@@ -485,6 +491,14 @@ void ButiEngine::FriendBody::SaveFriendData()
 	if (!m_isTutorial)
 	{
 		GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddCompleteFriend(gameObject, m_vlp_friendData);
+		
+		auto completeFriendComponent = gameObject.lock()->AddGameComponent<CompleteFriend>();
+		completeFriendComponent->SetHead(m_vwp_head);
+		completeFriendComponent->SetBody(gameObject);
+		completeFriendComponent->SetHeart(m_vwp_heart);
+		completeFriendComponent->SetEye(eye);
+		completeFriendComponent->SetNose(nose);
+		completeFriendComponent->SetMouth(mouth);
 	}
 }
 

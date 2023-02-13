@@ -26,16 +26,20 @@ namespace ButiEngine {
 		}
 
 		void SetHead(Value_weak_ptr<GameObject> arg_head) { m_vwp_head = arg_head; }
-		void SetBody(Value_weak_ptr<GameObject> arg_body) { m_vwp_body = arg_body; }
-		void SetEye(Value_weak_ptr<GameObject> arg_eye) { m_vwp_head = arg_eye; }
+		void SetBody(Value_weak_ptr<GameObject> arg_body);
+		void SetHeart(Value_weak_ptr<GameObject> arg_heart) { m_vwp_heart = arg_heart; }
+		void SetEye(Value_weak_ptr<GameObject> arg_eye) { m_vwp_eye = arg_eye; }
 		void SetNose(Value_weak_ptr<GameObject> arg_nose) { m_vwp_nose = arg_nose; }
-		void SetMouth(Value_weak_ptr<GameObject> arg_mouth) { m_vwp_head = arg_mouth; }
+		void SetMouth(Value_weak_ptr<GameObject> arg_mouth) { m_vwp_mouth = arg_mouth; }
 
 		Value_weak_ptr<GameObject> GetHead() { return m_vwp_head; }
 		Value_weak_ptr<GameObject> GetBody() { return m_vwp_body; }
 
+		void Dead();
+
 		void CreateParts(Value_weak_ptr<FriendData> arg_vwp_friendData);
 		void StartDance();
+		void StopDance();
 	private:
 		void CreateHead(Value_weak_ptr<Transform> arg_vwp_transform);
 		void CreateBody(Value_weak_ptr<Transform> arg_vwp_transform);
@@ -45,11 +49,13 @@ namespace ButiEngine {
 
 		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_body;
+		Value_weak_ptr<GameObject> m_vwp_heart;
 		Value_weak_ptr<GameObject> m_vwp_eye;
 		Value_weak_ptr<GameObject> m_vwp_nose;
 		Value_weak_ptr<GameObject> m_vwp_mouth;
 
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
+		bool m_isDance;
 
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 	};

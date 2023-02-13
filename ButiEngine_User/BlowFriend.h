@@ -22,6 +22,11 @@ namespace ButiEngine {
 		}
 
 	private:
+		void SetBlowParam();
+		void AddRollAnimation(float arg_angle);
+
+		Vector3 m_velocity;
+		float m_gravity;
 	};
 
 }

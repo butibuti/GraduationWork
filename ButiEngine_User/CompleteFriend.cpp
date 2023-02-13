@@ -4,19 +4,31 @@
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 #include "FriendFacePart.h"
 #include "PauseManager.h"
+#include "BlowFriend.h"
 
 void ButiEngine::CompleteFriend::OnUpdate()
 {
+	if (!m_vwp_pauseManager.lock())
+	{
+		m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+		return;
+	}
+
 	if (m_vwp_pauseManager.lock()->IsPause())
 	{
 		return;
 	}
 
-	m_vlp_animationController->Update();
+	if (m_isDance)
+	{
+		m_vlp_animationController->Update();
+	}
 }
 
 void ButiEngine::CompleteFriend::OnSet()
 {
+	gameObject.lock()->SetGameObjectTag(GameObjectTag("CompleteFriend"));
+	m_isDance = false;
 }
 
 void ButiEngine::CompleteFriend::OnRemove()
@@ -25,16 +37,40 @@ void ButiEngine::CompleteFriend::OnRemove()
 
 void ButiEngine::CompleteFriend::OnShowUI()
 {
+	if (GUI::Button("Blow"))
+	{
+		gameObject.lock()->AddGameComponent<BlowFriend>();
+	}
 }
 
 void ButiEngine::CompleteFriend::Start()
 {
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+	m_isDance = false;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::CompleteFriend::Clone()
 {
 	return ObjectFactory::Create<CompleteFriend>();
+}
+
+void ButiEngine::CompleteFriend::SetBody(Value_weak_ptr<GameObject> arg_body)
+{
+	m_vwp_body = arg_body;
+
+	auto modelDraw = m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>();
+	m_vlp_animationController = ButiRendering::CreateAnimationController(modelDraw->GetBone());
+}
+
+void ButiEngine::CompleteFriend::Dead()
+{
+	m_vwp_head.lock()->SetIsRemove(true);
+	m_vwp_body.lock()->SetIsRemove(true);
+	m_vwp_heart.lock()->SetIsRemove(true);
+	m_vwp_eye.lock()->SetIsRemove(true);
+	m_vwp_nose.lock()->SetIsRemove(true);
+	m_vwp_mouth.lock()->SetIsRemove(true);
+	gameObject.lock()->SetIsRemove(true);
 }
 
 void ButiEngine::CompleteFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_friendData)
@@ -48,10 +84,17 @@ void ButiEngine::CompleteFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_
 
 void ButiEngine::CompleteFriend::StartDance()
 {
+	m_isDance = true;
+
 	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
 		GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
 
 	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
+}
+
+void ButiEngine::CompleteFriend::StopDance()
+{
+	m_isDance = false;
 }
 
 void ButiEngine::CompleteFriend::CreateHead(Value_weak_ptr<Transform> arg_vwp_transform)
@@ -72,9 +115,10 @@ void ButiEngine::CompleteFriend::CreateBody(Value_weak_ptr<Transform> arg_vwp_tr
 	m_vlp_animationController = ButiRendering::CreateAnimationController(modelDraw->GetBone());
 
 	auto heartBone = modelDraw->GetBone()->searchBoneByName("Heart");
-	auto heart = GetManager().lock()->AddObjectFromCereal("FriendHeart");
-	heart.lock()->transform->SetLocalPosition(Vector3Const::Zero);
-	heart.lock()->transform->SetBaseTransform(heartBone->transform, true);
+	m_vwp_heart = GetManager().lock()->AddObjectFromCereal("FriendHeart");
+	m_vwp_heart.lock()->SetObjectName("CompleteFriend_Heart");
+	m_vwp_heart.lock()->transform->SetLocalPosition(Vector3Const::Zero);
+	m_vwp_heart.lock()->transform->SetBaseTransform(heartBone->transform, true);
 }
 
 void ButiEngine::CompleteFriend::CreateEye(Value_weak_ptr<Transform> arg_vwp_transform, const Rank arg_rank)
