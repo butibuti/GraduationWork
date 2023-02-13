@@ -41,15 +41,25 @@ namespace ButiEngine {
 		void ResetCurrentLevelFriendCount() { m_currentLevelFriendCount = 0; }
 		void AddFriendCount();
 
+		static std::vector<Value_weak_ptr<GameObject>>& GetCompleteFriend() { return g_vec_completeFriends; }
 		static std::vector<Value_ptr<FriendData>>& GetFriendDatas() { return g_vec_friendDatas; }
-		static void ClearFriendData() { g_vec_friendDatas.clear(); }
-		static void AddFriendData(Value_ptr<FriendData> arg_data) { g_vec_friendDatas.push_back(arg_data); }
+		static void ClearFriendData()
+		{
+			g_vec_completeFriends.clear();
+			g_vec_friendDatas.clear(); 
+		}
+		static void AddCompleteFriend(Value_weak_ptr<GameObject> arg_friend, Value_ptr<FriendData> arg_data)
+		{
+			g_vec_completeFriends.push_back(arg_friend);
+			g_vec_friendDatas.push_back(arg_data); 
+		}
 	private:
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
 		std::int32_t m_friendCount;
 		std::int32_t m_currentLevelFriendCount;
 
+		static std::vector<Value_weak_ptr<GameObject>> g_vec_completeFriends;
 		static std::vector<Value_ptr<FriendData>> g_vec_friendDatas;
 	};
 

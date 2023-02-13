@@ -410,14 +410,14 @@ void ButiEngine::FriendBody::CreateBonusFriend()
 
 	for (std::int32_t i = 0; i < createCount; i++)
 	{
-		if (!m_isTutorial)
-		{
-			GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
-		}
-
 		Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
 		auto bonusFriend = GetManager().lock()->AddObjectFromCereal("BonusFriend", ObjectFactory::Create<Transform>(pos));
 		bonusFriend.lock()->GetGameComponent<CompleteFriend>()->CreateParts(m_vlp_friendData);
+
+		if (!m_isTutorial)
+		{
+			GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddCompleteFriend(bonusFriend, m_vlp_friendData);
+		}
 
 		auto bonusFriendComponent = bonusFriend.lock()->GetGameComponent<BonusFriend>();
 		bonusFriendComponent->SetFrontBorder(m_frontBorder);
@@ -467,8 +467,8 @@ void ButiEngine::FriendBody::SaveFriendData()
 	auto headTransform = m_vwp_head.lock()->transform->Clone();
 	headTransform->SetBaseTransform(bodyTransform);
 
-	float rollAngle = GetLookForwardHeadAngle();
-	bodyTransform->RollLocalRotationY_Degrees(rollAngle);
+	//float rollAngle = GetLookForwardHeadAngle();
+	//bodyTransform->RollLocalRotationY_Degrees(rollAngle);
 
 	m_vlp_friendData->vlp_headTransform = headTransform;
 	m_vlp_friendData->vlp_bodyTransform = bodyTransform;
@@ -484,7 +484,7 @@ void ButiEngine::FriendBody::SaveFriendData()
 
 	if (!m_isTutorial)
 	{
-		GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddFriendData(m_vlp_friendData);
+		GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddCompleteFriend(gameObject, m_vlp_friendData);
 	}
 }
 

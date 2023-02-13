@@ -167,9 +167,9 @@ void ButiEngine::BonusFriend::Appear(const std::int32_t arg_friendNum)
 
 	anim->SetTargetPosition(targetPos);
 	
-	std::int32_t appearFrame = 15;
+	std::int32_t appearFrame = 8;
 	anim->SetSpeed(1.0f / appearFrame);
-	anim->SetEaseType(Easing::EasingType::EaseOutQuad);
+	anim->SetEaseType(Easing::EasingType::EaseOutBack);
 }
 
 void ButiEngine::BonusFriend::StartMoveBack()

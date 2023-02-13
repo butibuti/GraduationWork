@@ -8,6 +8,7 @@
 #include "FriendHead_PartHitArea.h"
 #endif // DEBUG
 
+std::vector<ButiEngine::Value_weak_ptr<ButiEngine::GameObject>> ButiEngine::FriendManager::g_vec_completeFriends;
 std::vector<ButiEngine::Value_ptr<ButiEngine::FriendData>> ButiEngine::FriendManager::g_vec_friendDatas;
 
 void ButiEngine::FriendManager::OnUpdate()

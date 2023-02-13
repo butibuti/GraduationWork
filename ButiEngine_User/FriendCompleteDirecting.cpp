@@ -37,16 +37,6 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 			m_vwp_gameCamera.lock()->NormalZoom(m_zoomFrame);
 		}
 
-		auto bodyComponent = gameObject.lock()->GetGameComponent<FriendBody>();
-		auto bonusFriends = bodyComponent->GetBonusFriens();
-		auto end = bonusFriends.end();
-		std::int32_t index = 0;
-		for (auto itr = bonusFriends.begin(); itr != end; ++itr)
-		{
-			(*itr).lock()->GetGameComponent<BonusFriend>()->Appear(index);
-			index++;
-		}
-
 		//m_vlp_spawnHukidashiIntervalTimer->Start();
 		//SpawnHukidashi();
 
@@ -140,6 +130,7 @@ void ButiEngine::FriendCompleteDirecting::OnSet()
 
 	SetGameCameraParameter();
 	//SetHukidashiParameter();
+	AppearBonusFriends();
 
 	m_vlp_directingTimer = ObjectFactory::Create<RelativeTimer>(m_waitZoomInFrame + m_waitZoomOutFrame);
 	m_vlp_directingTimer->Start();
@@ -247,5 +238,18 @@ void ButiEngine::FriendCompleteDirecting::SetHukidashiParameter()
 	if (bodyComponent->IsFront())
 	{
 		m_vec_hukidashiNames.push_back("Effect_Hukidashi_Front");
+	}
+}
+
+void ButiEngine::FriendCompleteDirecting::AppearBonusFriends()
+{
+	auto bodyComponent = gameObject.lock()->GetGameComponent<FriendBody>();
+	auto bonusFriends = bodyComponent->GetBonusFriens();
+	auto end = bonusFriends.end();
+	std::int32_t index = 0;
+	for (auto itr = bonusFriends.begin(); itr != end; ++itr)
+	{
+		(*itr).lock()->GetGameComponent<BonusFriend>()->Appear(index);
+		index++;
 	}
 }

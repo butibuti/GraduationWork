@@ -386,6 +386,8 @@ void ButiEngine::FriendFacePart::StickHead()
 		m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->StickPart(gameObject);
 	}
 
+	SpawnStickEffect();
+
 	m_isMove = false;
 	if (m_vwp_respawnPoint.lock()) {
 		m_vwp_respawnPoint.lock()->Success();
@@ -443,7 +445,6 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 		else
 		{
 			StickHead();
-			SpawnStickEffect();
 			CheckRank();
 		}
 	}
@@ -556,7 +557,6 @@ void ButiEngine::FriendFacePart::CheckRank()
 	}
 
 	CreateEvaluationObject();
-
 	ChangeModel();
 }
 

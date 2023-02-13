@@ -27,6 +27,7 @@ namespace ButiEngine {
 		void SpawnHukidashi();
 		void SetGameCameraParameter();
 		void SetHukidashiParameter();
+		void AppearBonusFriends();
 
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_weak_ptr<GameObject> m_vwp_cameraMan;
