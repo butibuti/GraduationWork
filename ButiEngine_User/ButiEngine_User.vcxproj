@@ -352,6 +352,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BlowFriend.cpp" />
     <ClCompile Include="BonusFriend.cpp" />
     <ClCompile Include="FacePartSpawner.cpp" />
     <ClCompile Include="CompleteFriend.cpp" />
@@ -434,6 +435,7 @@
     <ClCompile Include="UI_TutorialText.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BlowFriend.h" />
     <ClInclude Include="BonusFriend.h" />
     <ClInclude Include="CompleteFriend.h" />
     <ClInclude Include="FacePartSpawner.h" />
