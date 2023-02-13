@@ -128,6 +128,7 @@ namespace ButiEngine {
 		void StickHead();
 
 		void SpawnStickEffect();
+		void SpawnBeamEffect();
 		void SpawnDummyPartHitEffect();
 
 		void OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea);

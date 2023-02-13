@@ -386,8 +386,6 @@ void ButiEngine::FriendFacePart::StickHead()
 		m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->StickPart(gameObject);
 	}
 
-	SpawnStickEffect();
-
 	m_isMove = false;
 	if (m_vwp_respawnPoint.lock()) {
 		m_vwp_respawnPoint.lock()->Success();
@@ -403,13 +401,16 @@ void ButiEngine::FriendFacePart::SpawnStickEffect()
 	partHitFlash.lock()->transform->SetLocalPosition(gameObject.lock()->transform->GetWorldPosition());
 	partHitFlash.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
 
+	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/PartHit.wav"));
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
+}
+
+void ButiEngine::FriendFacePart::SpawnBeamEffect()
+{
 	auto partHitBeam = GetManager().lock()->AddObjectFromCereal("Effect_PartHitBeam");
 	partHitBeam.lock()->transform->SetLocalPosition(gameObject.lock()->transform->GetWorldPosition());
 	partHitBeam.lock()->transform->SetLocalRotation(gameObject.lock()->transform->GetLocalRotation());
 	partHitBeam.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
-
-	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/PartHit.wav"));
-	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
 }
 
 void ButiEngine::FriendFacePart::SpawnDummyPartHitEffect()
@@ -442,6 +443,7 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 		else
 		{
 			StickHead();
+			SpawnStickEffect();
 			CheckRank();
 		}
 	}
@@ -545,7 +547,13 @@ void ButiEngine::FriendFacePart::CheckRank()
 	{
 		return;
 	}
+
 	m_rank = newRank;
+
+	if (m_rank == Rank::Good)
+	{
+		SpawnBeamEffect();
+	}
 
 	CreateEvaluationObject();
 
