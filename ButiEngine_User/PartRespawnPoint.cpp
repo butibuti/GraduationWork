@@ -22,9 +22,13 @@ void ButiEngine::PartRespawnPoint::Failed()
 void ButiEngine::PartRespawnPoint::Success()
 {
 	m_vwp_part = nullptr;
-	gameObject.lock()->SetIsRemove(true);
 	m_vwp_spawner.lock()->DecreaseParts();
 	m_vwp_spawner.lock()->Success();
+}
+
+void ButiEngine::PartRespawnPoint::Damage()
+{
+	m_vwp_spawner.lock()->Damage();
 }
 
 void ButiEngine::PartRespawnPoint::Start()

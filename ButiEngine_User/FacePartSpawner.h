@@ -34,8 +34,10 @@ public:
 	void SetLevel(const std::int32_t arg_level);
 	void DecreaseParts() { m_remainPart--; }
 	void Success() { m_successPart++; }
+	void Damage() { m_successPart--; }
 	void SetIsRandom(const bool arg_isRandom) { m_isRandomLevelSelect = arg_isRandom; }
 	bool GetIsRandom ()const { return m_isRandomLevelSelect; }
+	std::int32_t GetCurrentLevel()const { return m_currentEditLevelIndex; }
 private:
 	void CreatePartArrangement();
 

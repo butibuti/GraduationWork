@@ -73,8 +73,8 @@ void ButiEngine::FriendBodySpawner::Start()
 
 	m_vlp_spawnPatternTimer = ObjectFactory::Create<RelativeTimer>(60);
 	m_spawnedBodiesNumber = 0;
-	m_existingBodiesNumber= 0;
-	m_spawnPatternOrderCounter = -2;
+	m_existingBodiesNumber = 0;
+	m_spawnPatternOrderCounter = -1;
 	m_isPlayPattern = false;
 }
 
@@ -136,7 +136,7 @@ void ButiEngine::FriendBodySpawner::StartSpawnPattern()
 		m_vlp_spawnTimer->Start();
 	}
 
-	
+
 }
 
 void ButiEngine::FriendBodySpawner::UpdateSpawnPattern()
@@ -147,79 +147,77 @@ void ButiEngine::FriendBodySpawner::UpdateSpawnPattern()
 	case -1:
 		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(0, -4, 0), 0, 0, 45);
+			SpawnBody(Vector3(0, -4, 0), 0, 0, 0);
 
 		}
 		break;
-	case 0: 
+	case 0:
 		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(0, -4, 0), 0, 0, 0);
-			
+			SpawnBody(Vector3(2.5, -4, 0), 0, 0, 0);
+
 		}
 		break;
 	case 1:
 		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, 70);
-			
+			SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, 0);
+
 		}
 		break;
 	case 2:
 		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, -70);
+			SpawnBody(Vector3(0, -4, 0), 0, 0, 0);
 		}
 		break;
 	case 3:
-		if (m_spawnedBodiesNumber < 2)
+		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, 90);
-			SpawnBody(Vector3(2.5f, -4, 0), 0, 0, 0);
+			SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, 0);
 
 		}
 		break;
 	case 4:
-		if (m_spawnedBodiesNumber < 3)
+		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(2.5f, -4, 0), 0, 0, 90);
-			SpawnBody(Vector3(0, -4, 0), 0, 0, 0);
-			SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, -90);
+			SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, 0);
 
 		}
 		break;
 	case 5:
 		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(0, -4, 0), 0, 1, -180);
+			SpawnBody(Vector3(-2, -4, 0), 0, 0, 0);
 
 		}
 		break;
 	case 6:
-		if (m_spawnedBodiesNumber < 2)
+		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(-2.5f, -4, 0), 0, 1, -180);
-			SpawnBody(Vector3(2.5f, -4, 0), 0, -1, 180);
+			SpawnBody(Vector3(2, -4, 0), 0, 0, 0);
+			//SpawnBody(Vector3(-2, -4, 0), 0, 1, 0);
 
 		}
 		break;
 	case 7:
-		if (m_spawnedBodiesNumber <	1)
+		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(0, -4, 0), 0, -20, 0);
+			SpawnBody(Vector3(2, -4, 0), 0, 10, 0);
+			SpawnBody(Vector3(-2, -4, 0), 0, -10, 0);
 
 		}
 	case 8:
 		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(-5.5, -4, 0), 0.05f, 0, 0);
+			SpawnBody(Vector3(2.5, -4, 0), 0, 0, 0);
 
 		}
 		break;
 	case 9:
 		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(5.5, -4, 0), -0.05f, 0, 0);
+			SpawnBody(Vector3(3, -4, 0), 0, 0, 0);
 
 		}
 	case 10:
@@ -253,24 +251,25 @@ void ButiEngine::FriendBodySpawner::UpdateSpawnPattern()
 		if (m_vlp_spawnTimer->Update())
 		{
 			m_vlp_spawnTimer->ChangeCountFrame(ButiRandom::GetInt(6, 10));
-			SpawnBody(Vector3(5.5f, -4, 0), ButiRandom::GetRandom(-0.1f, -0.15f,10), ButiRandom::GetRandom(20.0f, 30.0f, 10), ButiRandom::GetRandom(0.0f, 360.0f, 10));
+			SpawnBody(Vector3(5.5f, -4, 0), ButiRandom::GetRandom(-0.1f, -0.15f, 10), ButiRandom::GetRandom(20.0f, 30.0f, 10), ButiRandom::GetRandom(0.0f, 360.0f, 10));
 		}
 		break;
 	}
 
-	if (m_existingBodiesNumber <= 0 && m_spawnPatternOrderCounter < 13) m_isPlayPattern = false;
+	if (m_existingBodiesNumber <= 0) m_isPlayPattern = false;
 
-	
+
 }
 
 void ButiEngine::FriendBodySpawner::StartNextSpawnPattern()
 {
-	m_spawnPatternOrderCounter += 1;
+
 	if (m_vwp_facePartSpawner.lock()) {
 		m_vwp_facePartSpawner.lock()->LevelIncrement();
+		m_spawnPatternOrderCounter = m_vwp_facePartSpawner.lock()->GetCurrentLevel() - 1;
 	}
 	StartSpawnPattern();
-	
+
 }
 
 void ButiEngine::FriendBodySpawner::SetSpawnInterval()

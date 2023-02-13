@@ -60,6 +60,19 @@ void ButiEngine::FacePartSpawner::Start()
 
 	m_randomSelectLevelMin = min(m_randomSelectLevelMin, m_currentData.list_data.GetSize()-1);
 	m_randomSelectLevelMax = min(m_randomSelectLevelMax, m_currentData.list_data.GetSize()-1);
+	List<std::int32_t>l_list_emptyIndex;
+	for (std::int32_t index = 0, size = m_currentData.list_data.GetSize(); index < size; index++) {
+		if (!m_currentData.list_data[index].list_data.GetSize()) {
+			l_list_emptyIndex.Add(index);
+		}
+	}
+	std::int32_t remCount = 0;
+	for (auto index : l_list_emptyIndex) {
+		auto remItr = m_currentData.list_data.begin() + (index-remCount);
+		m_currentData.list_data.erase(remItr);
+		remCount++;
+	}
+
 	LevelIncrement();
 }
 

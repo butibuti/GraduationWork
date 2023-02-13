@@ -206,6 +206,11 @@ void ButiEngine::FriendFacePart::LeaveHead()
 	m_isMove = true;
 
 	m_vlp_leaveIntervalTimer->Start();
+	//m_vlp_deadTimer->Start();
+
+	if (m_vwp_respawnPoint.lock()) {
+		m_vwp_respawnPoint.lock()->Damage();
+	}
 }
 
 void ButiEngine::FriendFacePart::RemoveStickAnimation()
@@ -411,6 +416,9 @@ void ButiEngine::FriendFacePart::SpawnDummyPartHitEffect()
 {
 	auto partHitFlash = GetManager().lock()->AddObjectFromCereal("Effect_DummyPartHitFlash");
 	partHitFlash.lock()->transform->SetLocalPosition(gameObject.lock()->transform->GetWorldPosition());
+
+	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Damage.wav"));
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
 }
 
 void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea)

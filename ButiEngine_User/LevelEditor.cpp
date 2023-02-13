@@ -119,6 +119,14 @@ void ButiEngine::LevelEditor::OnShowUI()
 		Save();
 		RecreatePreview();
 	}
+	if (GUI::TreeNode("Gene")) {
+		GUI::BulletText("LevelSize:" + std::to_string(m_currentData.list_data.GetSize()));
+		if (GUI::Button("RemoveLast") && m_currentData.list_data.GetSize()) {
+			m_currentData.list_data.RemoveLast();
+		}
+		GUI::TreePop();
+	}
+
 }
 
 void ButiEngine::LevelEditor::Start()

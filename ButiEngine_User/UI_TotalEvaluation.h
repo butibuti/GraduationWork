@@ -33,6 +33,7 @@ namespace ButiEngine {
 		std::vector<Value_weak_ptr<GameObject>> m_vec_vwp_texts;
 
 		Value_ptr<RelativeTimer> m_vlp_appearIntervalTimer;
+		Value_ptr<RelativeTimer> m_vlp_waitDisappearTimer;
 		std::int32_t m_appearIndex;
 	};
 

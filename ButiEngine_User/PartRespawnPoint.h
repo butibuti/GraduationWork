@@ -14,6 +14,7 @@ public:
 	void OnUpdate()override;
 	void Failed();
 	void Success();
+	void Damage();
 	void Start()override;
 	Value_ptr<GameComponent> Clone()override;
 	template<class Archive>

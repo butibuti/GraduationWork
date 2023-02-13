@@ -30,7 +30,7 @@ void ButiEngine::Result_Camera::Start()
 {
 	m_startPos = gameObject.lock()->transform->GetLocalPosition();
 	m_zoomTargetPos = m_startPos;
-	m_zoomTargetPos.z -= 10.0f;
+	m_zoomTargetPos.z -= 20.0f;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Result_Camera::Clone()
@@ -40,7 +40,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Result_Camera::Clon
 
 void ButiEngine::Result_Camera::ZoomIn()
 {
-	AddPositionAnimation(m_zoomTargetPos, 120, Easing::EasingType::Liner);
+	AddPositionAnimation(m_zoomTargetPos, 120, Easing::EasingType::EaseOutQuad);
 }
 
 void ButiEngine::Result_Camera::ZoomOut()

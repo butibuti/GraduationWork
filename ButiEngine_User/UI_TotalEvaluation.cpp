@@ -19,6 +19,17 @@ void ButiEngine::UI_TotalEvaluation::OnUpdate()
 			m_vlp_appearIntervalTimer->Stop();
 		}
 	}
+
+	if (m_vlp_waitDisappearTimer->Update())
+	{
+		m_vlp_waitDisappearTimer->Stop();
+
+		std::int32_t textCount = m_vec_vwp_texts.size();
+		for (std::int32_t i = 0; i < textCount; i++)
+		{
+			AddPositionAnimation(-1700.0f, Easing::EasingType::EaseInCirc, 5, i);
+		}
+	}
 }
 
 void ButiEngine::UI_TotalEvaluation::OnSet()
@@ -48,7 +59,9 @@ void ButiEngine::UI_TotalEvaluation::Start()
 	m_vec_vwp_texts.push_back(mouth);
 
 	m_appearIndex = 0;
-	m_vlp_appearIntervalTimer = ObjectFactory::Create<RelativeTimer>(2);
+	m_vlp_appearIntervalTimer = ObjectFactory::Create<RelativeTimer>(4);
+
+	m_vlp_waitDisappearTimer = ObjectFactory::Create<RelativeTimer>(60);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::UI_TotalEvaluation::Clone()
@@ -71,12 +84,8 @@ void ButiEngine::UI_TotalEvaluation::Disappear()
 {
 	m_vlp_appearIntervalTimer->Reset();
 	m_vlp_appearIntervalTimer->Stop();
-	
-	std::int32_t textCount = m_vec_vwp_texts.size();
-	for (std::int32_t i = 0; i < textCount; i++)
-	{
-		AddPositionAnimation(-1700.0f, Easing::EasingType::EaseInCirc, 5, i);
-	}
+
+	m_vlp_waitDisappearTimer->Start();
 }
 
 const ButiEngine::Vector4 badColor = ButiEngine::Vector4(0.39f, 0.39f, 0.39f, 1.0f);
