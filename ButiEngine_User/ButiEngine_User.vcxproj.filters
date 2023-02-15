@@ -75,6 +75,8 @@
     <ClCompile Include="UI_PartEvaluation.cpp" />
     <ClCompile Include="UI_TotalEvaluation.cpp" />
     <ClCompile Include="BlowFriend.cpp" />
+    <ClCompile Include="BombFriend.cpp" />
+    <ClCompile Include="Bomb.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -149,6 +151,8 @@
     <ClInclude Include="UI_PartEvaluation.h" />
     <ClInclude Include="UI_TotalEvaluation.h" />
     <ClInclude Include="BlowFriend.h" />
+    <ClInclude Include="BombFriend.h" />
+    <ClInclude Include="Bomb.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />

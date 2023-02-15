@@ -3,6 +3,8 @@
 #include "FriendBody.h"
 #include "BonusFriend.h"
 #include "CompleteFriend.h"
+#include "FriendHead.h"
+#include "Bomb.h"
 #include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
 
 void ButiEngine::BlowFriend::OnUpdate()
@@ -10,15 +12,35 @@ void ButiEngine::BlowFriend::OnUpdate()
 	m_velocity.y += -m_gravity * GameDevice::GetWorldSpeed();
 	Vector3 pos = gameObject.lock()->transform->Translate(m_velocity * GameDevice::GetWorldSpeed());
 
-	if (pos.y <= -30.0f)
+	if (pos.y < -30.0f)
 	{
-		gameObject.lock()->GetGameComponent<CompleteFriend>()->Dead();
+		auto completeFriend = gameObject.lock()->GetGameComponent<CompleteFriend>();
+		if (completeFriend)
+		{
+			completeFriend->Dead();
+		}
+
+		auto head = gameObject.lock()->GetGameComponent<FriendHead>();
+		if (head)
+		{
+			head->Dead();
+		}
+
+		auto bomb = gameObject.lock()->GetGameComponent<Bomb>();
+		if (bomb)
+		{
+			bomb->Dead();
+		}
 	}
 }
 
 void ButiEngine::BlowFriend::OnSet()
 {
-	gameObject.lock()->GetGameComponent<CompleteFriend>()->StopDance();
+	auto completeFriend = gameObject.lock()->GetGameComponent<CompleteFriend>();
+	if (completeFriend)
+	{
+		completeFriend->StopDance();
+	}
 
 	auto friendBody = gameObject.lock()->GetGameComponent<FriendBody>();
 	if (friendBody)
@@ -54,19 +76,19 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::BlowFriend::Clone()
 
 void ButiEngine::BlowFriend::SetBlowParam()
 {
-	m_velocity = Vector3(0.0f, 1.4f, 0.0f);
-	m_gravity = 0.18f;
+	m_velocity = Vector3(0.0f, 1.2f, 0.0f);
+	m_gravity = 0.16f;
 
 	Vector3 pos = gameObject.lock()->transform->GetWorldPosition();
 	float force = 0.3f;
 	float direction = 1.0f;
 	if (pos.x > 2.0f)
 	{
-		direction = -1.0f;
+		direction = 1.0f;
 	}
 	else if (pos.x < -2.0f)
 	{
-		direction = 1.0f;
+		direction = -1.0f;
 	}
 	else
 	{
@@ -74,6 +96,10 @@ void ButiEngine::BlowFriend::SetBlowParam()
 		direction = rand ? 1.0f : -1.0f;
 	}
 	m_velocity.x = force * direction;
+	if (pos.z > -10.0f)
+	{
+		m_velocity.x *= 0.2f;
+	}
 
 	float rollAngle = ButiRandom::GetRandom(30.0f, 60.0f, 10);
 	rollAngle *= direction;

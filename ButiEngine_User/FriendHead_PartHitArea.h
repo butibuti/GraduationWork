@@ -51,7 +51,7 @@ namespace ButiEngine {
 
 		void RemoveAllComponent();
 
-		void Dead();
+		void Dead(bool arg_isRemovePart = false);
 	private:
 		void CreateGuideMarker();
 		void SetDefaultPosObject();

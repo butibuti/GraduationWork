@@ -178,11 +178,16 @@ void ButiEngine::FriendHead_PartHitArea::RemoveAllComponent()
 	SetIsRemove(true);
 }
 
-void ButiEngine::FriendHead_PartHitArea::Dead()
+void ButiEngine::FriendHead_PartHitArea::Dead(bool arg_isRemovePart)
 {
 	if (m_vwp_guideMarker.lock())
 	{
 		m_vwp_guideMarker.lock()->SetIsRemove(true);
+	}
+
+	if (arg_isRemovePart && m_vwp_part.lock())
+	{
+		m_vwp_part.lock()->SetIsRemove(true);
 	}
 
 	gameObject.lock()->SetIsRemove(true);

@@ -25,7 +25,7 @@ namespace ButiEngine {
 		void SpecialZoom(const std::int32_t arg_zoomInFrame);
 		void ZoomOut(const std::int32_t arg_zoomOutFrame);
 		void GameFinishZoom();
-		void StartShake(const std::int32_t arg_shakeFrame);
+		void StartShake(const std::int32_t arg_shakeFrame, float arg_maxAmplitude = 0.15f);
 		void StopShake();
 	private:
 		void AddPositionAnimation(const Vector3& arg_targetPos, const std::int32_t arg_animFrame);

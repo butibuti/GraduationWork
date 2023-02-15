@@ -46,11 +46,12 @@ namespace ButiEngine {
 		const float OUT_AREA_DISTANCE = 6;
 
 		void SetParameter(float arg_moveSpeed, float arg_rotateSpeed);
+		void StartMoveBack(const Vector3& arg_targetPos, const std::int32_t arg_frame);
+		void RemoveNeck();
 	private:
 		void Rotate();
 		void MoveBack();
-		void StartMoveBack();
-		void StartDance();
+		void StartMoveBackRandom();
 		void MoveHorizontal();
 
 		void SpawnNewHead();
@@ -60,16 +61,23 @@ namespace ButiEngine {
 		void CheckTotalRank();
 		void CreateBonusFriend();
 
+		void ChangeMaterial();
+		void CorrectionHead();
+
+		void RemoveGuideHead();
+		void RemoveHeart();
+		void RemoveBombFriendComponent();
+
 		bool IsFrontHead();
+		bool IsFrontBody();
 		float GetDifferenceFromHeadFront();
 		float GetLookForwardHeadAngle();
+		float GetLookForwardBodyAngle();
 		void SaveFriendData();
 
 		Vector3 GetFrontXZ(const Vector3& arg_front);
 
 		void ResizeLevelParameter();
-
-		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
 
 		Value_weak_ptr<GameSettings> m_vwp_gameSettings;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;

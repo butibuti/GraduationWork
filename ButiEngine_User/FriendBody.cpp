@@ -15,6 +15,7 @@
 #include "FadeOut.h"
 #include "FriendFacePart.h"
 #include "CompleteFriend.h"
+#include "BombFriend.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -96,11 +97,6 @@ void ButiEngine::FriendBody::Start()
 
 	ResizeLevelParameter();
 
-	m_vlp_animationController = ButiRendering::CreateAnimationController(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetBone());
-	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation());
-	m_vlp_animationController->GetCurrentModelAnimation()->SetProgress(0.0f);
-
 	m_vwp_neck = GetManager().lock()->AddObjectFromCereal("FriendBody_Neck");
 	m_vwp_neck.lock()->SetObjectName(gameObject.lock()->GetGameObjectName() + "_Neck");
 	m_vwp_neck.lock()->GetGameComponent<FriendBody_Neck>()->SetParent(gameObject);
@@ -156,25 +152,15 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	m_vwp_head = arg_vwp_head;
 
 	auto modelDraw = gameObject.lock()->GetGameComponent<ModelDrawComponent>();
-	modelDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
-	modelDraw->SetMaterialTag(MaterialTag("Material/FrendsBody.mat"), 0);
-	modelDraw->ReRegist();
-
 	auto bone = modelDraw->GetBone()->searchBoneByName("head");
-
 	m_vwp_head.lock()->transform->SetBaseTransform(bone->transform);
 
-	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
-	Vector3 bodyPos = gameObject.lock()->transform->GetLocalPosition();
-	Vector3 headPos = m_vwp_head.lock()->transform->GetWorldPosition();
-	headPos += bodyPos + headCenter.lock()->transform->GetLocalPosition() - headCenter.lock()->transform->GetWorldPosition();
-	m_vwp_head.lock()->transform->SetWorldPosition(headPos);
-
+	ChangeMaterial();
+	CorrectionHead();
 	SaveFriendData();
 	CheckTotalRank();
 	CreateBonusFriend();
 
-	m_isMoveHorizontal = false;
 	gameObject.lock()->AddGameComponent<FriendCompleteDirecting>();
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendBody"));
 
@@ -183,26 +169,17 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 		auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
 		m_vwp_tutorialManager.lock()->CheckPhaseClear(headComponent->IsFast(), IsFront());
 	}
-	
-	if (m_vwp_neck.lock())
-	{
-		m_vwp_neck.lock()->SetIsRemove(true);
-	}
 
-	if (m_vwp_guideHead.lock())
-	{
-		m_vwp_guideHead.lock()->SetIsRemove(true);
-		//m_vwp_guideHead.lock()->AddGameComponent<FadeOut>(120);
-		//m_vwp_guideHead.lock()->AddGameComponent<SucideComponent>(120);
-	}
+	RemoveNeck();
+	RemoveGuideHead();
+	RemoveBombFriendComponent();
 
 	if (m_vwp_friendBodySpawner.lock())
 	{
 		m_vwp_friendBodySpawner.lock()->DecreaceBodiesNumber();
 	}
-	StartMoveBack();
+	StartMoveBackRandom();
 	gameObject.lock()->GetGameComponent<CompleteFriend>()->StartDance();
-	//StartDance();
 }
 
 bool ButiEngine::FriendBody::IsFront()
@@ -228,7 +205,28 @@ void ButiEngine::FriendBody::SetParameter(float arg_moveSpeed, float arg_rotateS
 {
 	m_moveSpeed = arg_moveSpeed;
 	m_rotateSpeed = arg_rotateSpeed;
-	
+}
+
+void ButiEngine::FriendBody::StartMoveBack(const Vector3& arg_targetPos, const std::int32_t arg_frame)
+{
+	m_isMoveHorizontal = false;
+
+	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
+	m_moveBackStartPos = pos;
+
+	m_moveBackTargetPos = arg_targetPos;
+
+	m_isMoveBack = true;
+	m_vlp_moveBackTimer->ChangeCountFrame(arg_frame);
+	m_vlp_moveBackTimer->Start();
+}
+
+void ButiEngine::FriendBody::RemoveNeck()
+{
+	if (m_vwp_neck.lock())
+	{
+		m_vwp_neck.lock()->SetIsRemove(true);
+	}
 }
 
 void ButiEngine::FriendBody::Rotate()
@@ -271,30 +269,20 @@ void ButiEngine::FriendBody::MoveBack()
 	}
 }
 
-void ButiEngine::FriendBody::StartMoveBack()
+void ButiEngine::FriendBody::StartMoveBackRandom()
 {
+	m_isMoveHorizontal = false;
+
 	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
 
 	m_moveBackStartPos = pos;
 
-	m_moveBackTargetPos.x = ButiRandom::GetInt(-5, 5);
+	m_moveBackTargetPos.x = ButiRandom::GetInt(-7, 7);
 	m_moveBackTargetPos.y = pos.y;
-	m_moveBackTargetPos.z = pos.z + (ButiRandom::GetInt(-50, -45));
+	m_moveBackTargetPos.z = pos.z + (ButiRandom::GetInt(-60, -40));
 
 	m_isMoveBack = true;
 	m_vlp_moveBackTimer->Start();
-
-	
-}
-
-void ButiEngine::FriendBody::StartDance()
-{
-	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
-
-	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
-
-	m_isDance = true;
 }
 
 void ButiEngine::FriendBody::MoveHorizontal()
@@ -321,18 +309,9 @@ void ButiEngine::FriendBody::MoveHorizontal()
 
 	if (abs(gameObject.lock()->transform->GetLocalPosition().x) > OUT_AREA_DISTANCE)
 	{
-		if (m_vwp_neck.lock())
-		{
-			m_vwp_neck.lock()->SetIsRemove(true);
-		}
-		if (m_vwp_guideHead.lock())
-		{
-			m_vwp_guideHead.lock()->SetIsRemove(true);
-		}
-		if (m_vwp_heart.lock())
-		{
-			m_vwp_heart.lock()->SetIsRemove(true);
-		}
+		RemoveNeck();
+		RemoveGuideHead();
+		RemoveHeart();
 		gameObject.lock()->SetIsRemove(true);
 		if (m_vwp_friendBodySpawner.lock())
 		{
@@ -426,14 +405,67 @@ void ButiEngine::FriendBody::CreateBonusFriend()
 	}
 }
 
+void ButiEngine::FriendBody::ChangeMaterial()
+{
+	auto modelDraw = gameObject.lock()->GetGameComponent<ModelDrawComponent>();
+	modelDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
+	modelDraw->SetMaterialTag(MaterialTag("Material/FrendsBody.mat"), 0);
+	modelDraw->ReRegist();
+}
+
+void ButiEngine::FriendBody::CorrectionHead()
+{
+	auto headCenter = GetManager().lock()->GetGameObject(GameObjectTag("HeadCenter"));
+	Vector3 bodyPos = gameObject.lock()->transform->GetLocalPosition();
+	Vector3 headPos = m_vwp_head.lock()->transform->GetWorldPosition();
+	headPos += bodyPos + headCenter.lock()->transform->GetLocalPosition() - headCenter.lock()->transform->GetWorldPosition();
+	m_vwp_head.lock()->transform->SetWorldPosition(headPos);
+}
+
+void ButiEngine::FriendBody::RemoveGuideHead()
+{
+	if (m_vwp_guideHead.lock())
+	{
+		m_vwp_guideHead.lock()->SetIsRemove(true);
+		//m_vwp_guideHead.lock()->AddGameComponent<FadeOut>(120);
+		//m_vwp_guideHead.lock()->AddGameComponent<SucideComponent>(120);
+	}
+}
+
+void ButiEngine::FriendBody::RemoveHeart()
+{
+	if (m_vwp_heart.lock())
+	{
+		m_vwp_heart.lock()->SetIsRemove(true);
+	}
+}
+
+void ButiEngine::FriendBody::RemoveBombFriendComponent()
+{
+	auto bomb = gameObject.lock()->GetGameComponent<BombFriend>();
+	if (bomb)
+	{
+		bomb->Dead();
+	}
+}
+
 bool ButiEngine::FriendBody::IsFrontHead()
 {
 	if (!m_vwp_head.lock())
 	{
-		return false;
+		return IsFrontBody();
 	}
 
 	Vector3 front = GetFrontXZ(m_vwp_head.lock()->transform->GetFront());
+
+	float angle = abs(MathHelper::ToDegree(std::acos(front.Dot(Vector3Const::ZAxis))));
+
+	return angle <= m_frontBorder;
+}
+
+bool ButiEngine::FriendBody::IsFrontBody()
+{
+	Vector3 front = GetFrontXZ(gameObject.lock()->transform->GetFront());
 
 	float angle = abs(MathHelper::ToDegree(std::acos(front.Dot(Vector3Const::ZAxis))));
 
@@ -451,9 +483,27 @@ float ButiEngine::FriendBody::GetDifferenceFromHeadFront()
 
 float ButiEngine::FriendBody::GetLookForwardHeadAngle()
 {
+	if (!m_vwp_head.lock())
+	{
+		return GetLookForwardBodyAngle();
+	}
+
 	Vector3 headFront = GetFrontXZ(m_vwp_head.lock()->transform->GetFront());
 	float rollAngle = abs(MathHelper::ToDegree(std::acos(headFront.Dot(Vector3Const::ZAxis))));
 	bool isClockwise = headFront.x >= 0.0f;
+	if (isClockwise)
+	{
+		rollAngle *= -1.0f;
+	}
+
+	return rollAngle;
+}
+
+float ButiEngine::FriendBody::GetLookForwardBodyAngle()
+{
+	Vector3 front = GetFrontXZ(gameObject.lock()->transform->GetFront());
+	float rollAngle = abs(MathHelper::ToDegree(std::acos(front.Dot(Vector3Const::ZAxis))));
+	bool isClockwise = front.x >= 0.0f;
 	if (isClockwise)
 	{
 		rollAngle *= -1.0f;

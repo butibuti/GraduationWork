@@ -123,15 +123,15 @@ void ButiEngine::GameCamera::GameFinishZoom()
 	m_isGameFinishZoom = true;
 }
 
-void ButiEngine::GameCamera::StartShake(const std::int32_t arg_shakeFrame)
+void ButiEngine::GameCamera::StartShake(const std::int32_t arg_shakeFrame, float arg_maxAmplitude)
 {
 	auto shake = m_vwp_cameraMan.lock()->AddGameComponent<ShakeComponent>();
 	shake->SetShakeFrame(arg_shakeFrame);
 	shake->SetShakeSpeed(90.0f);
 	Vector3 amplitude;
-	amplitude.x = ButiRandom::GetRandom(0.1f, 0.15f, 10);
-	amplitude.y = ButiRandom::GetRandom(0.1f, 0.15f, 10);
-	amplitude.z = ButiRandom::GetRandom(0.1f, 0.15f, 10);
+	amplitude.x = ButiRandom::GetRandom(0.1f, arg_maxAmplitude, 10);
+	amplitude.y = ButiRandom::GetRandom(0.1f, arg_maxAmplitude, 10);
+	amplitude.z = ButiRandom::GetRandom(0.1f, arg_maxAmplitude, 10);
 	shake->SetStartAmplitude(amplitude);
 }
 

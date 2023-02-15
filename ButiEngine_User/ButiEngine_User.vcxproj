@@ -353,6 +353,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BlowFriend.cpp" />
+    <ClCompile Include="Bomb.cpp" />
+    <ClCompile Include="BombFriend.cpp" />
     <ClCompile Include="BonusFriend.cpp" />
     <ClCompile Include="FacePartSpawner.cpp" />
     <ClCompile Include="CompleteFriend.cpp" />
@@ -436,6 +438,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BlowFriend.h" />
+    <ClInclude Include="Bomb.h" />
+    <ClInclude Include="BombFriend.h" />
     <ClInclude Include="BonusFriend.h" />
     <ClInclude Include="CompleteFriend.h" />
     <ClInclude Include="FacePartSpawner.h" />

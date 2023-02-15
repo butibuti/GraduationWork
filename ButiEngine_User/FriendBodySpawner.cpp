@@ -5,6 +5,7 @@
 #include "GameLevelManager.h"
 #include "FriendBody.h"
 #include"FacePartSpawner.h"
+#include "BombFriend.h"
 
 void ButiEngine::FriendBodySpawner::OnUpdate()
 {
@@ -161,8 +162,17 @@ void ButiEngine::FriendBodySpawner::UpdateSpawnPattern()
 	case 1:
 		if (m_spawnedBodiesNumber < 1)
 		{
-			SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, 0);
+			//SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, 0);
 
+			auto body = GetManager().lock()->AddObjectFromCereal("BombFriend");
+			body.lock()->transform->SetLocalPosition(Vector3(0, -4, 0));
+			body.lock()->transform->SetLocalRotationY_Degrees(0);
+			Value_weak_ptr<FriendBody> friendBody = body.lock()->GetGameComponent<FriendBody>();
+			friendBody.lock()->m_vwp_friendBodySpawner = gameObject.lock()->GetGameComponent<FriendBodySpawner>();
+			friendBody.lock()->SetParameter(0, 0);
+			body.lock()->GetGameComponent<BombFriend>()->SetFrameToExplode(300);
+			m_spawnedBodiesNumber++;
+			m_existingBodiesNumber++;
 		}
 		break;
 	case 2:

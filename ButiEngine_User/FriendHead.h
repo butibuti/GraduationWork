@@ -46,6 +46,9 @@ namespace ButiEngine {
 
 		bool IsExistPartStuckArea();
 		void LeavePartRandom();
+
+		void Blow();
+		void Dead();
 	private:
 		void Control();
 		void ControlByKeyboard();
@@ -109,7 +112,8 @@ namespace ButiEngine {
 		Value_weak_ptr<TutorialManager> m_vwp_tutorialManager;
 
 		bool m_isShowGuide;
-		bool m_isShowEar;
+
+		bool m_isBlow;
 	};
 
 }
