@@ -11,7 +11,9 @@ void ButiEngine::PartRespawnPoint::Failed()
 {
 	if (!m_isContinue) {
 		m_vwp_part = nullptr;
-		SpawnFacePart();
+		if (m_param.type != PartType::Dummy) {
+			SpawnFacePart();
+		}
 	}
 	else {
 		m_vwp_spawner.lock()->DecreaseParts();

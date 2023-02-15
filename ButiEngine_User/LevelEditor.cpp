@@ -55,42 +55,100 @@ void ButiEngine::LevelEditor::OnShowUI()
 	std::int32_t l_index=0,l_removeIndex=-1;
 	bool l_isEdited=false;
 	l_isEdited|=GUI::Checkbox("IsContinue", m_currentData.list_data[m_currentEditLevelIndex].isContinue);
-	for (auto& data : m_currentData.list_data[m_currentEditLevelIndex].list_data) {
-		if (GUI::TreeNode(std::to_string(l_index))) {
-			GUI::SameLine();
-			if (GUI::Button("Remove##" + std::to_string(l_index))) {
-				l_removeIndex = l_index;
+	
+
+	if (GUI::TreeNode("FacePart")) {
+		for (auto& data : m_currentData.list_data[m_currentEditLevelIndex].list_data) {
+			if (GUI::TreeNode(std::to_string(l_index))) {
+				GUI::SameLine();
+				if (GUI::Button("Remove##" + std::to_string(l_index))) {
+					l_removeIndex = l_index;
+				}
+				l_isEdited |= GUI::Edit(*data.transform);
+				l_isEdited |= data.faceParam.GUI_SetMoveParam();
+				l_isEdited |= data.faceParam.GUI_SetLife();
+				l_isEdited |= data.faceParam.GUI_SetGravityParam();
+				l_isEdited |= data.faceParam.GUI_SetRotationParam();
+
+				GUI::BulletText("Type");
+				l_isEdited |= PartTypeButton("Eye", PartType::Eye, data.faceParam.type); GUI::SameLine();
+				l_isEdited |= PartTypeButton("Nose", PartType::Nose, data.faceParam.type); GUI::SameLine();
+				l_isEdited |= PartTypeButton("Mouth", PartType::Mouth, data.faceParam.type); GUI::SameLine();
+				l_isEdited |= PartTypeButton("Dummy", PartType::Dummy, data.faceParam.type);
+				GUI::TreePop();
 			}
-			l_isEdited |=GUI::Edit(*data.transform);
-			l_isEdited |= data.faceParam.GUI_SetMoveParam();
-			l_isEdited |= data.faceParam.GUI_SetLife();
-			l_isEdited |= data.faceParam.GUI_SetGravityParam();
-			l_isEdited |= data.faceParam.GUI_SetRotationParam();
-
-			GUI::BulletText("Type");
-			l_isEdited |= PartTypeButton("Eye", PartType::Eye, data.faceParam.type); GUI::SameLine();
-			l_isEdited |= PartTypeButton("Nose", PartType::Nose, data.faceParam.type); GUI::SameLine();
-			l_isEdited |= PartTypeButton("Mouth", PartType::Mouth, data.faceParam.type); GUI::SameLine();
-			l_isEdited |= PartTypeButton("Dummy", PartType::Dummy, data.faceParam.type); 
-			GUI::TreePop();
+			l_index++;
 		}
-		l_index++;
+		if (l_removeIndex >= 0) {
+			auto remItr = m_currentData.list_data[m_currentEditLevelIndex].list_data.begin() + l_removeIndex;
+			m_currentData.list_data[m_currentEditLevelIndex].list_data.erase(remItr);
+			l_isEdited |= true;
+		}
+
+		if (GUI::Button("Add")) {
+			if (m_currentData.list_data[m_currentEditLevelIndex].list_data.GetSize()) {
+				auto last = m_currentData.list_data[m_currentEditLevelIndex].list_data.GetLast();
+				last.transform = last.transform->Clone();
+				m_currentData.list_data[m_currentEditLevelIndex].list_data.Add(last);
+			}
+			else {
+				m_currentData.list_data[m_currentEditLevelIndex].list_data.Add({ FacePartParameter(), ObjectFactory::Create<Transform>(Vector3(0,0,5)) });
+			}
+			
+			l_isEdited |= true;
+		}
+
+		if (GUI::Button("Clear")) {
+			m_currentData.list_data[m_currentEditLevelIndex].list_data.Clear();
+			l_isEdited |= true;
+		}
+		GUI::TreePop();
 	}
 
-	if (l_removeIndex >= 0) {
-		auto remItr = m_currentData.list_data[m_currentEditLevelIndex].list_data.begin() + l_removeIndex;
-		m_currentData.list_data[m_currentEditLevelIndex].list_data.erase(remItr);
-		l_isEdited |= true;
-	}
 
-	if (GUI::Button("Add")) {
-		m_currentData.list_data[m_currentEditLevelIndex].list_data.Add({ FacePartParameter(), ObjectFactory::Create<Transform>(Vector3(0,0,5))});
-		l_isEdited |= true;
-	}
+	l_index = 0;
 
-	if (GUI::Button("Clear")) {
-		m_currentData.list_data[m_currentEditLevelIndex].list_data.Clear();
-		l_isEdited |= true;
+	if (GUI::TreeNode("Body")) {
+		for (auto& data : m_currentData.list_data[m_currentEditLevelIndex].list_bodyData) {
+			if (GUI::TreeNode(std::to_string(l_index))) {
+				GUI::SameLine();
+				if (GUI::Button("Remove##" + std::to_string(l_index))) {
+					l_removeIndex = l_index;
+				}
+				if (bool transformEdited = GUI::Edit(*data.transform)) {
+					data.initPosition = data.transform->GetLocalPosition();
+					data.initRotate = MathHelper::ToDegree( data.transform->GetLocalRotation_Euler().y);
+					l_isEdited |= transformEdited;
+				}
+				l_isEdited |= GUI::DragFloat("TranslateSpped##" + std::to_string(l_index), data.translateSpeed, 0.01f, -10.0f, 10.0f);
+				l_isEdited |= GUI::DragFloat("rotationSpeed##" + std::to_string(l_index), data.rotationSpeed, 0.01f, -10.0f, 10.0f);
+				l_isEdited |= GUI::Checkbox("isBomb##" + std::to_string(l_index), data.isBomb);
+				if (data.isBomb) {
+					l_isEdited |= GUI::DragInt("bombCount##" + std::to_string(l_index), data.bombCount, 1.0f, 0, 100000);
+				}
+				
+
+
+				GUI::TreePop();
+			}
+			l_index++;
+		}
+		if (l_removeIndex >= 0) {
+			auto remItr = m_currentData.list_data[m_currentEditLevelIndex].list_bodyData.begin() + l_removeIndex;
+			m_currentData.list_data[m_currentEditLevelIndex].list_bodyData.erase(remItr);
+			l_isEdited |= true;
+		}
+
+		if (GUI::Button("Add")) {
+			m_currentData.list_data[m_currentEditLevelIndex].list_bodyData.Add({ 0,0,0, Vector3(0,0.0f,0)});
+			l_isEdited |= true;
+		}
+
+		if (GUI::Button("Clear")) {
+			m_currentData.list_data[m_currentEditLevelIndex].list_bodyData.Clear();
+			l_isEdited |= true;
+		}
+		GUI::TreePop();
 	}
 
 	static std::int32_t srcIndex = 0;
@@ -106,11 +164,16 @@ void ButiEngine::LevelEditor::OnShowUI()
 	}
 
 
-	if (GUI::Button("Copy")) {
+	if (GUI::Button("Copy")&& m_currentEditLevelIndex!= srcIndex) {
 		m_currentData.list_data[m_currentEditLevelIndex].list_data.Clear();
 		for (auto data : m_currentData.list_data[srcIndex].list_data) {
 			data.transform = data.transform->Clone();
 			m_currentData.list_data[m_currentEditLevelIndex].list_data.Add(data);
+		}
+		m_currentData.list_data[m_currentEditLevelIndex].list_bodyData.Clear();
+		for (auto data : m_currentData.list_data[srcIndex].list_bodyData) {
+			data.transform = data.transform->Clone();
+			m_currentData.list_data[m_currentEditLevelIndex].list_bodyData.Add(data);
 		}
 		l_isEdited |= true;
 	}
@@ -162,8 +225,18 @@ void ButiEngine::LevelEditor::CreatePreview()
 			break;
 		}
 
-		auto gameobj=GetManager().lock()->AddObjectFromCereal(objectName, data.transform);
-		data.transform=gameobj.lock()->transform  ;
+		auto gameobj = GetManager().lock()->AddObjectFromCereal(objectName, data.transform);
+		data.transform = gameobj.lock()->transform;
+	}
+	for (auto& data : m_currentData.list_data[m_currentEditLevelIndex].list_bodyData) {
+		std::string objectName = "BodyPreview";
+		if (data.isBomb) {
+			objectName += "_bomb";
+		}
+		auto gameobj = GetManager().lock()->AddObjectFromCereal(objectName, ObjectFactory::Create<Transform>(
+			data.initPosition,Vector3(0,data.initRotate,0),Vector3(1,1,1)
+			));
+		data.transform = gameobj.lock()->transform;
 	}
 }
 

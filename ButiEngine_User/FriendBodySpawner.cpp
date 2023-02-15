@@ -64,6 +64,8 @@ void ButiEngine::FriendBodySpawner::OnShowUI()
 
 void ButiEngine::FriendBodySpawner::Start()
 {
+	InputCereal(m_currentData, "Scene/" + GetManager().lock()->GetScene().lock()->GetSceneInformation()->GetSceneName() + "/levelData.lvd");
+
 	m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
@@ -75,8 +77,9 @@ void ButiEngine::FriendBodySpawner::Start()
 	m_vlp_spawnPatternTimer = ObjectFactory::Create<RelativeTimer>(60);
 	m_spawnedBodiesNumber = 0;
 	m_existingBodiesNumber = 0;
-	m_spawnPatternOrderCounter = -1;
+	m_spawnPatternOrderCounter = 0;
 	m_isPlayPattern = false;
+	UpdateSpawnPattern();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBodySpawner::Clone()
@@ -114,6 +117,20 @@ void ButiEngine::FriendBodySpawner::SpawnBody(Vector3 spawnPosition, float moveS
 	m_existingBodiesNumber++;
 }
 
+void ButiEngine::FriendBodySpawner::SpawnBombBody(Vector3 spawnPosition, float moveSpeed, float rotateSpeed, float initRotationY, std::int32_t arg_bombCount)
+{
+	auto body = GetManager().lock()->AddObjectFromCereal("BombFriend");
+	body.lock()->transform->SetLocalPosition(spawnPosition);
+	body.lock()->transform->SetLocalRotationY_Degrees(initRotationY);
+	Value_weak_ptr<FriendBody> friendBody = body.lock()->GetGameComponent<FriendBody>();
+	friendBody.lock()->m_vwp_friendBodySpawner = gameObject.lock()->GetGameComponent<FriendBodySpawner>();
+	friendBody.lock()->SetParameter(moveSpeed, rotateSpeed);
+	auto bombFriend = body.lock()->GetGameComponent<BombFriend>();
+	bombFriend->SetFrameToExplode(arg_bombCount);
+	m_spawnedBodiesNumber++;
+	m_existingBodiesNumber++;
+}
+
 void ButiEngine::FriendBodySpawner::StartSpawnPattern()
 {
 	m_vlp_spawnPatternTimer->ChangeCountFrame(100000);
@@ -137,137 +154,36 @@ void ButiEngine::FriendBodySpawner::StartSpawnPattern()
 		m_vlp_spawnTimer->Start();
 	}
 
-
 }
 
 void ButiEngine::FriendBodySpawner::UpdateSpawnPattern()
 {
+	if (m_existingBodiesNumber > 0) 
+	{ 
+	}
+	else if(m_spawnedBodiesNumber==0) {
+		if (m_currentData.list_data.GetSize() <= m_spawnPatternOrderCounter) {
 
-	switch (m_spawnPatternOrderCounter)
-	{
-	case -1:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(0, -4, 0), 0, 0, 0);
-
-		}
-		break;
-	case 0:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(2.5, -4, 0), 0, 0, 0);
-
-		}
-		break;
-	case 1:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			//SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, 0);
-
-			auto body = GetManager().lock()->AddObjectFromCereal("BombFriend");
-			body.lock()->transform->SetLocalPosition(Vector3(0, -4, 0));
-			body.lock()->transform->SetLocalRotationY_Degrees(0);
-			Value_weak_ptr<FriendBody> friendBody = body.lock()->GetGameComponent<FriendBody>();
-			friendBody.lock()->m_vwp_friendBodySpawner = gameObject.lock()->GetGameComponent<FriendBodySpawner>();
-			friendBody.lock()->SetParameter(0, 0);
-			body.lock()->GetGameComponent<BombFriend>()->SetFrameToExplode(300);
-			m_spawnedBodiesNumber++;
-			m_existingBodiesNumber++;
-		}
-		break;
-	case 2:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(0, -4, 0), 0, 0, 0);
-		}
-		break;
-	case 3:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, 0);
-
-		}
-		break;
-	case 4:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(-2.5f, -4, 0), 0, 0, 0);
-
-		}
-		break;
-	case 5:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(-2, -4, 0), 0, 0, 0);
-
-		}
-		break;
-	case 6:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(2, -4, 0), 0, 0, 0);
-			//SpawnBody(Vector3(-2, -4, 0), 0, 1, 0);
-
-		}
-		break;
-	case 7:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(2, -4, 0), 0, 10, 0);
-			SpawnBody(Vector3(-2, -4, 0), 0, -10, 0);
-
-		}
-	case 8:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(2.5, -4, 0), 0, 0, 0);
-
-		}
-		break;
-	case 9:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(3, -4, 0), 0, 0, 0);
-
-		}
-	case 10:
-		if (m_spawnedBodiesNumber < 1)
-		{
-			SpawnBody(Vector3(5.5, -4, 0), -0.1f, -5, 0);
-
-		}
-		break;
-	case 11:
-		if (m_spawnedBodiesNumber < 1)
-		{
 			if (m_vlp_spawnTimer->Update())
 			{
-				SpawnBody(Vector3(5.5, -4, 0), -0.15f, -100, 0);
-				m_vlp_spawnTimer->Stop();
+				m_vlp_spawnTimer->ChangeCountFrame(ButiRandom::GetInt(6, 10));
+				SpawnBody(Vector3(5.5f, -4, 0), ButiRandom::GetRandom(-0.1f, -0.15f, 10), ButiRandom::GetRandom(20.0f, 30.0f, 10), ButiRandom::GetRandom(0.0f, 360.0f, 10));
 			}
-
-
 		}
-		break;
-	case 12:
-		if (m_spawnedBodiesNumber < 2)
-		{
-			SpawnBody(Vector3(-5.5f, -4, 0), 0.05f, 2, -180);
-			SpawnBody(Vector3(5.5f, -4, 0), -0.05f, -2, 180);
-
+		else {
+			for (auto& bodyData : m_currentData.list_data[m_spawnPatternOrderCounter].list_bodyData) {
+				if (bodyData.isBomb) {
+					SpawnBombBody(Vector3(bodyData.initPosition.x, -4, bodyData.initPosition.z), bodyData.translateSpeed, bodyData.rotationSpeed, bodyData.initRotate,bodyData.bombCount);
+				}
+				else {
+					SpawnBody(Vector3(bodyData.initPosition.x, -4, bodyData.initPosition.z), bodyData.translateSpeed, bodyData.rotationSpeed, bodyData.initRotate);
+				}
+				
+			}
 		}
-		break;
-	case 13:
-		if (m_vlp_spawnTimer->Update())
-		{
-			m_vlp_spawnTimer->ChangeCountFrame(ButiRandom::GetInt(6, 10));
-			SpawnBody(Vector3(5.5f, -4, 0), ButiRandom::GetRandom(-0.1f, -0.15f, 10), ButiRandom::GetRandom(20.0f, 30.0f, 10), ButiRandom::GetRandom(0.0f, 360.0f, 10));
-		}
-		break;
 	}
 
 	if (m_existingBodiesNumber <= 0) m_isPlayPattern = false;
-
 
 }
 
@@ -276,7 +192,7 @@ void ButiEngine::FriendBodySpawner::StartNextSpawnPattern()
 
 	if (m_vwp_facePartSpawner.lock()) {
 		m_vwp_facePartSpawner.lock()->LevelIncrement();
-		m_spawnPatternOrderCounter = m_vwp_facePartSpawner.lock()->GetCurrentLevel() - 1;
+		m_spawnPatternOrderCounter = m_vwp_facePartSpawner.lock()->GetCurrentLevel();
 	}
 	StartSpawnPattern();
 
