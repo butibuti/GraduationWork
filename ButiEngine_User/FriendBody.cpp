@@ -299,10 +299,7 @@ void ButiEngine::FriendBody::StartDance()
 void ButiEngine::FriendBody::MoveHorizontal()
 {
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	if (!m_isTutorial && gameLevel == 0)
-	{
-		return;
-	}
+	
 
 	if (m_vlp_pullUpTimer->Update())
 	{

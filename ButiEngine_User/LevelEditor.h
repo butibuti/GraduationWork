@@ -15,13 +15,37 @@ struct PartArrangeData {
 		ARCHIVE_BUTI(transform);
 	}
 };
+
+
+struct BodyArrangeData {
+	float translateSpeed;
+	float rotationSpeed;
+	float initRotate;
+	Vector3 initPosition;
+	Value_ptr<Transform> transform;
+	bool isBomb=false;
+	std::int32_t bombCount=0;
+	template<class Archive>
+	void serialize(Archive& archive)
+	{
+		ARCHIVE_BUTI(translateSpeed);
+		ARCHIVE_BUTI(rotationSpeed);
+		ARCHIVE_BUTI(initRotate);
+		ARCHIVE_BUTI(initPosition);
+		ARCHIVE_BUTI(isBomb);
+		ARCHIVE_BUTI(bombCount);
+	}
+};
+
 struct LevelData {
 	List<PartArrangeData> list_data;
+	List<BodyArrangeData> list_bodyData;
 	bool isContinue = false;
 	template<class Archive>
 	void serialize(Archive& archive)
 	{
 		ARCHIVE_BUTI(list_data);
+		ARCHIVE_BUTI(list_bodyData);
 		ARCHIVE_BUTI(isContinue);
 	}
 };
