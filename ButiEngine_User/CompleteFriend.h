@@ -55,7 +55,7 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_mouth;
 
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
-		bool m_isDance;
+		bool m_isDance = false;
 
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 	};

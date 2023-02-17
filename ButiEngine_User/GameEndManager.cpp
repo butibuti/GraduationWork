@@ -13,7 +13,7 @@ void ButiEngine::GameEndManager::OnUpdate()
 	if (m_vlp_timer->Update())
 	{
 		m_vlp_timer->Stop();
-		GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GamePlay_1");
+		//GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GamePlay_1");
 	}
 }
 

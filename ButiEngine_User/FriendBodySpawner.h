@@ -27,6 +27,7 @@ public:
 		ARCHIVE_BUTI(m_vec_spawnIntervalFrames);
 	}
 	void DecreaceBodiesNumber();
+	std::int32_t GetBodiesNumber() { return m_existingBodiesNumber; }
 private:
 	void SpawnBody();
 	void SpawnBody(Vector3 spawnPosition, float moveSpeed, float rotateSpeed, float initRotationY);

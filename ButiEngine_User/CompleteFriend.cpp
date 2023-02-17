@@ -46,7 +46,6 @@ void ButiEngine::CompleteFriend::OnShowUI()
 void ButiEngine::CompleteFriend::Start()
 {
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
-	m_isDance = false;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::CompleteFriend::Clone()

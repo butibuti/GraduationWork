@@ -2,6 +2,8 @@
 #include "FacePartSpawner.h"
 #include"FriendFacePart.h"
 #include"PartRespawnPoint.h"
+#include "FriendHead.h"
+
 void ButiEngine::FacePartSpawner::OnUpdate()
 {
 	if (!m_remainPart&&(m_successPart!= m_currentData.list_data[m_currentEditLevelIndex].list_data.GetSize())
@@ -115,6 +117,17 @@ void ButiEngine::FacePartSpawner::LevelIncrement()
 
 void ButiEngine::FacePartSpawner::SetLevel(const std::int32_t arg_level)
 {
+	auto head = GetManager().lock()->GetGameObject(GameObjectTag("FriendHead"));
+	if (head.lock())
+	{
+		head.lock()->GetGameComponent<FriendHead>()->Disappear();
+	}
+	else
+	{
+		head = GetManager().lock()->AddObjectFromCereal("FriendHead");
+		head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
+	}
+
 	Clear();
 	m_currentEditLevelIndex =max(arg_level,0);
 	if (m_currentEditLevelIndex >= m_currentData.list_data.GetSize()) {

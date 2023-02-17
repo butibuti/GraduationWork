@@ -49,6 +49,8 @@ namespace ButiEngine {
 
 		void Blow();
 		void Dead();
+
+		void Disappear();
 	private:
 		void Control();
 		void ControlByKeyboard();

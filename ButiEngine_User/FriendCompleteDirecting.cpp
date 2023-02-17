@@ -11,6 +11,7 @@
 #include "FriendFacePart.h"
 #include "UI_TotalEvaluation.h"
 #include "GameLevelManager.h"
+#include "FriendBodySpawner.h"
 
 void ButiEngine::FriendCompleteDirecting::OnUpdate()
 {
@@ -85,8 +86,12 @@ void ButiEngine::FriendCompleteDirecting::OnUpdate()
 		}
 		else
 		{
-			auto head = GetManager().lock()->AddObjectFromCereal("FriendHead");
-			head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
+			auto friendBodySpawner = GetManager().lock()->GetGameObject("FriendBodySpawner").lock()->GetGameComponent<FriendBodySpawner>();
+			if (friendBodySpawner->GetBodiesNumber() > 0)
+			{
+				auto head = GetManager().lock()->AddObjectFromCereal("FriendHead");
+				head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
+			}
 		}
 
 		SetIsRemove(true);

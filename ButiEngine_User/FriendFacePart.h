@@ -84,6 +84,7 @@ namespace ButiEngine {
 		}
 
 		void Dead();
+		void Disappear();
 
 		void SetRandomParam_Straight();
 
@@ -140,7 +141,6 @@ namespace ButiEngine {
 		void ChangeModel();
 
 		void Appear();
-		void Disappear();
 		void OnAppear();
 		void OnDisappear();
 		void AddScaleAnimation(const Vector3& arg_targetScale, Easing::EasingType arg_easeType);

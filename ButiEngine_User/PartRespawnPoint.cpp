@@ -46,7 +46,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::PartRespawnPoint::C
 void ButiEngine::PartRespawnPoint::Clear()
 {
 	if (m_vwp_part.lock()) {
-		m_vwp_part.lock()->SetIsRemove(true);
+		m_vwp_part.lock()->GetGameComponent<FriendFacePart>()->Disappear();
 	}
 }
 

@@ -41,7 +41,7 @@ void ButiEngine::Bomb::OnShowUI()
 void ButiEngine::Bomb::Start()
 {
 	m_vlp_explodeTimer = ObjectFactory::Create<RelativeTimer>(m_frameToExplode);
-	m_vlp_waitExplodeTimer = ObjectFactory::Create<RelativeTimer>(180);
+	m_vlp_waitExplodeTimer = ObjectFactory::Create<RelativeTimer>(120);
 
 	m_vlp_explodeTimer->Start();
 }
@@ -69,6 +69,10 @@ void ButiEngine::Bomb::Explode()
 	for (std::int32_t i = 0; i < 2; i++)
 	{
 		auto completeFriends = FriendManager::GetCompleteFriends();
+		if (completeFriends.size() == 0)
+		{
+			break;
+		}
 		std::int32_t randomIndex = ButiRandom::GetInt(0, completeFriends.size() - 1);
 		auto blowFriend = completeFriends[randomIndex];
 		blowFriend.lock()->AddGameComponent<BlowFriend>();
@@ -76,8 +80,6 @@ void ButiEngine::Bomb::Explode()
 
 		FriendManager::RemoveCompleteFriend(randomIndex);
 	}
-
-	GetManager().lock()->GetGameObject(GameObjectTag("FriendHead")).lock()->GetGameComponent<FriendHead>()->Blow();
 
 	GetManager().lock()->GetGameObject("FriendBodySpawner").lock()->GetGameComponent<FriendBodySpawner>()->DecreaceBodiesNumber();
 
