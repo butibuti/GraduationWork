@@ -5,9 +5,12 @@
 #include "FriendBodySpawner.h"
 #include "FriendManager.h"
 #include "FriendHead.h"
+#include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 
 void ButiEngine::Bomb::OnUpdate()
 {
+	m_vlp_animationController->Update();
+
 	if (m_isFall)
 	{
 		Fall();
@@ -41,6 +44,14 @@ void ButiEngine::Bomb::OnShowUI()
 void ButiEngine::Bomb::Start()
 {
 	m_vlp_explodeTimer = ObjectFactory::Create<RelativeTimer>(m_frameToExplode);
+
+	auto modelDraw = gameObject.lock()->GetGameComponent<ModelDrawComponent>();
+	m_vlp_animationController = ButiRendering::CreateAnimationController(modelDraw->GetBone());
+
+	auto anim = gameObject.lock()->GetResourceContainer()->GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation();
+	m_vlp_animationController->ChangeAnimation(m_frameToExplode, anim, anim->GetEnd());
+
+
 	m_vlp_waitExplodeTimer = ObjectFactory::Create<RelativeTimer>(120);
 
 	m_vlp_explodeTimer->Start();

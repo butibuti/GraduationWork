@@ -14,7 +14,8 @@
 #include "TutorialManager.h"
 #include "GameCamera.h"
 #include "FriendFacePart.h"
-#include "BlowFriend.h"
+#include "Header/GameObjects/DefaultGameComponent/ScaleAnimationComponent.h"
+#include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
 
 void ButiEngine::FriendHead::OnUpdate()
 {
@@ -41,12 +42,10 @@ void ButiEngine::FriendHead::OnUpdate()
 		return;
 	}
 
-	if (m_isBlow)
+	if (m_isDisappear)
 	{
-		if (gameObject.lock()->transform->GetWorldPosition().y < -30.0f)
-		{
-			Dead();
-		}
+		OnDisappear();
+		return;
 	}
 
 	Appear();
@@ -173,7 +172,7 @@ void ButiEngine::FriendHead::Start()
 	gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
 	gameObject.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(0.0f);
 
-	m_isBlow = false;
+	m_isDisappear = false;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
@@ -322,12 +321,6 @@ void ButiEngine::FriendHead::LeavePartRandom()
 	}
 }
 
-void ButiEngine::FriendHead::Blow()
-{
-	m_isBlow = true;
-	gameObject.lock()->AddGameComponent<BlowFriend>();
-}
-
 void ButiEngine::FriendHead::Dead()
 {
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendHead"));
@@ -354,13 +347,14 @@ void ButiEngine::FriendHead::Dead()
 	}
 
 	gameObject.lock()->SetIsRemove(true);
-	auto head = GetManager().lock()->AddObjectFromCereal("FriendHead");
-	head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
 }
 
 void ButiEngine::FriendHead::Disappear()
 {
-	Dead();
+	m_isDisappear = true;
+	
+	RemoveTriggerComponent();
+	AddScaleAnimation(0.0f, Easing::EasingType::EaseInBack);
 }
 
 void ButiEngine::FriendHead::Control()
@@ -434,8 +428,8 @@ void ButiEngine::FriendHead::ControlByGamePad()
 
 void ButiEngine::FriendHead::ControlByVRTracker()
 {
-	gameObject.lock()->transform->SetLocalPosition(GetTrackerPos());
-	gameObject.lock()->transform->SetLocalRotation(GetTrackerRotation());
+	gameObject.lock()->transform->SetLocalPosition(m_vwp_gameSettings.lock()->GetTrackerPos(m_trackerIndex));
+	gameObject.lock()->transform->SetLocalRotation(m_vwp_gameSettings.lock()->GetTrackerRotation(m_trackerIndex));
 }
 
 void ButiEngine::FriendHead::SpawnStarFlash()
@@ -500,13 +494,13 @@ void ButiEngine::FriendHead::Appear()
 		return;
 	}
 
-	Vector3 targetPos = GetTrackerPos();
+	Vector3 targetPos = m_vwp_gameSettings.lock()->GetTrackerPos(m_trackerIndex);
 	float progress = m_vlp_appearTimer->GetPercent();
 	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
 	Vector3 newPos = MathHelper::LerpPosition(pos, targetPos, progress);
 	gameObject.lock()->transform->SetLocalPosition(newPos);
 
-	Quat targetRotation = GetTrackerRotation().ToQuat();
+	Quat targetRotation = m_vwp_gameSettings.lock()->GetTrackerRotation(m_trackerIndex).ToQuat();
 	Quat rotation = gameObject.lock()->transform->GetLocalRotation().ToQuat();
 	Quat newRotation = MathHelper::LearpQuat(rotation, targetRotation, progress);
 	gameObject.lock()->transform->SetLocalRotation(newRotation);
@@ -515,11 +509,30 @@ void ButiEngine::FriendHead::Appear()
 	{
 		m_vlp_appearTimer->Stop();
 
-		gameObject.lock()->transform->SetLocalPosition(GetTrackerPos());
-		gameObject.lock()->transform->SetLocalRotation(GetTrackerRotation());
+		gameObject.lock()->transform->SetLocalPosition(m_vwp_gameSettings.lock()->GetTrackerPos(m_trackerIndex));
+		gameObject.lock()->transform->SetLocalRotation(m_vwp_gameSettings.lock()->GetTrackerRotation(m_trackerIndex));
 
 		CreatePartHitArea();
 	}
+}
+
+void ButiEngine::FriendHead::OnDisappear()
+{
+	auto anim = gameObject.lock()->GetGameComponent<ScaleAnimation>();
+	if (!anim)
+	{
+		m_isDisappear = false;
+		Dead();
+	}
+}
+
+void ButiEngine::FriendHead::AddScaleAnimation(const Vector3& arg_targetScale, Easing::EasingType arg_easeType)
+{
+	auto anim = gameObject.lock()->AddGameComponent<ScaleAnimation>();
+	anim->SetInitScale(gameObject.lock()->transform->GetLocalScale());
+	anim->SetTargetScale(arg_targetScale);
+	anim->SetSpeed(1.0f / 30);
+	anim->SetEaseType(arg_easeType);
 }
 
 void ButiEngine::FriendHead::CalcVelocity()
@@ -656,4 +669,19 @@ void ButiEngine::FriendHead::CreatePartHitArea()
 
 	auto mouthDefault = GetManager().lock()->GetGameObject("Mouth_Default");
 	mouthDefault.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);
+}
+
+void ButiEngine::FriendHead::RemoveTriggerComponent()
+{
+	auto triggerComponent = m_vwp_eyesHitArea.lock()->GetGameComponent<TriggerComponent>();
+	triggerComponent->SetIsRemove(true);
+
+	triggerComponent = m_vwp_noseHitArea.lock()->GetGameComponent<TriggerComponent>();
+	triggerComponent->SetIsRemove(true);
+
+	triggerComponent = m_vwp_mouthHitArea.lock()->GetGameComponent<TriggerComponent>();
+	triggerComponent->SetIsRemove(true);
+
+	triggerComponent = m_vwp_dummyHitArea.lock()->GetGameComponent<TriggerComponent>();
+	triggerComponent->SetIsRemove(true);
 }

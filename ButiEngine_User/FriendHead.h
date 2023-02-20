@@ -61,6 +61,8 @@ namespace ButiEngine {
 		void CompleteFace();
 
 		void Appear();
+		void OnDisappear();
+		void AddScaleAnimation(const Vector3& arg_targetScale, Easing::EasingType arg_easeType);
 		void CalcVelocity();
 		Vector3 GetTrackerPos();
 		Matrix4x4 GetTrackerRotation();
@@ -70,6 +72,7 @@ namespace ButiEngine {
 		std::vector<Value_weak_ptr<FriendHead_PartHitArea>> GetPartStuckAreas();
 
 		void CreatePartHitArea();
+		void RemoveTriggerComponent();
 
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<InputManager> m_vwp_inputManager;
@@ -115,7 +118,7 @@ namespace ButiEngine {
 
 		bool m_isShowGuide;
 
-		bool m_isBlow;
+		bool m_isDisappear;
 	};
 
 }

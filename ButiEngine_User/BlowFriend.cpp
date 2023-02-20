@@ -20,12 +20,6 @@ void ButiEngine::BlowFriend::OnUpdate()
 			completeFriend->Dead();
 		}
 
-		auto head = gameObject.lock()->GetGameComponent<FriendHead>();
-		if (head)
-		{
-			head->Dead();
-		}
-
 		auto bomb = gameObject.lock()->GetGameComponent<Bomb>();
 		if (bomb)
 		{

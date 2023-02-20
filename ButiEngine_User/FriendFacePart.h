@@ -81,6 +81,7 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_param);
 			ARCHIVE_BUTI(g_goodAngleBorder);
+			ARCHIVE_BUTI(m_vec_rayStartPoints);
 		}
 
 		void Dead();
@@ -151,6 +152,7 @@ namespace ButiEngine {
 		bool IsBetterRank();
 		void CreateEvaluationObject();
 
+		void GUI_SetRayStartPoint();
 
 		Value_weak_ptr<StageManager> m_vwp_stageManager;
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
@@ -170,6 +172,8 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_partHitArea;
 
 		Value_ptr<RelativeTimer> m_vlp_leaveIntervalTimer;
+
+		std::vector<Vector3> m_vec_rayStartPoints;
 
 		float m_startZ;
 

@@ -112,6 +112,8 @@ void ButiEngine::FriendFacePart::OnShowUI()
 	m_param.GUI_SetGravityParam();
 	m_param.GUI_SetRotationParam();
 
+	GUI_SetRayStartPoint();
+
 
 	GUI::BulletText("GoodAngleBorder");
 	GUI::DragFloat3("##goodAngleBorder", &g_goodAngleBorder.x, 0.1f, 0.0f, 180.0f);
@@ -166,6 +168,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendFacePart::Clo
 	auto clone = ObjectFactory::Create<FriendFacePart>();
 	clone->m_param = m_param;
 	clone->g_goodAngleBorder = g_goodAngleBorder;
+	clone->m_vec_rayStartPoints = m_vec_rayStartPoints;
 	return clone;
 }
 
@@ -470,33 +473,40 @@ ButiEngine::Vector3 ButiEngine::FriendFacePart::GetStickPos()
 	Vector3 stickPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
 	stickPos.z = m_vwp_partHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>()->GetStickPos().z;
 
-	Vector3 rayStartPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
-	rayStartPos.z += 50.0f;
+	float nearestDistance = 1000.0f;
+	float stickPosZ = stickPos.z;
 
-	List<ButiBullet::PhysicsRaycastResult> list_rayRes;
-	if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
-		RaycastAllHit(rayStartPos, -Vector3Const::ZAxis, 100.0f, 1, &list_rayRes))
+	auto end = m_vec_rayStartPoints.end();
+	for (auto itr = m_vec_rayStartPoints.begin(); itr != end; ++itr)
 	{
-		float nearestDistance = 1000.0f;
-		float stickPosZ = stickPos.z;
+		Vector3 rayStartPos = m_vwp_partHitArea.lock()->transform->GetWorldPosition();
+		rayStartPos.z += 50.0f;
 
-		for (auto& res : list_rayRes)
+		rayStartPos += (*itr) * gameObject.lock()->transform->GetLocalRotation();
+
+		List<ButiBullet::PhysicsRaycastResult> list_rayRes;
+		if (gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
+			RaycastAllHit(rayStartPos, -Vector3Const::ZAxis, 100.0f, 1, &list_rayRes))
 		{
-			auto obj= Value_weak_ptr<GameObject>();
-			obj = res.physicsObject->GetOwnerData();
-			
 
-			if (obj.lock()->HasGameObjectTag("FriendHead"))
+			for (auto& res : list_rayRes)
 			{
-				float distance = abs(res.point.z - rayStartPos.z);
-				if (distance <= nearestDistance)
+				auto obj = Value_weak_ptr<GameObject>();
+				obj = res.physicsObject->GetOwnerData();
+
+
+				if (obj.lock()->HasGameObjectTag("FriendHead"))
 				{
-					nearestDistance = distance;
-					stickPosZ = res.point.z;
+					float distance = abs(res.point.z - rayStartPos.z);
+					if (distance <= nearestDistance)
+					{
+						nearestDistance = distance;
+						stickPosZ = res.point.z;
+					}
 				}
 			}
+			stickPos.z = stickPosZ;
 		}
-		stickPos.z = stickPosZ;
 	}
 
 	return stickPos;
@@ -720,6 +730,46 @@ void ButiEngine::FriendFacePart::CreateEvaluationObject()
 	evaluation.lock()->transform->SetLocalPosition(screenPos);
 	evaluation.lock()->GetGameComponent<UI_PartEvaluation>()->SetScore(GetCalcScore());
 	evaluation.lock()->GetGameComponent<UI_PartEvaluation>()->SetRank(m_rank);
+}
+
+void ButiEngine::FriendFacePart::GUI_SetRayStartPoint()
+{
+	if (GUI::TreeNode("RayStartPoint"))
+	{
+		if (GUI::Button("Add"))
+		{
+			m_vec_rayStartPoints.push_back(Vector3Const::Zero);
+			GUI::TreePop();
+			return;
+		}
+
+		auto end = m_vec_rayStartPoints.end();
+		std::int32_t index = 0;
+		for (auto itr = m_vec_rayStartPoints.begin(); itr != end; ++itr)
+		{
+			GUI::BulletText("Point:" + std::to_string(index));
+			if (GUI::Button("Remove"))
+			{
+				m_vec_rayStartPoints.erase(itr);
+				break;
+			}
+			GUI::SameLine();
+			if (GUI::Button("Insert"))
+			{
+				m_vec_rayStartPoints.insert(itr, Vector3Const::Zero);
+				break;
+			}
+
+			GUI::DragFloat3("##rayStartPoint" + std::to_string(index), &(*itr).x, 0.1f, -100.0f, 100.0f);
+
+			Vector3 pos = gameObject.lock()->transform->GetWorldPosition() + (*itr) * gameObject.lock()->transform->GetLocalRotation();
+			GUI::Text("x:" + std::to_string(pos.x) + ", y:" + std::to_string(pos.y) + ", z:" + std::to_string(pos.z));
+
+			index++;
+		}
+
+		GUI::TreePop();
+	}
 }
 
 

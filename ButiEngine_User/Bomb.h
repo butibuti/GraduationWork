@@ -41,6 +41,8 @@ namespace ButiEngine {
 
 		Value_weak_ptr<MeshDrawComponent> m_vwp_meshDraw;
 
+		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
+
 		float m_startScale;
 
 		bool m_isFall;

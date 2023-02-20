@@ -111,7 +111,6 @@ void ButiEngine::FacePartSpawner::Clear()
 
 void ButiEngine::FacePartSpawner::LevelIncrement()
 {
-
 	SetLevel(m_isRandomLevelSelect? ButiRandom::GetInt(m_randomSelectLevelMin, m_randomSelectLevelMax): m_currentEditLevelIndex + 1);
 }
 
@@ -122,11 +121,8 @@ void ButiEngine::FacePartSpawner::SetLevel(const std::int32_t arg_level)
 	{
 		head.lock()->GetGameComponent<FriendHead>()->Disappear();
 	}
-	else
-	{
-		head = GetManager().lock()->AddObjectFromCereal("FriendHead");
-		head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
-	}
+	head = GetManager().lock()->AddObjectFromCereal("FriendHead");
+	head.lock()->transform->SetLocalPosition(Vector3(0.0f, -10.0f, 0.0f));
 
 	Clear();
 	m_currentEditLevelIndex =max(arg_level,0);

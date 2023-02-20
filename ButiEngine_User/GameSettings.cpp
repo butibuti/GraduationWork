@@ -8,19 +8,23 @@ void ButiEngine::GameSettings::OnUpdate()
 		GameDevice::GetInput().CheckKey(ButiInput::Keys::LeftShift) &&
 		GameDevice::GetInput().TriggerKey(ButiInput::Keys::D))
 	{
-		m_isDebugMode = !m_isDebugMode;
-
-		auto pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
-
-		if (m_isDebugMode)
 		{
-			gameObject.lock()->GetGameComponent<MeshDrawComponent>()->ReRegist();
-			pauseManager->SetIsPause(true);
-		}
-		else
-		{
-			gameObject.lock()->GetGameComponent<MeshDrawComponent>()->UnRegist();
-			pauseManager->SetIsPause(false);
+			m_isDebugMode = !m_isDebugMode;
+
+			auto pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+
+			if (m_isDebugMode)
+			{
+				gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->ReRegist();
+				m_vwp_debugHead.lock()->GetTransform()->SetLocalScale(1.0f);
+				pauseManager->SetIsPause(true);
+			}
+			else
+			{
+				gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->UnRegist();
+				m_vwp_debugHead.lock()->GetTransform()->SetLocalScale(0.0f);
+				pauseManager->SetIsPause(false);
+			}
 		}
 	}
 
@@ -29,9 +33,12 @@ void ButiEngine::GameSettings::OnUpdate()
 		return;
 	}
 
+	SetOffset();
+
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::O))
 	{
 		SetOrigin();
+		OutputCereal(m_data, "GameSettings.savedata");
 	}
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::F))
 	{
@@ -40,6 +47,7 @@ void ButiEngine::GameSettings::OnUpdate()
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::R))
 	{
 		SetMoveAreaRightTop();
+		OutputCereal(m_data, "GameSettings.savedata");
 	}
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::B))
 	{
@@ -48,11 +56,10 @@ void ButiEngine::GameSettings::OnUpdate()
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::L))
 	{
 		SetMoveAreaLeftBottom();
-	}
-	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::S))
-	{
 		OutputCereal(m_data, "GameSettings.savedata");
 	}
+
+	ControlDebugHead();
 }
 
 void ButiEngine::GameSettings::OnSet()
@@ -124,10 +131,12 @@ void ButiEngine::GameSettings::Start()
 	GameDevice::GetVRTrackerInput().SetOrigin(m_data.trackerOrigin);
 
 	m_headMoveLimit = GetManager().lock()->GetGameObject("FieldOfView").lock()->transform->GetLocalScale().x;
+	m_offset = Vector3Const::Zero;
 
 	m_isDebugMode = false;
 
-	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->UnRegist();
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>(0)->UnRegist();
+	m_vwp_debugHead = gameObject.lock()->GetGameComponent<MeshDrawComponent>(1);
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::GameSettings::Clone()
@@ -142,6 +151,43 @@ float ButiEngine::GameSettings::GetCorrection()
 	float correction = m_headMoveLimit / moveArea;
 
 	return correction;
+}
+
+ButiEngine::Vector3 ButiEngine::GameSettings::GetTrackerPos(const std::int32_t arg_trackerIndex)
+{
+	if (!(GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > arg_trackerIndex))
+	{
+		return Vector3Const::Zero;
+	}
+
+	Matrix4x4 deviceMatrix;
+	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[arg_trackerIndex], deviceMatrix);
+	Vector3 pos = deviceMatrix.GetPosition();
+	pos *= GetCorrection();
+	pos.x *= -1.0f;
+	pos.z = 0.0f;
+
+	pos += m_offset;
+
+	return pos;
+}
+
+ButiEngine::Matrix4x4 ButiEngine::GameSettings::GetTrackerRotation(const std::int32_t arg_trackerIndex)
+{
+	if (!(GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > arg_trackerIndex))
+	{
+		return Matrix4x4().Identity();
+	}
+
+	Matrix4x4 deviceMatrix;
+	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[arg_trackerIndex], deviceMatrix);
+	auto rotation = deviceMatrix.GetRemovePosition();
+	rotation._13 *= -1;
+	rotation._31 *= -1;
+	rotation._12 *= -1;
+	rotation._21 *= -1;
+
+	return rotation;
 }
 
 void ButiEngine::GameSettings::SetOrigin()
@@ -192,4 +238,50 @@ void ButiEngine::GameSettings::SetTablePos()
 	bodyPos *= GetCorrection();
 	bodyPos.x *= -1.0f;
 	m_data.bodyPos = bodyPos;
+}
+
+void ButiEngine::GameSettings::SetOffset()
+{
+	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::LeftCtrl))
+	{
+		return;
+	}
+
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::R))
+	{
+		m_offset = Vector3Const::Zero;
+	}
+
+	float speed = 0.01f;
+	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::LeftShift))
+	{
+		speed *= 10;
+	}
+
+	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::A))
+	{
+		m_offset.x += speed;
+	}
+	else if (GameDevice::GetInput().CheckKey(ButiInput::Keys::D))
+	{
+		m_offset.x -= speed;
+	}
+
+	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::W))
+	{
+		m_offset.y += speed;
+	}
+	else if (GameDevice::GetInput().CheckKey(ButiInput::Keys::S))
+	{
+		m_offset.y -= speed;
+	}
+}
+
+void ButiEngine::GameSettings::ControlDebugHead()
+{
+	if (GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_data.trackerIndex)
+	{
+		m_vwp_debugHead.lock()->GetTransform()->SetLocalPosition(GetTrackerPos(m_data.trackerIndex));
+		m_vwp_debugHead.lock()->GetTransform()->SetLocalRotation(GetTrackerRotation(m_data.trackerIndex));
+	}
 }
