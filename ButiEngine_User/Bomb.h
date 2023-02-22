@@ -2,6 +2,8 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	class NumberDraw;
+
 	class Bomb :public GameComponent
 	{
 	public:
@@ -31,20 +33,18 @@ namespace ButiEngine {
 		void ChangeColor();
 		void ScaleAnimation();
 		void Fall();
+		void SetTimer();
 
 		Value_weak_ptr<GameObject> m_vwp_parent;
+		Value_weak_ptr<GameObject> m_vwp_timerText;
+		Value_weak_ptr<NumberDraw> m_vwp_timerTextComponent;
 
 		Value_ptr<RelativeTimer> m_vlp_explodeTimer;
 		std::int32_t m_frameToExplode;
-
 		Value_ptr<RelativeTimer> m_vlp_waitExplodeTimer;
-
 		Value_weak_ptr<MeshDrawComponent> m_vwp_meshDraw;
 
-		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
-
 		float m_startScale;
-
 		bool m_isFall;
 	};
 

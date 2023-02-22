@@ -5,6 +5,7 @@
 #include "CompleteFriend.h"
 #include "FriendHead.h"
 #include "Bomb.h"
+#include "BombFriend.h"
 #include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
 
 void ButiEngine::BlowFriend::OnUpdate()
@@ -20,7 +21,7 @@ void ButiEngine::BlowFriend::OnUpdate()
 			completeFriend->Dead();
 		}
 
-		auto bomb = gameObject.lock()->GetGameComponent<Bomb>();
+		auto bomb = gameObject.lock()->GetGameComponent<BombFriend>();
 		if (bomb)
 		{
 			bomb->Dead();
@@ -34,12 +35,6 @@ void ButiEngine::BlowFriend::OnSet()
 	if (completeFriend)
 	{
 		completeFriend->StopDance();
-	}
-
-	auto friendBody = gameObject.lock()->GetGameComponent<FriendBody>();
-	if (friendBody)
-	{
-		friendBody->SetIsRemove(true);
 	}
 
 	auto bonusFriend = gameObject.lock()->GetGameComponent<BonusFriend>();

@@ -48,6 +48,9 @@ namespace ButiEngine {
 		void SetParameter(float arg_moveSpeed, float arg_rotateSpeed);
 		void StartMoveBack(const Vector3& arg_targetPos, const std::int32_t arg_frame);
 		void RemoveNeck();
+		void RemoveGuideHead();
+		void RemoveHeart();
+		void Blow();
 	private:
 		void Rotate();
 		void MoveBack();
@@ -64,9 +67,7 @@ namespace ButiEngine {
 		void ChangeMaterial();
 		void CorrectionHead();
 
-		void RemoveGuideHead();
-		void RemoveHeart();
-		void RemoveBombFriendComponent();
+		void StopBombTimer();
 
 		bool IsFrontHead();
 		bool IsFrontBody();
@@ -120,6 +121,8 @@ namespace ButiEngine {
 		Value_weak_ptr<TutorialManager> m_vwp_tutorialManager;
 
 		Rank m_totalRank;
+
+		bool m_isBlow;
 	};
 
 }

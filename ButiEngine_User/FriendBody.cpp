@@ -16,10 +16,16 @@
 #include "FriendFacePart.h"
 #include "CompleteFriend.h"
 #include "BombFriend.h"
+#include "BlowFriend.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
 	if (m_vwp_pauseManager.lock()->IsPause())
+	{
+		return;
+	}
+
+	if (m_isBlow)
 	{
 		return;
 	}
@@ -136,6 +142,8 @@ void ButiEngine::FriendBody::Start()
 	m_offsetPos = gameObject.lock()->transform->GetLocalPosition();
 
 	m_totalRank = Rank::NoRank;
+
+	m_isBlow = false;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
@@ -172,7 +180,7 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 
 	RemoveNeck();
 	RemoveGuideHead();
-	RemoveBombFriendComponent();
+	StopBombTimer();
 
 	if (m_vwp_friendBodySpawner.lock())
 	{
@@ -227,6 +235,35 @@ void ButiEngine::FriendBody::RemoveNeck()
 	{
 		m_vwp_neck.lock()->SetIsRemove(true);
 	}
+}
+
+void ButiEngine::FriendBody::RemoveGuideHead()
+{
+	if (m_vwp_guideHead.lock())
+	{
+		m_vwp_guideHead.lock()->SetIsRemove(true);
+		//m_vwp_guideHead.lock()->AddGameComponent<FadeOut>(120);
+		//m_vwp_guideHead.lock()->AddGameComponent<SucideComponent>(120);
+	}
+}
+
+void ButiEngine::FriendBody::RemoveHeart()
+{
+	if (m_vwp_heart.lock())
+	{
+		m_vwp_heart.lock()->SetIsRemove(true);
+	}
+}
+
+void ButiEngine::FriendBody::Blow()
+{
+	if (m_isBlow)
+	{
+		return;
+	}
+
+	m_isBlow = true;
+	gameObject.lock()->AddGameComponent<BlowFriend>();
 }
 
 void ButiEngine::FriendBody::Rotate()
@@ -419,30 +456,12 @@ void ButiEngine::FriendBody::CorrectionHead()
 	m_vwp_head.lock()->transform->SetWorldPosition(headPos);
 }
 
-void ButiEngine::FriendBody::RemoveGuideHead()
-{
-	if (m_vwp_guideHead.lock())
-	{
-		m_vwp_guideHead.lock()->SetIsRemove(true);
-		//m_vwp_guideHead.lock()->AddGameComponent<FadeOut>(120);
-		//m_vwp_guideHead.lock()->AddGameComponent<SucideComponent>(120);
-	}
-}
-
-void ButiEngine::FriendBody::RemoveHeart()
-{
-	if (m_vwp_heart.lock())
-	{
-		m_vwp_heart.lock()->SetIsRemove(true);
-	}
-}
-
-void ButiEngine::FriendBody::RemoveBombFriendComponent()
+void ButiEngine::FriendBody::StopBombTimer()
 {
 	auto bomb = gameObject.lock()->GetGameComponent<BombFriend>();
 	if (bomb)
 	{
-		bomb->Dead();
+		bomb->StopTimer();
 	}
 }
 

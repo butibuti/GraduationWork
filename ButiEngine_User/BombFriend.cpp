@@ -41,7 +41,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::BombFriend::Clone()
 	return ObjectFactory::Create<BombFriend>();
 }
 
-void ButiEngine::BombFriend::Dead()
+void ButiEngine::BombFriend::StopTimer()
 {
 	if (m_vwp_bomb.lock())
 	{
@@ -50,6 +50,20 @@ void ButiEngine::BombFriend::Dead()
 
 	m_vlp_explodeTimer->Stop();
 	SetIsRemove(true);
+}
+
+void ButiEngine::BombFriend::Dead()
+{
+	if (m_vwp_bomb.lock())
+	{
+		m_vwp_bomb.lock()->GetGameComponent<Bomb>()->Dead();
+	}
+
+	auto friendBody = gameObject.lock()->GetGameComponent<FriendBody>();
+	friendBody->RemoveGuideHead();
+	friendBody->RemoveHeart();
+
+	gameObject.lock()->SetIsRemove(true);
 }
 
 void ButiEngine::BombFriend::CreateBomb()

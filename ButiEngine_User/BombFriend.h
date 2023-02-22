@@ -23,6 +23,7 @@ namespace ButiEngine {
 
 		void SetFrameToExplode(const std::int32_t arg_frame) { m_frameToExplode = arg_frame; }
 
+		void StopTimer();
 		void Dead();
 	private:
 		void CreateBomb();

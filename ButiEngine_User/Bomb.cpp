@@ -5,21 +5,28 @@
 #include "FriendBodySpawner.h"
 #include "FriendManager.h"
 #include "FriendHead.h"
-#include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
+#include "NumberDraw.h"
+#include "FriendBody.h"
 
 void ButiEngine::Bomb::OnUpdate()
 {
-	m_vlp_animationController->Update();
-
 	if (m_isFall)
 	{
 		Fall();
 		return;
 	}
+
 	if (m_vlp_explodeTimer->Update())
 	{
 		m_vlp_explodeTimer->Stop();
 		m_vlp_waitExplodeTimer->Start();
+
+		m_vwp_timerTextComponent.lock()->SetNumber(0);
+	}
+
+	if (m_vlp_explodeTimer->IsOn())
+	{
+		SetTimer();
 	}
 
 	if (m_vlp_waitExplodeTimer->Update())
@@ -43,17 +50,13 @@ void ButiEngine::Bomb::OnShowUI()
 
 void ButiEngine::Bomb::Start()
 {
+	m_vwp_timerText = GetManager().lock()->AddObjectFromCereal("BombTimerText");
+	m_vwp_timerText.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
+	m_vwp_timerTextComponent = m_vwp_timerText.lock()->GetGameComponent<NumberDraw>();
+	m_vwp_timerTextComponent.lock()->SetMeshDrawComponent();
+
 	m_vlp_explodeTimer = ObjectFactory::Create<RelativeTimer>(m_frameToExplode);
-
-	auto modelDraw = gameObject.lock()->GetGameComponent<ModelDrawComponent>();
-	m_vlp_animationController = ButiRendering::CreateAnimationController(modelDraw->GetBone());
-
-	auto anim = gameObject.lock()->GetResourceContainer()->GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[0]->GetAnimation();
-	m_vlp_animationController->ChangeAnimation(m_frameToExplode, anim, anim->GetEnd());
-
-
 	m_vlp_waitExplodeTimer = ObjectFactory::Create<RelativeTimer>(120);
-
 	m_vlp_explodeTimer->Start();
 }
 
@@ -64,6 +67,11 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::Bomb::Clone()
 
 void ButiEngine::Bomb::Dead()
 {
+	if (m_vwp_timerText.lock())
+	{
+		m_vwp_timerText.lock()->SetIsRemove(true);
+	}
+
 	gameObject.lock()->SetIsRemove(true);
 }
 
@@ -94,8 +102,7 @@ void ButiEngine::Bomb::Explode()
 
 	GetManager().lock()->GetGameObject("FriendBodySpawner").lock()->GetGameComponent<FriendBodySpawner>()->DecreaceBodiesNumber();
 
-	m_vwp_parent.lock()->AddGameComponent<BlowFriend>();
-	SetIsRemove(true);
+	m_vwp_parent.lock()->GetGameComponent<FriendBody>()->Blow();
 }
 
 void ButiEngine::Bomb::ChangeColor()
@@ -114,4 +121,11 @@ void ButiEngine::Bomb::Fall()
 	{
 		Dead();
 	}
+}
+
+void ButiEngine::Bomb::SetTimer()
+{
+	float remainSecond = m_vlp_explodeTimer->GetRemainFrame() / 60.0f;
+	std::int32_t number = static_cast<std::int32_t>(remainSecond * 100);
+	m_vwp_timerTextComponent.lock()->SetNumber(number);
 }
