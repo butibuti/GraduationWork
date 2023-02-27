@@ -50,31 +50,6 @@ void ButiEngine::NumberDraw::SetNumber(const std::int32_t arg_number)
 	{
 		m_vec_vwp_spriteAnimationComponents[i].lock()->SetHorizontalAnim(vec_digitNums[i]);
 	}
-
-	//std::int32_t firstDigit = arg_number % 10 / 1;
-	//std::int32_t secondDigit = arg_number % 100 / 10;
-	//std::int32_t thirdDigit = arg_number % 1000 / 100;
-
-	//if (thirdDigit == 0)
-	//{
-	//	m_vec_vwp_meshDrawComponents[2].lock()->GetTransform()->SetLocalScale(0.0f);
-	//	if (secondDigit == 0)
-	//	{
-	//		m_vec_vwp_meshDrawComponents[1].lock()->GetTransform()->SetLocalScale(0.0f);
-	//	}
-	//	else
-	//	{
-	//		m_vec_vwp_meshDrawComponents[1].lock()->GetTransform()->SetLocalScale(m_defaultScale);
-	//	}
-	//}
-	//else
-	//{
-	//	m_vec_vwp_meshDrawComponents[2].lock()->GetTransform()->SetLocalScale(m_defaultScale);
-	//}
-
-	//m_vec_vwp_spriteAnimationComponents[0].lock()->SetHorizontalAnim(firstDigit);
-	//m_vec_vwp_spriteAnimationComponents[1].lock()->SetHorizontalAnim(secondDigit);
-	//m_vec_vwp_spriteAnimationComponents[2].lock()->SetHorizontalAnim(thirdDigit);
 }
 
 void ButiEngine::NumberDraw::SetColor(const Vector4& arg_color)
@@ -123,7 +98,7 @@ void ButiEngine::NumberDraw::SetHideDigit(const std::int32_t arg_number, std::ve
 		}
 		else
 		{
-			m_vec_vwp_meshDrawComponents[1].lock()->GetTransform()->SetLocalScale(m_defaultScale);
+			m_vec_vwp_meshDrawComponents[i].lock()->GetTransform()->SetLocalScale(m_defaultScale);
 		}
 	}
 }

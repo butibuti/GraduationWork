@@ -417,6 +417,7 @@
     <ClCompile Include="SeparateDrawObject.cpp" />
     <ClCompile Include="ShakeComponent.cpp" />
     <ClCompile Include="EditorObject.cpp" />
+    <ClCompile Include="SpriteParticleGenerator.cpp" />
     <ClCompile Include="StageManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -498,6 +499,7 @@
     <ClInclude Include="SeparateDrawObject.h" />
     <ClInclude Include="ShakeComponent.h" />
     <ClInclude Include="EditorObject.h" />
+    <ClInclude Include="SpriteParticleGenerator.h" />
     <ClInclude Include="StageManager.h" />
     <ClInclude Include="stdafx_u.h" />
     <ClInclude Include="SwayAnimation.h" />

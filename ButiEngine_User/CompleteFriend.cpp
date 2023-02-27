@@ -149,7 +149,7 @@ void ButiEngine::CompleteFriend::CreateNose(Value_weak_ptr<Transform> arg_vwp_tr
 	}
 	else if (arg_rank == Rank::Bad)
 	{
-		m_vwp_eye.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
+		m_vwp_nose.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
 	}
 }
 
@@ -167,6 +167,6 @@ void ButiEngine::CompleteFriend::CreateMouth(Value_weak_ptr<Transform> arg_vwp_t
 	}
 	else if (arg_rank == Rank::Bad)
 	{
-		m_vwp_eye.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
+		m_vwp_mouth.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
 	}
 }

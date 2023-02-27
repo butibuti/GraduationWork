@@ -234,6 +234,7 @@ void ButiEngine::FriendBody::RemoveNeck()
 	if (m_vwp_neck.lock())
 	{
 		m_vwp_neck.lock()->SetIsRemove(true);
+		m_vwp_neck = Value_weak_ptr<GameObject>();
 	}
 }
 

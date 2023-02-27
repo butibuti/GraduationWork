@@ -21,10 +21,40 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 		}
 
+		void AddCount();
+		void RemoveCount();
+
 	private:
 		void SetText();
+		void CheckNextAnimation();
+		void CheckRestartAnimation();
+		void StartAddCountAnimation();
+		void StartRemoveCountAnimation();
+		void StartReturnAnimation();
+		void Animation();
+		void SetNumberPos(const float arg_pos);
+		void SetNumberScale(const Vector3& arg_scale);
 
 		Value_weak_ptr<TextDrawComponent> m_vwp_textDraw;
+
+		std::vector<Value_weak_ptr<MeshDrawComponent>> m_vec_vwp_numbers;
+
+		std::int32_t m_targetCount;
+		std::int32_t m_drawCount;
+
+		Value_ptr<RelativeTimer> m_vlp_animTimer;
+		std::int32_t m_animFrame;
+		float m_startNumberPos;
+		float m_targetNumberPos;
+		Vector3 m_defaultNumberScale;
+		Vector3 m_startNumberScale;
+		Vector3 m_targetNumberScale;
+
+		bool m_isAddCountAnimation;
+		bool m_isRemoveCountAnimation;
+		bool m_isReturnAnimation;
+
+		bool m_isFirstAnimation;
 	};
 
 }

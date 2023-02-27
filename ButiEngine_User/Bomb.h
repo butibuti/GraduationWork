@@ -3,6 +3,7 @@
 namespace ButiEngine {
 
 	class NumberDraw;
+	class SpriteParticleGenerator;
 
 	class Bomb :public GameComponent
 	{
@@ -30,21 +31,30 @@ namespace ButiEngine {
 		void StartFall();
 	private:
 		void Explode();
-		void ChangeColor();
-		void ScaleAnimation();
+		void BombAnimation();
+		void ColorAnimation(const float arg_progress);
+		void ScaleAnimation(const float arg_progress);
 		void Fall();
 		void SetTimer();
+
+		void TinderAnimation();
+		void SpawnSparkEffect();
+
+		Value_weak_ptr<SpriteParticleGenerator> m_vwp_particleGenerator;
 
 		Value_weak_ptr<GameObject> m_vwp_parent;
 		Value_weak_ptr<GameObject> m_vwp_timerText;
 		Value_weak_ptr<NumberDraw> m_vwp_timerTextComponent;
+
+		Value_weak_ptr<Transform> m_vwp_tinderTransform;
+		Value_weak_ptr<Transform> m_vwp_spawnSparkTransform;
 
 		Value_ptr<RelativeTimer> m_vlp_explodeTimer;
 		std::int32_t m_frameToExplode;
 		Value_ptr<RelativeTimer> m_vlp_waitExplodeTimer;
 		Value_weak_ptr<MeshDrawComponent> m_vwp_meshDraw;
 
-		float m_startScale;
+		float m_theta;
 		bool m_isFall;
 	};
 

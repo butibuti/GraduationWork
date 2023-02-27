@@ -178,12 +178,17 @@ void ButiEngine::FriendHead_PartHitArea::RemoveAllComponent()
 	SetIsRemove(true);
 }
 
-void ButiEngine::FriendHead_PartHitArea::Dead(bool arg_isRemovePart)
+void ButiEngine::FriendHead_PartHitArea::RemoveGuideMarker()
 {
 	if (m_vwp_guideMarker.lock())
 	{
 		m_vwp_guideMarker.lock()->SetIsRemove(true);
 	}
+}
+
+void ButiEngine::FriendHead_PartHitArea::Dead(bool arg_isRemovePart)
+{
+	RemoveGuideMarker();
 
 	if (arg_isRemovePart && m_vwp_part.lock())
 	{

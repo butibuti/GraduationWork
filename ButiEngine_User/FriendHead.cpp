@@ -352,6 +352,19 @@ void ButiEngine::FriendHead::Dead()
 void ButiEngine::FriendHead::Disappear()
 {
 	m_isDisappear = true;
+
+	if (m_vwp_eyesHitArea.lock())
+	{
+		m_vwp_eyesHitAreaComponent.lock()->RemoveGuideMarker();
+	}
+	if (m_vwp_noseHitArea.lock())
+	{
+		m_vwp_noseHitAreaComponent.lock()->RemoveGuideMarker();
+	}
+	if (m_vwp_mouthHitArea.lock())
+	{
+		m_vwp_mouthHitAreaComponent.lock()->RemoveGuideMarker();
+	}
 	
 	RemoveTriggerComponent();
 	AddScaleAnimation(0.0f, Easing::EasingType::EaseInBack);
@@ -586,7 +599,7 @@ void ButiEngine::FriendHead::CheckPut()
 	}
 
 	auto collisionBody = m_vwp_headCenterComponent.lock()->GetCollisionFriendBody();
-	if (collisionBody.lock())
+	if (collisionBody.lock() && collisionBody.lock()->GetGameComponent<FriendBody>()->GetNeck().lock())
 	{
 		OnPut(collisionBody);
 	}

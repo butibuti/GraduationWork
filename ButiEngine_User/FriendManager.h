@@ -48,16 +48,8 @@ namespace ButiEngine {
 			g_vec_completeFriends.clear();
 			g_vec_friendDatas.clear(); 
 		}
-		static void AddCompleteFriend(Value_weak_ptr<GameObject> arg_friend, Value_ptr<FriendData> arg_data)
-		{
-			g_vec_completeFriends.push_back(arg_friend);
-			g_vec_friendDatas.push_back(arg_data); 
-		}
-		static void RemoveCompleteFriend(const std::int32_t arg_index)
-		{
-			g_vec_completeFriends.erase(g_vec_completeFriends.begin() + arg_index);
-			g_vec_friendDatas.erase(g_vec_friendDatas.begin() + arg_index);
-		}
+		void AddCompleteFriend(Value_weak_ptr<GameObject> arg_friend, Value_ptr<FriendData> arg_data);
+		void RemoveCompleteFriend(const std::int32_t arg_index);
 	private:
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 

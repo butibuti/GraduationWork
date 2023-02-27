@@ -50,6 +50,7 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> GetPart() { return m_vwp_part; }
 
 		void RemoveAllComponent();
+		void RemoveGuideMarker();
 
 		void Dead(bool arg_isRemovePart = false);
 	private:

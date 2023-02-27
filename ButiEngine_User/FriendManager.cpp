@@ -1,12 +1,7 @@
 #include "stdafx_u.h"
 #include "FriendManager.h"
 #include "GameLevelManager.h"
-#include "Result_CompleteFriend.h"
-
-#ifdef DEBUG
-#include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
-#include "FriendHead_PartHitArea.h"
-#endif // DEBUG
+#include "UI_FriendCount.h"
 
 std::vector<ButiEngine::Value_weak_ptr<ButiEngine::GameObject>> ButiEngine::FriendManager::g_vec_completeFriends;
 std::vector<ButiEngine::Value_ptr<ButiEngine::FriendData>> ButiEngine::FriendManager::g_vec_friendDatas;
@@ -50,4 +45,20 @@ void ButiEngine::FriendManager::AddFriendCount()
 	m_currentLevelFriendCount++;
 
 	m_vwp_gameLevelManager.lock()->CheckLevelUp(m_currentLevelFriendCount);
+}
+
+void ButiEngine::FriendManager::AddCompleteFriend(Value_weak_ptr<GameObject> arg_friend, Value_ptr<FriendData> arg_data)
+{
+	g_vec_completeFriends.push_back(arg_friend);
+	g_vec_friendDatas.push_back(arg_data);
+
+	GetManager().lock()->GetGameObject("UI_FriendCount").lock()->GetGameComponent<UI_FriendCount>()->AddCount();
+}
+
+void ButiEngine::FriendManager::RemoveCompleteFriend(const std::int32_t arg_index)
+{
+	g_vec_completeFriends.erase(g_vec_completeFriends.begin() + arg_index);
+	g_vec_friendDatas.erase(g_vec_friendDatas.begin() + arg_index);
+
+	GetManager().lock()->GetGameObject("UI_FriendCount").lock()->GetGameComponent<UI_FriendCount>()->RemoveCount();
 }
