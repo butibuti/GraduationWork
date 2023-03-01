@@ -23,10 +23,10 @@ namespace ButiEngine {
 		void serialize(Archive& archive)
 		{
 			ARCHIVE_BUTI(isActive);
-			ARCHIVE_BUTI(m_successBorder);
+			ARCHIVE_BUTI(g_successBorder);
 		}
 
-		std::int32_t GetSuccessBorder() { return m_successBorder; }
+		static std::int32_t GetSuccessBorder() { return g_successBorder; }
 
 		void StartFailedTimer();
 	private:
@@ -35,13 +35,13 @@ namespace ButiEngine {
 		void StartSuccess();
 		void StartFailed();
 
+		static std::int32_t g_successBorder;
+
 		Value_weak_ptr<Result_Camera> m_vwp_camera;
 		Value_weak_ptr<Result_BackHuman> m_vwp_backHuman;
 		Value_weak_ptr<Result_FriendFallPoint> m_vwp_fallPoint;
 
 		Value_ptr<RelativeTimer> m_vlp_waitStartFallTimer;
-
-		std::int32_t m_successBorder;
 
 		bool m_isStartedZoomIn;
 		bool m_isStartedZoomOut;

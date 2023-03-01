@@ -2,11 +2,10 @@
 #include "UI_FriendCount.h"
 #include "FriendManager.h"
 #include "NumberDraw.h"
+#include "ResultManager.h"
 
 void ButiEngine::UI_FriendCount::OnUpdate()
 {
-	//SetText();
-
 	Animation();
 	CheckNextAnimation();
 }
@@ -25,10 +24,6 @@ void ButiEngine::UI_FriendCount::OnShowUI()
 
 void ButiEngine::UI_FriendCount::Start()
 {
-	//m_vwp_textDraw = gameObject.lock()->GetGameComponent<TextDrawComponent>();
-
-	//SetText();
-
 	m_startNumberPos = 0.0f;
 	m_targetNumberPos = 0.25f;
 
@@ -65,18 +60,6 @@ void ButiEngine::UI_FriendCount::RemoveCount()
 {
 	m_targetCount--;
 	m_targetCount = max(m_targetCount, 0);
-}
-
-void ButiEngine::UI_FriendCount::SetText()
-{
-	std::int32_t friendCount = FriendManager::GetFriendDatas().size();
-	std::string friendCountStr = std::to_string(friendCount);
-	if (friendCount < 10)
-	{
-		friendCountStr = "0" + friendCountStr;
-	}
-
-	m_vwp_textDraw.lock()->SetText(U8("¡‚Ì—F’B@" + friendCountStr + "l"));
 }
 
 void ButiEngine::UI_FriendCount::CheckNextAnimation()
@@ -201,20 +184,8 @@ void ButiEngine::UI_FriendCount::Animation()
 			m_isReturnAnimation = false;
 		}
 
-		if (!m_isFirstAnimation)
-		{
-			if (m_isAddCountAnimation)
-			{
-				auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Grounded_High.wav"));
-				GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
-			}
-			else if (m_isRemoveCountAnimation)
-			{
-				auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Grounded_Base.wav"));
-				GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
-			}
-		}
-		m_isFirstAnimation = false;
+		PlaySE();
+		CheckColor();
 
 		return;
 	}
@@ -247,5 +218,51 @@ void ButiEngine::UI_FriendCount::SetNumberScale(const Vector3& arg_scale)
 	for (auto itr = m_vec_vwp_numbers.begin(); itr != end; ++itr)
 	{
 		(*itr).lock()->GetTransform()->SetLocalScale(arg_scale);
+	}
+}
+
+void ButiEngine::UI_FriendCount::SetNumberColor(const Vector4& arg_color)
+{
+	m_vec_vwp_numbers[0].lock()->SetColor(arg_color);
+	m_vec_vwp_numbers[1].lock()->SetColor(arg_color);
+}
+
+void ButiEngine::UI_FriendCount::SetUnitColor(const Vector4& arg_color)
+{
+	gameObject.lock()->GetGameComponent<MeshDrawComponent>(4)->SetColor(arg_color);
+}
+
+void ButiEngine::UI_FriendCount::PlaySE()
+{
+	if (m_isFirstAnimation)
+	{
+		return;
+	}
+	
+	if (m_isAddCountAnimation)
+	{
+		auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Grounded_High.wav"));
+		GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
+	}
+	else if (m_isRemoveCountAnimation)
+	{
+		auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Grounded_Base.wav"));
+		GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
+	}
+
+	m_isFirstAnimation = false;
+}
+
+void ButiEngine::UI_FriendCount::CheckColor()
+{
+	if (m_drawCount >= ResultManager::GetSuccessBorder())
+	{
+		SetNumberColor(m_successColor);
+		SetUnitColor(m_successColor);
+	}
+	else
+	{
+		SetNumberColor(m_defaultColor);
+		SetUnitColor(m_defaultColor);
 	}
 }

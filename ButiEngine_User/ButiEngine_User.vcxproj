@@ -352,6 +352,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Accessory.cpp" />
     <ClCompile Include="BlowFriend.cpp" />
     <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="BombFriend.cpp" />
@@ -438,6 +439,7 @@
     <ClCompile Include="UI_TutorialText.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Accessory.h" />
     <ClInclude Include="BlowFriend.h" />
     <ClInclude Include="Bomb.h" />
     <ClInclude Include="BombFriend.h" />

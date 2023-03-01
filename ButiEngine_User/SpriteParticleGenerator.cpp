@@ -31,11 +31,11 @@ void ButiEngine::SpriteParticleGenerator::Spark(const Vector3& arg_pos, Value_we
     Particle2D particle;
     Vector3 position = arg_pos;
 
-    float offsetX = ButiRandom::GetInt(0.05f, 0.1f);
+    float offsetX = ButiRandom::GetRandom(0.025f, 0.05f, 100);
     offsetX = ButiRandom::GetInt(0, 1) ? offsetX : -offsetX;
     position.x += offsetX;
 
-    float offsetY = ButiRandom::GetInt(0.05f, 0.1f);
+    float offsetY = ButiRandom::GetRandom(0.025f, 0.05f, 100);
     offsetY = ButiRandom::GetInt(0, 1) ? offsetY : -offsetY;
     position.y += offsetY;
 
@@ -47,7 +47,7 @@ void ButiEngine::SpriteParticleGenerator::Spark(const Vector3& arg_pos, Value_we
     color.y = ButiRandom::GetRandom(0.3f, 1.0f, 10);
     particle.color = color;
 
-    particle.size = ButiRandom::GetRandom(20.0f, 40.0f, 10);
+    particle.size = ButiRandom::GetRandom(40.0f, 60.0f, 10);
     particle.life = 6;
     particle.angle = MathHelper::ToRadian(ButiRandom::GetInt(0, 90));
 

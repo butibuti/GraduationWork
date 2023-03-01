@@ -2,12 +2,12 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
-	class SeparateDrawObject :public GameComponent
+	class Accessory :public GameComponent
 	{
 	public:
 
 		std::string GetGameComponentName()const override {
-			return "SeparateDrawObject";
+			return "Accessory";
 		}
 		void OnUpdate()override;
 		void OnSet()override;
@@ -18,18 +18,19 @@ namespace ButiEngine {
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
-			archive(isActive);
+			ARCHIVE_BUTI(isActive);
 		}
-
-		Value_weak_ptr<GameObject> GetDrawObject();
-
-		void ReturnDrawObject();
 
 		void Dead();
 	private:
+		void OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
+		void Appear();
+		void OnAppear();
+
 		Value_weak_ptr<GameObject> m_vwp_drawObject;
+		bool m_isAppear;
 	};
 
 }
 
-BUTI_REGIST_GAMECOMPONENT(SeparateDrawObject, true);
+BUTI_REGIST_GAMECOMPONENT(Accessory, true);

@@ -11,7 +11,6 @@
 #include "GameLevelManager.h"
 #include "FriendHead_Center.h"
 #include "StageManager.h"
-#include "TutorialManager.h"
 #include "GameCamera.h"
 #include "FriendFacePart.h"
 #include "Header/GameObjects/DefaultGameComponent/ScaleAnimationComponent.h"
@@ -55,37 +54,12 @@ void ButiEngine::FriendHead::OnUpdate()
 		return;
 	}
 
-	if (m_vlp_completeFaceCountUpTimer->Update())
-	{
-		m_vlp_completeFaceCountUpTimer->Stop();
-		//m_isFast = false;
-	}
-
-	//if (m_isFast)
-	//{
-	//	if (m_isTutorial)
-	//	{
-	//		if (m_vlp_spawnStarFlashIntervalTimer->Update())
-	//		{
-	//			SpawnStarFlash();
-	//		}
-	//	}
-	//	else if (m_vwp_stageManager.lock()->IsGameStart())
-	//	{
-	//		if (m_vlp_spawnStarFlashIntervalTimer->Update())
-	//		{
-	//			SpawnStarFlash();
-	//		}
-	//	}
-	//}
-
 	if (!m_isCompleteFace && CanPut())
 	{
 		CompleteFace();
 	}
 
 	Control();
-	CalcVelocity();
 	CheckPut();
 }
 
@@ -113,33 +87,20 @@ void ButiEngine::FriendHead::OnRemove()
 	{
 		m_vwp_mouthHitAreaComponent.lock()->Dead();
 	}
-	if (m_vwp_dummyHitArea.lock())
+	if (m_vwp_otherHitArea.lock())
 	{
-		m_vwp_dummyHitAreaComponent.lock()->Dead();
+		m_vwp_otherHitAreaComponent.lock()->Dead();
 	}
 }
 
 void ButiEngine::FriendHead::OnShowUI()
 {
 	GUI::DragInt("TrackerIndex", m_trackerIndex, 1.0, 0, 16);
-
-	GUI::BulletText(U8("完成時「はやい」ボーナスが付く時間"));
-	GUI::DragInt("##fastBorder", m_fastBorder, 1.0f, 0, 1000);
 }
 
 void ButiEngine::FriendHead::Start()
 {
-	auto tutorialManager = GetManager().lock()->GetGameObject("TutorialManager");
-	if (tutorialManager.lock())
-	{
-		m_vwp_tutorialManager = tutorialManager.lock()->GetGameComponent<TutorialManager>();
-		m_isTutorial = true;
-	}
-
-	if (!m_isTutorial)
-	{
-		m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
-	}
+	m_vwp_stageManager = GetManager().lock()->GetGameObject("StageManager").lock()->GetGameComponent<StageManager>();
 	m_vwp_inputManager = GetManager().lock()->GetGameObject("InputManager").lock()->GetGameComponent<InputManager>();
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
@@ -148,25 +109,12 @@ void ButiEngine::FriendHead::Start()
 	m_vwp_headCenter = GetManager().lock()->AddObjectFromCereal("HeadCenter");
 	m_vwp_headCenter.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
 	m_vwp_headCenterComponent = m_vwp_headCenter.lock()->GetGameComponent<FriendHead_Center>();
-
-	m_prevPos = Vector3Const::Zero;
-	m_crntPos = Vector3Const::Zero;
-	m_velocity = Vector3Const::Zero;
+	m_vwp_headCenterComponent.lock()->SetHead(gameObject);
 
 	m_vlp_appearTimer = ObjectFactory::Create<RelativeTimer>(10);
 	m_vlp_appearTimer->Start();
 
 	m_isPut = false;
-
-	//m_isFast = true;
-	//if (m_isTutorial && m_vwp_tutorialManager.lock()->GetTutorialPhase() != 2)
-	//{
-	//	m_isFast = false;
-	//}
-
-	m_vlp_completeFaceCountUpTimer = ObjectFactory::Create<RelativeTimer>(m_fastBorder);
-
-	m_vlp_spawnStarFlashIntervalTimer = ObjectFactory::Create<RelativeTimer>(3);
 
 	gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
 	gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
@@ -179,7 +127,6 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendHead::Clone()
 {
 	auto clone = ObjectFactory::Create<FriendHead>();
 	clone->m_trackerIndex = m_trackerIndex;
-	clone->m_fastBorder = m_fastBorder;
 	return clone;
 }
 
@@ -198,72 +145,12 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::FriendHead::GetMo
 	return m_vwp_mouthHitAreaComponent.lock()->GetPart();
 }
 
-std::int32_t ButiEngine::FriendHead::GetEyeScore()
-{
-	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
-	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
-
-	if (gameLevel == 0)
-	{
-		return 0;
-	}
-
-	std::int32_t score = 0;
-	//score += m_vwp_eyesHitAreaComponent.lock()->GetCalcScore();
-	return score;
-}
-
-std::int32_t ButiEngine::FriendHead::GetNoseScore()
-{
-	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
-	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
-
-	if (gameLevel == 0)
-	{
-		return 0;
-	}
-
-	return 0;// m_vwp_noseHitAreaComponent.lock()->GetCalcScore();
-}
-
-std::int32_t ButiEngine::FriendHead::GetMouthScore()
-{
-	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
-	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
-
-	if (gameLevel == 0)
-	{
-		return 0;
-	}
-
-	return 0;// m_vwp_mouthHitAreaComponent.lock()->GetCalcScore();
-}
-
-bool ButiEngine::FriendHead::IsFast()
-{
-	//if (!m_isFast)
-	//{
-	//	return false;
-	//}
-
-	//auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
-	//std::int32_t gameLevel = gameLevelManager->GetGameLevel();
-
-	//if (!m_isTutorial && gameLevel == 0)
-	//{
-	//	return false;
-	//}
-
-	//return m_isFast;
-	return false;
-}
-
 bool ButiEngine::FriendHead::IsGood()
 {
 	auto gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
 	std::int32_t gameLevel = gameLevelManager->GetGameLevel();
 
-	if (!m_isTutorial && gameLevel == 0)
+	if (gameLevel == 0)
 	{
 		return false;
 	}
@@ -283,7 +170,7 @@ bool ButiEngine::FriendHead::IsGood()
 	return true;
 }
 
-bool ButiEngine::FriendHead::IsExistPartStuckArea()
+bool ButiEngine::FriendHead::ExistPartStuckArea()
 {
 	return GetPartStuckAreas().size() > 0;
 }
@@ -309,11 +196,6 @@ void ButiEngine::FriendHead::LeavePartRandom()
 		meshDraw->SetColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
 		meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead_Gray.mat"), 0);
 		meshDraw->ReRegist();
-
-		m_vlp_completeFaceCountUpTimer->Reset();
-		m_vlp_completeFaceCountUpTimer->Stop();
-		m_vlp_spawnStarFlashIntervalTimer->Reset();
-		m_vlp_spawnStarFlashIntervalTimer->Stop();
 
 		m_isCompleteFace = false;
 
@@ -341,9 +223,9 @@ void ButiEngine::FriendHead::Dead()
 	{
 		m_vwp_mouthHitAreaComponent.lock()->Dead(true);
 	}
-	if (m_vwp_dummyHitArea.lock())
+	if (m_vwp_otherHitArea.lock())
 	{
-		m_vwp_dummyHitAreaComponent.lock()->Dead(true);
+		m_vwp_otherHitAreaComponent.lock()->Dead(true);
 	}
 
 	gameObject.lock()->SetIsRemove(true);
@@ -445,32 +327,6 @@ void ButiEngine::FriendHead::ControlByVRTracker()
 	gameObject.lock()->transform->SetLocalRotation(m_vwp_gameSettings.lock()->GetTrackerRotation(m_trackerIndex));
 }
 
-void ButiEngine::FriendHead::SpawnStarFlash()
-{
-	Vector3 center = m_vwp_headCenter.lock()->transform->GetWorldPosition();
-	center += 1.0f * Vector3Const::ZAxis;
-
-	Vector3 dir = Vector3Const::Zero;
-	dir.x = ButiRandom::GetRandom(5.0f, 15.0f, 10);
-	dir.y = ButiRandom::GetRandom(5.0f, 15.0f, 10);
-
-	if (ButiRandom::GetInt(0, 1))
-	{
-		dir.x *= -1.0f;
-	}
-	if (ButiRandom::GetInt(0, 1))
-	{
-		dir.y *= -1.0f;
-	}
-
-	dir.Normalize();
-
-	float radius = 0.75f;
-	Vector3 pos = center + dir * radius;
-	auto starFlash = GetManager().lock()->AddObjectFromCereal("Effect_StarFlash");
-	starFlash.lock()->transform->SetLocalPosition(pos);
-}
-
 void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
 {
 	m_vwp_eyesHitAreaComponent.lock()->GetPart().lock()->GetGameComponent<FriendFacePart>()->RemoveStickAnimation();
@@ -479,10 +335,7 @@ void ButiEngine::FriendHead::OnPut(Value_weak_ptr<GameObject> arg_vwp_body)
 
 	arg_vwp_body.lock()->GetGameComponent<FriendBody>()->SetHead(gameObject);
 
-	if (!m_isTutorial)
-	{
-		m_vwp_friendManager.lock()->AddFriendCount();
-	}
+	m_vwp_friendManager.lock()->AddFriendCount();
 
 	m_isPut = true;
 }
@@ -493,9 +346,6 @@ void ButiEngine::FriendHead::CompleteFace()
 	meshDraw->SetColor(Vector4(1.0f, 0.83f, 0.71f, 1.0f));
 	meshDraw->SetMaterialTag(MaterialTag("Material/FriendHead.mat"), 0);
 	meshDraw->ReRegist();
-
-	m_vlp_completeFaceCountUpTimer->Start();
-	m_vlp_spawnStarFlashIntervalTimer->Start();
 
 	m_isCompleteFace = true;
 }
@@ -546,49 +396,6 @@ void ButiEngine::FriendHead::AddScaleAnimation(const Vector3& arg_targetScale, E
 	anim->SetTargetScale(arg_targetScale);
 	anim->SetSpeed(1.0f / 30);
 	anim->SetEaseType(arg_easeType);
-}
-
-void ButiEngine::FriendHead::CalcVelocity()
-{
-	m_prevPos = m_crntPos;
-	m_crntPos = gameObject.lock()->transform->GetLocalPosition();
-
-	m_velocity = m_crntPos - m_prevPos;
-}
-
-ButiEngine::Vector3 ButiEngine::FriendHead::GetTrackerPos()
-{
-	if (!(GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_trackerIndex))
-	{
-		return Vector3Const::Zero;
-	}
-
-	Matrix4x4 deviceMatrix;
-	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
-	Vector3 pos = deviceMatrix.GetPosition();
-	pos *= m_vwp_gameSettings.lock()->GetCorrection();
-	pos.x *= -1;
-	pos.z = 0.0f;
-	
-	return pos;
-}
-
-ButiEngine::Matrix4x4 ButiEngine::FriendHead::GetTrackerRotation()
-{
-	if (!(GameDevice::GetVRTrackerInput().GetAllDeviceNames().GetSize() > m_trackerIndex))
-	{
-		return Matrix4x4().Identity();
-	}
-
-	Matrix4x4 deviceMatrix;
-	GameDevice::GetVRTrackerInput().GetDevicePoseMatrix(GameDevice::GetVRTrackerInput().GetAllDeviceNames()[m_trackerIndex], deviceMatrix);
-	auto rotation = deviceMatrix.GetRemovePosition();
-	rotation._13 *= -1;
-	rotation._31 *= -1;
-	rotation._12 *= -1;
-	rotation._21 *= -1;
-
-	return rotation;
 }
 
 void ButiEngine::FriendHead::CheckPut()
@@ -662,17 +469,17 @@ void ButiEngine::FriendHead::CreatePartHitArea()
 	m_vwp_eyesHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Eyes");
 	m_vwp_noseHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Nose");
 	m_vwp_mouthHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Mouth");
-	m_vwp_dummyHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Dummy");
+	m_vwp_otherHitArea = GetManager().lock()->AddObjectFromCereal("PartHitArea_Dummy");
 
 	m_vwp_eyesHitAreaComponent = m_vwp_eyesHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 	m_vwp_noseHitAreaComponent = m_vwp_noseHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 	m_vwp_mouthHitAreaComponent = m_vwp_mouthHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
-	m_vwp_dummyHitAreaComponent = m_vwp_dummyHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
+	m_vwp_otherHitAreaComponent = m_vwp_otherHitArea.lock()->GetGameComponent<FriendHead_PartHitArea>();
 
 	m_vwp_eyesHitAreaComponent.lock()->SetParent(gameObject);
 	m_vwp_noseHitAreaComponent.lock()->SetParent(gameObject);
 	m_vwp_mouthHitAreaComponent.lock()->SetParent(gameObject);
-	m_vwp_dummyHitAreaComponent.lock()->SetParent(gameObject);
+	m_vwp_otherHitAreaComponent.lock()->SetParent(gameObject);
 
 	auto eyesDefault = GetManager().lock()->GetGameObject("Eyes_Default");
 	eyesDefault.lock()->transform->SetBaseTransform(m_vwp_headCenter.lock()->transform, true);
@@ -695,6 +502,6 @@ void ButiEngine::FriendHead::RemoveTriggerComponent()
 	triggerComponent = m_vwp_mouthHitArea.lock()->GetGameComponent<TriggerComponent>();
 	triggerComponent->SetIsRemove(true);
 
-	triggerComponent = m_vwp_dummyHitArea.lock()->GetGameComponent<TriggerComponent>();
+	triggerComponent = m_vwp_otherHitArea.lock()->GetGameComponent<TriggerComponent>();
 	triggerComponent->SetIsRemove(true);
 }

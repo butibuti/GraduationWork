@@ -10,7 +10,6 @@ namespace ButiEngine {
 	class FriendHead_PartHitArea;
 	class FriendHead_Center;
 	class StageManager;
-	class TutorialManager;
 
 	class FriendHead :public GameComponent
 	{
@@ -30,42 +29,36 @@ namespace ButiEngine {
 		{
 			ARCHIVE_BUTI(isActive);
 			ARCHIVE_BUTI(m_trackerIndex);
-			ARCHIVE_BUTI(m_fastBorder);
 		}
 
 		Value_weak_ptr<GameObject> GetEye();
 		Value_weak_ptr<GameObject> GetNose();
 		Value_weak_ptr<GameObject> GetMouth();
+		Value_weak_ptr<GameObject> GetHelmet() { return m_vwp_helmet; }
 
-		std::int32_t GetEyeScore();
-		std::int32_t GetNoseScore();
-		std::int32_t GetMouthScore();
+		void SetHelmet(Value_weak_ptr<GameObject> arg_vwp_helmet)
+		{
+			m_vwp_helmet = arg_vwp_helmet; 
+			m_vwp_helmet.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
+		}
 
-		bool IsFast();
 		bool IsGood();
-
-		bool IsExistPartStuckArea();
+		bool ExistPartStuckArea();
 		void LeavePartRandom();
 
-		void Blow();
 		void Dead();
-
 		void Disappear();
 	private:
 		void Control();
 		void ControlByKeyboard();
 		void ControlByGamePad();
 		void ControlByVRTracker();
-		void SpawnStarFlash();
 		void OnPut(Value_weak_ptr<GameObject> arg_vwp_body);
 		void CompleteFace();
 
 		void Appear();
 		void OnDisappear();
 		void AddScaleAnimation(const Vector3& arg_targetScale, Easing::EasingType arg_easeType);
-		void CalcVelocity();
-		Vector3 GetTrackerPos();
-		Matrix4x4 GetTrackerRotation();
 		void CheckPut();
 		bool CanPut();
 		bool CanUpdate();
@@ -85,39 +78,24 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_headCenter;
 		Value_weak_ptr<FriendHead_Center> m_vwp_headCenterComponent;
 
-		//移動速度関連
-		Vector3 m_prevPos;
-		Vector3 m_crntPos;
-		Vector3 m_velocity;
-
 		//各パーツがくっつく範囲
 		Value_weak_ptr<GameObject> m_vwp_eyesHitArea;
 		Value_weak_ptr<GameObject> m_vwp_noseHitArea;
 		Value_weak_ptr<GameObject> m_vwp_mouthHitArea;
-		Value_weak_ptr<GameObject> m_vwp_dummyHitArea;
+		Value_weak_ptr<GameObject> m_vwp_otherHitArea;
 
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_eyesHitAreaComponent;
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_noseHitAreaComponent;
 		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_mouthHitAreaComponent;
-		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_dummyHitAreaComponent;
+		Value_weak_ptr<FriendHead_PartHitArea> m_vwp_otherHitAreaComponent;
+
+		Value_weak_ptr<GameObject> m_vwp_helmet;
 
 		Value_ptr<RelativeTimer> m_vlp_appearTimer;
 
 		bool m_isPut;
-
 		bool m_isCompleteFace;
-
-		bool m_isFast;
-		std::int32_t m_fastBorder;
-		Value_ptr<RelativeTimer> m_vlp_completeFaceCountUpTimer;
-
-		Value_ptr<RelativeTimer> m_vlp_spawnStarFlashIntervalTimer;
-
-		bool m_isTutorial;
-		Value_weak_ptr<TutorialManager> m_vwp_tutorialManager;
-
 		bool m_isShowGuide;
-
 		bool m_isDisappear;
 	};
 

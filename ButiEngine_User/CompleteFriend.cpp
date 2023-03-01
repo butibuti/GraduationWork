@@ -69,6 +69,10 @@ void ButiEngine::CompleteFriend::Dead()
 	m_vwp_eye.lock()->SetIsRemove(true);
 	m_vwp_nose.lock()->SetIsRemove(true);
 	m_vwp_mouth.lock()->SetIsRemove(true);
+	if (m_vwp_helmet.lock())
+	{
+		m_vwp_helmet.lock()->SetIsRemove(true);
+	}
 	gameObject.lock()->SetIsRemove(true);
 }
 
@@ -79,6 +83,10 @@ void ButiEngine::CompleteFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_
 	CreateEye(arg_vwp_friendData.lock()->vlp_eyeTransform, arg_vwp_friendData.lock()->eyeRank);
 	CreateNose(arg_vwp_friendData.lock()->vlp_noseTransform, arg_vwp_friendData.lock()->noseRank);
 	CreateMouth(arg_vwp_friendData.lock()->vlp_mouthTransform, arg_vwp_friendData.lock()->mouthRank);
+	if (arg_vwp_friendData.lock()->hasHelmet)
+	{
+		CreateHelmet();
+	}
 }
 
 void ButiEngine::CompleteFriend::StartDance()
@@ -169,4 +177,10 @@ void ButiEngine::CompleteFriend::CreateMouth(Value_weak_ptr<Transform> arg_vwp_t
 	{
 		m_vwp_mouth.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
 	}
+}
+
+void ButiEngine::CompleteFriend::CreateHelmet()
+{
+	m_vwp_helmet = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Helmet", ObjectFactory::Create<Transform>());
+	m_vwp_helmet.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
 }

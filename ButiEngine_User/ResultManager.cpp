@@ -5,6 +5,8 @@
 #include "Result_FriendFallPoint.h"
 #include "Result_FriendSpawner.h"
 
+std::int32_t ButiEngine::ResultManager::g_successBorder = 20;
+
 void ButiEngine::ResultManager::OnUpdate()
 {
 	if (m_vlp_waitStartFallTimer && m_vlp_waitStartFallTimer->Update())
@@ -27,7 +29,7 @@ void ButiEngine::ResultManager::OnRemove()
 void ButiEngine::ResultManager::OnShowUI()
 {
 	GUI::BulletText("SuccessBorder");
-	GUI::DragInt("##SuccessBorder", m_successBorder, 1.0f, 0, 100);
+	GUI::DragInt("##SuccessBorder", g_successBorder, 1.0f, 0, 100);
 }
 
 void ButiEngine::ResultManager::Start()
@@ -52,14 +54,14 @@ void ButiEngine::ResultManager::Start()
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::ResultManager::Clone()
 {
 	auto clone = ObjectFactory::Create<ResultManager>();
-	clone->m_successBorder = m_successBorder;
+	clone->g_successBorder = g_successBorder;
 	return clone;
 }
 
 void ButiEngine::ResultManager::StartFailedTimer()
 {
 	std::int32_t friendCount = GetManager().lock()->GetGameObjects(GameObjectTag("CompleteFriend")).GetSize();
-	if (m_successBorder <= friendCount)
+	if (g_successBorder <= friendCount)
 	{
 		return;
 	}
@@ -97,7 +99,7 @@ void ButiEngine::ResultManager::CheckStartZoomOut()
 		m_vwp_camera.lock()->ZoomOut();
 
 		std::int32_t friendCount = GetManager().lock()->GetGameObjects(GameObjectTag("CompleteFriend")).GetSize();
-		if (m_successBorder <= friendCount)
+		if (g_successBorder <= friendCount)
 		{
 			StartSuccess();
 		}

@@ -25,7 +25,6 @@ namespace ButiEngine {
 		void RemoveCount();
 
 	private:
-		void SetText();
 		void CheckNextAnimation();
 		void CheckRestartAnimation();
 		void StartAddCountAnimation();
@@ -34,8 +33,10 @@ namespace ButiEngine {
 		void Animation();
 		void SetNumberPos(const float arg_pos);
 		void SetNumberScale(const Vector3& arg_scale);
-
-		Value_weak_ptr<TextDrawComponent> m_vwp_textDraw;
+		void SetNumberColor(const Vector4& arg_color);
+		void SetUnitColor(const Vector4& arg_color);
+		void PlaySE();
+		void CheckColor();
 
 		std::vector<Value_weak_ptr<MeshDrawComponent>> m_vec_vwp_numbers;
 
@@ -55,6 +56,9 @@ namespace ButiEngine {
 		bool m_isReturnAnimation;
 
 		bool m_isFirstAnimation;
+
+		Vector4 m_defaultColor = Vector4(0.3f, 0.55f, 0.81f, 1.0f);
+		Vector4 m_successColor = Vector4(1.0f, 0.85f, 0.0f, 1.0f);
 	};
 
 }

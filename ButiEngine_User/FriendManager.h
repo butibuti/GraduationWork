@@ -15,6 +15,8 @@ namespace ButiEngine {
 		Rank eyeRank;
 		Rank noseRank;
 		Rank mouthRank;
+
+		bool hasHelmet;
 	};
 
 	class GameLevelManager;

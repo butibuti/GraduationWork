@@ -90,13 +90,6 @@ void ButiEngine::FriendBody::OnShowUI()
 
 void ButiEngine::FriendBody::Start()
 {
-	auto tutorialManager = GetManager().lock()->GetGameObject("TutorialManager");
-	if (tutorialManager.lock())
-	{
-		m_vwp_tutorialManager = tutorialManager.lock()->GetGameComponent<TutorialManager>();
-		m_isTutorial = true;
-	}
-
 	m_vwp_gameSettings = GetManager().lock()->GetGameObject("GameSettings").lock()->GetGameComponent<GameSettings>();
 	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_gameLevelManager = GetManager().lock()->GetGameObject("GameLevelManager").lock()->GetGameComponent<GameLevelManager>();
@@ -172,12 +165,6 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	gameObject.lock()->AddGameComponent<FriendCompleteDirecting>();
 	gameObject.lock()->RemoveGameObjectTag(GameObjectTag("FriendBody"));
 
-	if (m_isTutorial)
-	{
-		auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
-		m_vwp_tutorialManager.lock()->CheckPhaseClear(headComponent->IsFast(), IsFront());
-	}
-
 	RemoveNeck();
 	RemoveGuideHead();
 	StopBombTimer();
@@ -192,13 +179,8 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 
 bool ButiEngine::FriendBody::IsFront()
 {
-	if (m_isTutorial && m_vwp_tutorialManager.lock()->GetTutorialPhase() != 1)
-	{
-		return false;
-	}
-
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	if (!m_isTutorial && gameLevel == 0)
+	if (gameLevel == 0)
 	{
 		return false;
 	}
@@ -270,7 +252,7 @@ void ButiEngine::FriendBody::Blow()
 void ButiEngine::FriendBody::Rotate()
 {
 	std::int32_t gameLevel = m_vwp_gameLevelManager.lock()->GetGameLevel();
-	if (!m_isTutorial && gameLevel == 0)
+	if (gameLevel == 0)
 	{
 		return;
 	}
@@ -429,10 +411,7 @@ void ButiEngine::FriendBody::CreateBonusFriend()
 		auto bonusFriend = GetManager().lock()->AddObjectFromCereal("BonusFriend", ObjectFactory::Create<Transform>(pos));
 		bonusFriend.lock()->GetGameComponent<CompleteFriend>()->CreateParts(m_vlp_friendData);
 
-		if (!m_isTutorial)
-		{
-			GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddCompleteFriend(bonusFriend, m_vlp_friendData);
-		}
+		GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddCompleteFriend(bonusFriend, m_vlp_friendData);
 
 		auto bonusFriendComponent = bonusFriend.lock()->GetGameComponent<BonusFriend>();
 		bonusFriendComponent->SetFrontBorder(m_frontBorder);
@@ -535,9 +514,6 @@ void ButiEngine::FriendBody::SaveFriendData()
 	auto headTransform = m_vwp_head.lock()->transform->Clone();
 	headTransform->SetBaseTransform(bodyTransform);
 
-	//float rollAngle = GetLookForwardHeadAngle();
-	//bodyTransform->RollLocalRotationY_Degrees(rollAngle);
-
 	m_vlp_friendData->vlp_headTransform = headTransform;
 	m_vlp_friendData->vlp_bodyTransform = bodyTransform;
 
@@ -551,21 +527,25 @@ void ButiEngine::FriendBody::SaveFriendData()
 	auto mouth = headComponent->GetMouth();
 	m_vlp_friendData->vlp_mouthTransform = mouth.lock()->transform->Clone();
 
+	auto helmet = headComponent->GetHelmet();
+	m_vlp_friendData->hasHelmet = helmet.lock();
+
 	m_vlp_friendData->eyeRank = headComponent->GetEye().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
 	m_vlp_friendData->noseRank = headComponent->GetNose().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
 	m_vlp_friendData->mouthRank = headComponent->GetMouth().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
 
-	if (!m_isTutorial)
+	GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddCompleteFriend(gameObject, m_vlp_friendData);
+
+	auto completeFriendComponent = gameObject.lock()->AddGameComponent<CompleteFriend>();
+	completeFriendComponent->SetHead(m_vwp_head);
+	completeFriendComponent->SetBody(gameObject);
+	completeFriendComponent->SetHeart(m_vwp_heart);
+	completeFriendComponent->SetEye(eye);
+	completeFriendComponent->SetNose(nose);
+	completeFriendComponent->SetMouth(mouth);
+	if (helmet.lock())
 	{
-		GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddCompleteFriend(gameObject, m_vlp_friendData);
-		
-		auto completeFriendComponent = gameObject.lock()->AddGameComponent<CompleteFriend>();
-		completeFriendComponent->SetHead(m_vwp_head);
-		completeFriendComponent->SetBody(gameObject);
-		completeFriendComponent->SetHeart(m_vwp_heart);
-		completeFriendComponent->SetEye(eye);
-		completeFriendComponent->SetNose(nose);
-		completeFriendComponent->SetMouth(mouth);
+		completeFriendComponent->SetHelmet(helmet);
 	}
 }
 

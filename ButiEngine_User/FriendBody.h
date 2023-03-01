@@ -6,7 +6,6 @@ namespace ButiEngine {
 	class PauseManager;
 	class GameLevelManager;
 	class FriendBodySpawner;
-	class TutorialManager;
 	struct FriendData;
 	enum class Rank;
 
@@ -116,9 +115,6 @@ namespace ButiEngine {
 		float m_moveSpeed;
 		float m_rotateSpeed;
 		Vector3 m_offsetPos;
-
-		bool m_isTutorial = false;
-		Value_weak_ptr<TutorialManager> m_vwp_tutorialManager;
 
 		Rank m_totalRank;
 

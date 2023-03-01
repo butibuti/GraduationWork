@@ -42,13 +42,9 @@ void ButiEngine::ScoreManager::CalcScore(Value_weak_ptr<GameObject> arg_vwp_head
 	auto bodyComponent = arg_vwp_body.lock()->GetGameComponent<FriendBody>();
 
 	std::int32_t addScore = 0;
-	addScore += headComponent->GetEyeScore();
-	addScore += headComponent->GetNoseScore();
-	addScore += headComponent->GetMouthScore();
 
 	//addScore *= 2 * (1 + headComponent->IsBeautiful());
 	addScore *= 2 * (1 + bodyComponent->IsFront());
-	addScore *= 2 * (1 + headComponent->IsFast());
 
 	m_score += addScore;
 	//m_vlp_heart->SetScore(m_score);

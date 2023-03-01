@@ -21,8 +21,12 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 		}
 
+		void SetHead(Value_weak_ptr<GameObject> arg_vwp_head) { m_vwp_head = arg_vwp_head; }
+
+		Value_weak_ptr<GameObject> GetParent() { return m_vwp_head; }
 		Value_weak_ptr<GameObject> GetCollisionFriendBody() { return m_vwp_collisionFriendBody; }
 	private:
+		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_collisionFriendBody;
 	};
 

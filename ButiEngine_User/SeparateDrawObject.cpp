@@ -46,6 +46,13 @@ ButiEngine::Value_weak_ptr<ButiEngine::GameObject> ButiEngine::SeparateDrawObjec
 	return m_vwp_drawObject;
 }
 
+void ButiEngine::SeparateDrawObject::ReturnDrawObject()
+{
+	auto meshDrawComponent = m_vwp_drawObject.lock()->GetGameComponent<MeshDrawComponent>();
+	gameObject.lock()->AddGameComponent(meshDrawComponent->Clone());
+	m_vwp_drawObject.lock()->SetIsRemove(true);
+}
+
 void ButiEngine::SeparateDrawObject::Dead()
 {
 	if (m_vwp_drawObject.lock())

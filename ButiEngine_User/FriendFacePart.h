@@ -138,6 +138,7 @@ namespace ButiEngine {
 		bool CanUpdate();
 		Vector3 GetStickPos();
 		void Blow();
+		void DummyBlow();
 		void CheckRank();
 		void ChangeModel();
 
@@ -181,6 +182,8 @@ namespace ButiEngine {
 		static Vector3 g_goodAngleBorder;
 
 		bool m_isTutorial;
+
+		bool m_isDummyBlow;
 
 		static std::int32_t g_eyeCount;
 		static std::int32_t g_noseCount;

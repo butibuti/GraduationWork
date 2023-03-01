@@ -151,6 +151,7 @@ void ButiEngine::FriendFacePart::Start()
 	m_rank = Rank::NoRank;
 
 	m_isMove = true;
+	m_isDummyBlow = false;
 
 	if (!m_param.isGravity)
 	{
@@ -437,12 +438,19 @@ void ButiEngine::FriendFacePart::OnCollisionPartHitArea(Value_weak_ptr<GameObjec
 	{
 		if (m_param.type == PartType::Dummy)
 		{
-			auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
-			if (headComponent->IsExistPartStuckArea())
+			if (!m_isDummyBlow)
 			{
-				SpawnDummyPartHitEffect();
-				headComponent->LeavePartRandom();
-				Dead();
+				auto headComponent = m_vwp_head.lock()->GetGameComponent<FriendHead>();
+				if (headComponent->GetHelmet().lock())
+				{
+					DummyBlow();
+				}
+				else if (headComponent->ExistPartStuckArea())
+				{
+					SpawnDummyPartHitEffect();
+					headComponent->LeavePartRandom();
+					Dead();
+				}
 			}
 		}
 		else
@@ -537,6 +545,38 @@ void ButiEngine::FriendFacePart::Blow()
 	}
 	m_param.velocity.x = force * direction;
 	m_param.rotateSpeed = 10.0f * direction;
+}
+
+void ButiEngine::FriendFacePart::DummyBlow()
+{
+	m_param.isGravity = true;
+	m_param.gravity = 0.05f;
+	m_param.isSway = false;
+	m_param.velocity.y = 0.3f;
+	m_param.velocity.z = 3.0f;
+	m_param.maxMoveSpeed = 10.0f;
+
+	Vector3 pos = gameObject.lock()->transform->GetWorldPosition();
+	float force = 0.1f;
+	float direction = 1.0f;
+	if (pos.x > 2.0f)
+	{
+		direction = -1.0f;
+	}
+	else if (pos.x < -2.0f)
+	{
+		direction = 1.0f;
+	}
+	else
+	{
+		std::int32_t rand = ButiRandom::GetInt(0, 1);
+		direction = rand ? 1.0f : -1.0f;
+	}
+	m_param.velocity.x = force * direction;
+	m_param.rotateSpeed = 10.0f * direction;
+
+	m_isMove = true;
+	m_isDummyBlow = true;
 }
 
 void ButiEngine::FriendFacePart::CheckRank()
