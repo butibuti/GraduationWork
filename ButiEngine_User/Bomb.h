@@ -4,6 +4,7 @@ namespace ButiEngine {
 
 	class NumberDraw;
 	class SpriteParticleGenerator;
+	class PauseManager;
 
 	class Bomb :public GameComponent
 	{
@@ -39,6 +40,8 @@ namespace ButiEngine {
 
 		void TinderAnimation();
 		void SpawnSparkEffect();
+
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 
 		Value_weak_ptr<SpriteParticleGenerator> m_vwp_particleGenerator;
 

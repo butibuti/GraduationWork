@@ -5,11 +5,17 @@
 #include "FriendHead_Center.h"
 #include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/ScaleAnimationComponent.h"
+#include "Effect_CompleteFriend.h"
+#include "PauseManager.h"
 
 std::int32_t ButiEngine::Accessory::g_accessoryCount;
 
 void ButiEngine::Accessory::OnUpdate()
 {
+	if (m_vwp_pauseManager.lock()->IsPause())
+	{
+		return;
+	}
 	if (m_isAppear)
 	{
 		OnAppear();
@@ -45,6 +51,7 @@ void ButiEngine::Accessory::OnShowUI()
 
 void ButiEngine::Accessory::Start()
 {
+	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_drawObject = gameObject.lock()->GetGameComponent<SeparateDrawObject>()->GetDrawObject();
 
 	m_isAppear = false;
@@ -67,6 +74,12 @@ void ButiEngine::Accessory::Dead()
 
 void ButiEngine::Accessory::OnCollisionHeadCenter(Value_weak_ptr<GameObject> arg_vwp_partHitArea)
 {
+	auto completeFriendEffect = GetManager().lock()->AddObjectFromCereal("Effect_CompleteFriend");
+	completeFriendEffect.lock()->transform->SetLocalPosition(arg_vwp_partHitArea.lock()->transform->GetWorldPosition());
+
+	auto effectComponent = completeFriendEffect.lock()->GetGameComponent<Effect_CompleteFriend>();
+	effectComponent->SetBody(arg_vwp_partHitArea);
+
 	gameObject.lock()->GetGameComponent<SeparateDrawObject>()->ReturnDrawObject();
 	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetTransform()->SetLocalPosition(Vector3Const::Zero);
 

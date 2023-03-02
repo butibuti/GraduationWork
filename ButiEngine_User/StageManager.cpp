@@ -51,7 +51,7 @@ void ButiEngine::StageManager::OnUpdate()
 		//{
 		//	ResetGame();
 		//}
-		//return;
+		return;
 	}
 
 	if (m_vwp_gameTimer.lock()->GetRemainSecond() == 0)

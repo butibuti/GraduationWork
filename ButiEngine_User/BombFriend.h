@@ -2,6 +2,8 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	class PauseManager;
+
 	class BombFriend :public GameComponent
 	{
 	public:
@@ -28,6 +30,7 @@ namespace ButiEngine {
 	private:
 		void CreateBomb();
 
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 		Value_ptr<RelativeTimer> m_vlp_explodeTimer;
 		std::int32_t m_frameToExplode;
 

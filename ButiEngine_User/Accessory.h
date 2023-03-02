@@ -2,6 +2,8 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	class PauseManager;
+
 	class Accessory :public GameComponent
 	{
 	public:
@@ -35,6 +37,8 @@ namespace ButiEngine {
 		void OnCollisionHeadCenter(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
 		void Appear();
 		void OnAppear();
+
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 
 		Value_weak_ptr<GameObject> m_vwp_drawObject;
 		bool m_isAppear;

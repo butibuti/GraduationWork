@@ -3,9 +3,14 @@
 #include "Bomb.h"
 #include "FriendBody.h"
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
+#include "PauseManager.h"
 
 void ButiEngine::BombFriend::OnUpdate()
 {
+	if (m_vwp_pauseManager.lock()->IsPause())
+	{
+		return;
+	}
 	if (m_vlp_explodeTimer->Update())
 	{
 		m_vlp_explodeTimer->Stop();
@@ -30,6 +35,8 @@ void ButiEngine::BombFriend::OnShowUI()
 
 void ButiEngine::BombFriend::Start()
 {
+	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+
 	m_vlp_explodeTimer = ObjectFactory::Create<RelativeTimer>(m_frameToExplode);
 	m_vlp_explodeTimer->Start();
 

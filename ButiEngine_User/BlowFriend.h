@@ -2,6 +2,8 @@
 #include"Header/GameComponentHeader.h"
 namespace ButiEngine {
 
+	class PauseManager;
+
 	class BlowFriend :public GameComponent
 	{
 	public:
@@ -24,6 +26,8 @@ namespace ButiEngine {
 	private:
 		void SetBlowParam();
 		void AddRollAnimation(float arg_angle);
+
+		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 
 		Vector3 m_velocity;
 		float m_gravity;

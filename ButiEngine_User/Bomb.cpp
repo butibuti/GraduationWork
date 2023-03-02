@@ -9,12 +9,17 @@
 #include "FriendBody.h"
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 #include "SpriteParticleGenerator.h"
+#include "PauseManager.h"
 
 void ButiEngine::Bomb::OnUpdate()
 {
 	if (m_isFall)
 	{
 		Fall();
+		return;
+	}
+	if (m_vwp_pauseManager.lock()->IsPause())
+	{
 		return;
 	}
 
@@ -56,6 +61,7 @@ void ButiEngine::Bomb::OnShowUI()
 
 void ButiEngine::Bomb::Start()
 {
+	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
 	m_vwp_particleGenerator = GetManager().lock()->GetGameObject("SpriteParticleGenerator").lock()->GetGameComponent<SpriteParticleGenerator>();
 
 	m_vwp_timerText = GetManager().lock()->AddObjectFromCereal("BombTimerText");

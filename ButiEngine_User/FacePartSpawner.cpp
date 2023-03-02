@@ -103,7 +103,7 @@ void ButiEngine::FacePartSpawner::CreatePartArrangement()
 
 void ButiEngine::FacePartSpawner::SpawnAccessory()
 {
-	if (m_currentEditLevelIndex == 0)
+	if (m_currentEditLevelIndex <= 0)
 	{
 		return;
 	}

@@ -118,7 +118,7 @@ void ButiEngine::CompleteFriend::StartDance()
 		animIndex = 6;
 	}
 
-	m_vlp_animationController->ChangeAnimation(10.0f, gameObject.lock()->GetResourceContainer()->
+	m_vlp_animationController->ChangeAnimation(60.0f, gameObject.lock()->GetResourceContainer()->
 		GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[animIndex]->GetAnimation());
 
 	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);

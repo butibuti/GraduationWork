@@ -8,9 +8,14 @@
 #include "BombFriend.h"
 #include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
+#include "PauseManager.h"
 
 void ButiEngine::BlowFriend::OnUpdate()
 {
+	if (m_vwp_pauseManager.lock()->IsPause())
+	{
+		return;
+	}
 	m_velocity.y += -m_gravity * GameDevice::GetWorldSpeed() * m_speed;
 	Vector3 pos = gameObject.lock()->transform->Translate(m_velocity * GameDevice::GetWorldSpeed() * m_speed);
 
@@ -32,6 +37,8 @@ void ButiEngine::BlowFriend::OnUpdate()
 
 void ButiEngine::BlowFriend::OnSet()
 {
+	m_vwp_pauseManager = GetManager().lock()->GetGameObject("PauseManager").lock()->GetGameComponent<PauseManager>();
+
 	auto completeFriend = gameObject.lock()->GetGameComponent<CompleteFriend>();
 	if (completeFriend)
 	{
