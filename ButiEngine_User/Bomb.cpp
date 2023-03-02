@@ -97,6 +97,8 @@ void ButiEngine::Bomb::StartFall()
 
 void ButiEngine::Bomb::Explode()
 {
+	auto explosion= AddObjectFromCereal("Explosion");
+	explosion.lock()->transform->SetLocalPosition(gameObject.lock()->transform->GetWorldPosition());
 	GetManager().lock()->GetGameObject("CameraParent").lock()->GetGameComponent<GameCamera>()->StartShake(20, 0.2f);
 
 	for (std::int32_t i = 0; i < 2; i++)

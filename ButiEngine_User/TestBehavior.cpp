@@ -14,15 +14,7 @@ void ButiEngine::TestBehavior::OnUpdate()
 		gameObject.lock()->transform->SetLocalRotation(deviceMatrix.RemovePosition());
 	}*/
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::Enter)) {
-		auto objA = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("PhysicsObjectA").lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody();
-		auto objB = gameObject.lock()->GetGameObjectManager().lock()->GetGameObject("PhysicsObjectB").lock()->GetGameComponent<RigidBodyComponent>()->GetRigidBody();
-		auto joint = ButiBullet::CreateSpringJoint(objA, Matrix4x4(), objB, Matrix4x4(), 0);
-		joint->SetLinearUpperLimit(Vector3(2, 2, 2));
-		joint->SetLinearLowerLimit(Vector3(-2, -2, -2));
-		joint->SetAngularUpperLimit(Vector3(0, MathHelper::ToRadian(360), 0));
-		joint->SetLinearStiffness(Vector3(2, 2, 2));
-		gameObject.lock()->GetGameObjectManager().lock()->GetScene().lock()->GetPhysicsManager()->GetActivePhysicsWorld()->
-			AddJoint(joint);
+		AddObjectFromCereal("Explosion");
 	}
 }
 

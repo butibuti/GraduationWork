@@ -79,6 +79,9 @@
     <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="SpriteParticleGenerator.cpp" />
     <ClCompile Include="Accessory.cpp" />
+    <ClCompile Include="Effect_Explosion.cpp" />
+    <ClCompile Include="Effect_ExplosionSmoke.cpp" />
+    <ClCompile Include="Effect_ExplosionNeedle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Effect_ConcentratedLine.h" />
@@ -157,6 +160,9 @@
     <ClInclude Include="Bomb.h" />
     <ClInclude Include="SpriteParticleGenerator.h" />
     <ClInclude Include="Accessory.h" />
+    <ClInclude Include="Effect_Explosion.h" />
+    <ClInclude Include="Effect_ExplosionSmoke.h" />
+    <ClInclude Include="Effect_ExplosionNeedle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\output\Debug\Resources\Application\ButiEngine.ini" />
