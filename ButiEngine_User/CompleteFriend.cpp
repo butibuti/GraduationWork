@@ -19,7 +19,7 @@ void ButiEngine::CompleteFriend::OnUpdate()
 		return;
 	}
 
-	if (m_isDance)
+	if (m_isDance || m_isBlow)
 	{
 		m_vlp_animationController->Update();
 	}
@@ -118,6 +118,13 @@ void ButiEngine::CompleteFriend::StartDance()
 void ButiEngine::CompleteFriend::StopDance()
 {
 	m_isDance = false;
+}
+
+void ButiEngine::CompleteFriend::StartBlowAnimation()
+{
+	m_isBlow = true;
+	m_vlp_animationController->ChangeAnimation(5.0f, gameObject.lock()->GetResourceContainer()->
+		GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[8]->GetAnimation());
 }
 
 void ButiEngine::CompleteFriend::CreateHead(Value_weak_ptr<Transform> arg_vwp_transform)

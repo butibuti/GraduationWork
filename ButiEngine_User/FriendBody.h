@@ -98,7 +98,6 @@ namespace ButiEngine {
 		bool m_isRotate;
 		bool m_isStopRotate;
 		float m_frontBorder;
-		bool m_isDance;
 
 		bool m_isMoveBack;
 		Value_ptr<RelativeTimer> m_vlp_moveBackTimer;
@@ -117,6 +116,7 @@ namespace ButiEngine {
 		Vector3 m_offsetPos;
 
 		bool m_isBlow;
+		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
 	};
 
 }

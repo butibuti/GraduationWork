@@ -27,12 +27,8 @@ void ButiEngine::FriendBody::OnUpdate()
 
 	if (m_isBlow)
 	{
+		m_vlp_animationController->Update();
 		return;
-	}
-
-	if (m_isDance)
-	{
-		//m_vlp_animationController->Update(1.0f);
 	}
 
 	if (m_isRotate)
@@ -114,7 +110,6 @@ void ButiEngine::FriendBody::Start()
 
 	m_isRotate = true;
 	m_isStopRotate = false;
-	m_isDance = false;
 
 	m_isMoveBack = false;
 	m_vlp_moveBackTimer = ObjectFactory::Create<RelativeTimer>(90);
@@ -137,10 +132,6 @@ void ButiEngine::FriendBody::Start()
 	m_vlp_friendData->totalRank = Rank::NoRank;
 
 	m_isBlow = false;
-
-	//auto animationController = ButiRendering::CreateAnimationController(modelDraw->GetBone());
-	//animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-	//	GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[5]->GetAnimation());
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
@@ -254,6 +245,11 @@ void ButiEngine::FriendBody::Blow()
 	}
 
 	m_isBlow = true;
+
+	auto modelDraw = gameObject.lock()->GetGameComponent<ModelDrawComponent>();
+	m_vlp_animationController = ButiRendering::CreateAnimationController(modelDraw->GetBone());
+	m_vlp_animationController->ChangeAnimation(5.0f, gameObject.lock()->GetResourceContainer()->
+		GetModel(modelDraw->GetModelTag()).lock()->GetMotion()[8]->GetAnimation());
 	gameObject.lock()->AddGameComponent<BlowFriend>();
 }
 

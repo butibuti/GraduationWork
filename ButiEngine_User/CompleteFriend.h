@@ -42,6 +42,7 @@ namespace ButiEngine {
 		void CreateParts(Value_weak_ptr<FriendData> arg_vwp_friendData);
 		void StartDance();
 		void StopDance();
+		void StartBlowAnimation();
 	private:
 		void CreateHead(Value_weak_ptr<Transform> arg_vwp_transform);
 		void CreateBody(Value_weak_ptr<Transform> arg_vwp_transform);
@@ -62,6 +63,7 @@ namespace ButiEngine {
 
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
 		bool m_isDance = false;
+		bool m_isBlow = false;
 
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
 	};

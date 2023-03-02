@@ -7,6 +7,7 @@
 #include "Bomb.h"
 #include "BombFriend.h"
 #include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
+#include "Header/GameObjects/DefaultGameComponent/ModelDrawComponent.h"
 
 void ButiEngine::BlowFriend::OnUpdate()
 {
@@ -35,6 +36,7 @@ void ButiEngine::BlowFriend::OnSet()
 	if (completeFriend)
 	{
 		completeFriend->StopDance();
+		completeFriend->StartBlowAnimation();
 	}
 
 	auto bonusFriend = gameObject.lock()->GetGameComponent<BonusFriend>();
