@@ -25,6 +25,7 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 		}
 
+		void SetFriendData(Value_weak_ptr<FriendData> arg_friendData) { m_vwp_friendData = arg_friendData; }
 		void SetHead(Value_weak_ptr<GameObject> arg_head) { m_vwp_head = arg_head; }
 		void SetBody(Value_weak_ptr<GameObject> arg_body);
 		void SetHeart(Value_weak_ptr<GameObject> arg_heart) { m_vwp_heart = arg_heart; }
@@ -56,6 +57,8 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_nose;
 		Value_weak_ptr<GameObject> m_vwp_mouth;
 		Value_weak_ptr<GameObject> m_vwp_helmet;
+
+		Value_weak_ptr<FriendData> m_vwp_friendData;
 
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
 		bool m_isDance = false;

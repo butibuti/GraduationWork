@@ -15,6 +15,7 @@ namespace ButiEngine {
 		Rank eyeRank;
 		Rank noseRank;
 		Rank mouthRank;
+		Rank totalRank;
 
 		bool hasHelmet;
 	};

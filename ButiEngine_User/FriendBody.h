@@ -31,7 +31,7 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(m_vec_moveHorizontalFrame);
 		}
 
-		Rank GetTotalRank() { return m_totalRank; }
+		Rank GetTotalRank();
 
 		Value_weak_ptr<GameObject> GetNeck() { return m_vwp_neck; }
 
@@ -115,8 +115,6 @@ namespace ButiEngine {
 		float m_moveSpeed;
 		float m_rotateSpeed;
 		Vector3 m_offsetPos;
-
-		Rank m_totalRank;
 
 		bool m_isBlow;
 	};

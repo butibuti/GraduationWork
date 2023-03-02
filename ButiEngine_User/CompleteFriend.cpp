@@ -78,6 +78,8 @@ void ButiEngine::CompleteFriend::Dead()
 
 void ButiEngine::CompleteFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_friendData)
 {
+	SetFriendData(arg_vwp_friendData);
+
 	CreateBody(arg_vwp_friendData.lock()->vlp_bodyTransform);
 	CreateHead(arg_vwp_friendData.lock()->vlp_headTransform);
 	CreateEye(arg_vwp_friendData.lock()->vlp_eyeTransform, arg_vwp_friendData.lock()->eyeRank);
@@ -93,8 +95,22 @@ void ButiEngine::CompleteFriend::StartDance()
 {
 	m_isDance = true;
 
-	m_vlp_animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
-		GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[1]->GetAnimation());
+	std::int32_t animIndex = 4;
+	if (m_vwp_friendData.lock()->totalRank == Rank::Bad)
+	{
+		animIndex = 7;
+	}
+	else if (m_vwp_friendData.lock()->totalRank == Rank::Normal)
+	{
+		animIndex = 5;
+	}
+	else if (m_vwp_friendData.lock()->totalRank == Rank::Good)
+	{
+		animIndex = 6;
+	}
+
+	m_vlp_animationController->ChangeAnimation(10.0f, gameObject.lock()->GetResourceContainer()->
+		GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[animIndex]->GetAnimation());
 
 	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
 }

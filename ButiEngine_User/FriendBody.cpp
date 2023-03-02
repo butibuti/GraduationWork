@@ -134,9 +134,13 @@ void ButiEngine::FriendBody::Start()
 
 	m_offsetPos = gameObject.lock()->transform->GetLocalPosition();
 
-	m_totalRank = Rank::NoRank;
+	m_vlp_friendData->totalRank = Rank::NoRank;
 
 	m_isBlow = false;
+
+	//auto animationController = ButiRendering::CreateAnimationController(modelDraw->GetBone());
+	//animationController->ChangeAnimation(0.0f, gameObject.lock()->GetResourceContainer()->
+	//	GetModel(gameObject.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[5]->GetAnimation());
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
@@ -146,6 +150,11 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
 	clone->m_vec_rotateSpeeds = m_vec_rotateSpeeds;
 	clone->m_vec_moveHorizontalFrame = m_vec_moveHorizontalFrame;
 	return clone;
+}
+
+ButiEngine::Rank ButiEngine::FriendBody::GetTotalRank()
+{
+	return m_vlp_friendData->totalRank;
 }
 
 void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
@@ -159,7 +168,6 @@ void ButiEngine::FriendBody::SetHead(Value_weak_ptr<GameObject> arg_vwp_head)
 	ChangeMaterial();
 	CorrectionHead();
 	SaveFriendData();
-	CheckTotalRank();
 	CreateBonusFriend();
 
 	gameObject.lock()->AddGameComponent<FriendCompleteDirecting>();
@@ -371,15 +379,15 @@ void ButiEngine::FriendBody::CheckTotalRank()
 
 	if (score > goodBorder)
 	{
-		m_totalRank = Rank::Good;
+		m_vlp_friendData->totalRank = Rank::Good;
 	}
 	else if (score >= normalBorder)
 	{
-		m_totalRank = Rank::Normal;
+		m_vlp_friendData->totalRank = Rank::Normal;
 	}
 	else
 	{
-		m_totalRank = Rank::Bad;
+		m_vlp_friendData->totalRank = Rank::Bad;
 	}
 }
 
@@ -392,15 +400,15 @@ void ButiEngine::FriendBody::CreateBonusFriend()
 	}
 
 	std::int32_t createCount = 0;
-	if (m_totalRank == Rank::Bad)
+	if (m_vlp_friendData->totalRank == Rank::Bad)
 	{
 		createCount = 0;
 	}
-	else if (m_totalRank == Rank::Normal)
+	else if (m_vlp_friendData->totalRank == Rank::Normal)
 	{
 		createCount = 1;
 	}
-	else if (m_totalRank == Rank::Good)
+	else if (m_vlp_friendData->totalRank == Rank::Good)
 	{
 		createCount = 2;
 	}
@@ -534,9 +542,12 @@ void ButiEngine::FriendBody::SaveFriendData()
 	m_vlp_friendData->noseRank = headComponent->GetNose().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
 	m_vlp_friendData->mouthRank = headComponent->GetMouth().lock()->GetGameComponent<FriendFacePart>()->GetPartRank();
 
+	CheckTotalRank();
+
 	GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddCompleteFriend(gameObject, m_vlp_friendData);
 
 	auto completeFriendComponent = gameObject.lock()->AddGameComponent<CompleteFriend>();
+	completeFriendComponent->SetFriendData(m_vlp_friendData);
 	completeFriendComponent->SetHead(m_vwp_head);
 	completeFriendComponent->SetBody(gameObject);
 	completeFriendComponent->SetHeart(m_vwp_heart);
