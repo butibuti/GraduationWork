@@ -4,6 +4,17 @@
 
 void ButiEngine::GameSettings::OnUpdate()
 {
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::T))
+	{
+		m_multiply = 1.0f;
+		SetHeightOffset();
+	}
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::Y))
+	{
+		m_multiply = 2.0f;
+		SetHeightOffset();
+	}
+
 	if (GameDevice::GetInput().CheckKey(ButiInput::Keys::LeftCtrl) &&
 		GameDevice::GetInput().CheckKey(ButiInput::Keys::LeftShift) &&
 		GameDevice::GetInput().TriggerKey(ButiInput::Keys::D))
@@ -33,7 +44,7 @@ void ButiEngine::GameSettings::OnUpdate()
 		return;
 	}
 
-	SetOffset();
+	//SetOffset();
 
 	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::O))
 	{
@@ -132,6 +143,7 @@ void ButiEngine::GameSettings::Start()
 
 	m_headMoveLimit = GetManager().lock()->GetGameObject("FieldOfView").lock()->transform->GetLocalScale().x;
 	m_offset = Vector3Const::Zero;
+	m_multiply = 1.0f;
 
 	m_isDebugMode = false;
 
@@ -166,6 +178,7 @@ ButiEngine::Vector3 ButiEngine::GameSettings::GetTrackerPos(const std::int32_t a
 	pos *= GetCorrection();
 	pos.x *= -1.0f;
 	pos.z = 0.0f;
+	pos *= m_multiply;
 
 	pos += m_offset;
 
@@ -275,6 +288,12 @@ void ButiEngine::GameSettings::SetOffset()
 	{
 		m_offset.y -= speed;
 	}
+}
+
+void ButiEngine::GameSettings::SetHeightOffset()
+{
+	Vector3 trackerPos = GetTrackerPos(m_data.trackerIndex);
+	m_offset.y = -trackerPos.y;
 }
 
 void ButiEngine::GameSettings::ControlDebugHead()

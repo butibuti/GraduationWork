@@ -7,6 +7,7 @@
 #include "GameFinishDirecting.h"
 #include "Header/GameObjects/DefaultGameComponent/PositionAnimationComponent.h"
 #include "FriendFacePart.h"
+#include "Accessory.h"
 
 void ButiEngine::StageManager::OnUpdate()
 {
@@ -42,15 +43,15 @@ void ButiEngine::StageManager::OnUpdate()
 
 	if (m_vwp_pauseManager.lock()->IsPause())
 	{
-		if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::R))
-		{
-			ResetGame();
-		}
-		else if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_X))
-		{
-			ResetGame();
-		}
-		return;
+		//if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::R))
+		//{
+		//	ResetGame();
+		//}
+		//else if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_X))
+		//{
+		//	ResetGame();
+		//}
+		//return;
 	}
 
 	if (m_vwp_gameTimer.lock()->GetRemainSecond() == 0)
@@ -82,6 +83,7 @@ void ButiEngine::StageManager::Start()
 
 	FriendManager::ClearFriendData();
 	FriendFacePart::ResetPartCount();
+	Accessory::ResetAccessoryCount();
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::StageManager::Clone()

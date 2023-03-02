@@ -61,6 +61,7 @@ namespace ButiEngine {
 		void SetTablePos();
 
 		void SetOffset();
+		void SetHeightOffset();
 
 		void ControlDebugHead();
 
@@ -72,6 +73,7 @@ namespace ButiEngine {
 		Value_weak_ptr<MeshDrawComponent> m_vwp_debugHead;
 
 		bool m_isDebugMode;
+		float m_multiply;
 	};
 
 }

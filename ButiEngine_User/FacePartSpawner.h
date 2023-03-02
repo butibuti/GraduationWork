@@ -40,6 +40,7 @@ public:
 	std::int32_t GetCurrentLevel()const { return m_currentEditLevelIndex; }
 private:
 	void CreatePartArrangement();
+	void SpawnAccessory();
 
 	Value_weak_ptr<StageManager> m_vwp_stageManager;
 	Value_weak_ptr<PauseManager> m_vwp_pauseManager;

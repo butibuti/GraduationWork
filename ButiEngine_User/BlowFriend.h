@@ -27,6 +27,7 @@ namespace ButiEngine {
 
 		Vector3 m_velocity;
 		float m_gravity;
+		float m_speed;
 	};
 
 }

@@ -38,6 +38,8 @@ namespace ButiEngine {
 
 		void SetHelmet(Value_weak_ptr<GameObject> arg_vwp_helmet)
 		{
+			auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/GetHelmet.wav"));
+			GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
 			m_vwp_helmet = arg_vwp_helmet; 
 			m_vwp_helmet.lock()->transform->SetBaseTransform(gameObject.lock()->transform, true);
 		}

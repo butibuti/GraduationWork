@@ -21,14 +21,25 @@ namespace ButiEngine {
 			ARCHIVE_BUTI(isActive);
 		}
 
+		static std::int32_t GetAccessoryCount() { return g_accessoryCount; }
+		static void ResetAccessoryCount() { g_accessoryCount = 0; }
+		static void AddAccessoryCount() { g_accessoryCount++; }
+		static void RemoveAccessoryCount()
+		{
+			g_accessoryCount--; 
+			g_accessoryCount = max(g_accessoryCount, 0);
+		}
+
 		void Dead();
 	private:
-		void OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
+		void OnCollisionHeadCenter(Value_weak_ptr<GameObject> arg_vwp_partHitArea);
 		void Appear();
 		void OnAppear();
 
 		Value_weak_ptr<GameObject> m_vwp_drawObject;
 		bool m_isAppear;
+
+		static std::int32_t g_accessoryCount;
 	};
 
 }

@@ -549,6 +549,9 @@ void ButiEngine::FriendFacePart::Blow()
 
 void ButiEngine::FriendFacePart::DummyBlow()
 {
+	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/NeedleHit.wav"));
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
+
 	m_param.isGravity = true;
 	m_param.gravity = 0.05f;
 	m_param.isSway = false;

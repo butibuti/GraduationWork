@@ -5,6 +5,7 @@
 #include "FriendFacePart.h"
 #include "PauseManager.h"
 #include "BlowFriend.h"
+#include "Header/GameObjects/DefaultGameComponent/PositionAnimationComponent.h"
 
 void ButiEngine::CompleteFriend::OnUpdate()
 {
@@ -73,6 +74,10 @@ void ButiEngine::CompleteFriend::Dead()
 	{
 		m_vwp_helmet.lock()->SetIsRemove(true);
 	}
+	if (m_vwp_chara.lock())
+	{
+		m_vwp_chara.lock()->SetIsRemove(true);
+	}
 	gameObject.lock()->SetIsRemove(true);
 }
 
@@ -88,6 +93,10 @@ void ButiEngine::CompleteFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_
 	if (arg_vwp_friendData.lock()->hasHelmet)
 	{
 		CreateHelmet();
+	}
+	if (arg_vwp_friendData.lock()->totalRank == Rank::Good)
+	{
+		CreateChara();
 	}
 }
 
@@ -206,4 +215,18 @@ void ButiEngine::CompleteFriend::CreateHelmet()
 {
 	m_vwp_helmet = GetManager().lock()->AddObjectFromCereal("CompleteFriend_Helmet", ObjectFactory::Create<Transform>());
 	m_vwp_helmet.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
+}
+
+void ButiEngine::CompleteFriend::CreateChara()
+{
+	m_vwp_chara = GetManager().lock()->AddObjectFromCereal("Chara_Kami");
+	m_vwp_chara.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
+
+	if (m_vwp_friendData.lock()->hasHelmet)
+	{
+		auto anim = m_vwp_chara.lock()->GetGameComponent<PositionAnimation>();
+		auto targetPos = anim->GetTargetPosition();
+		targetPos.y += 0.3f;
+		anim->SetTargetPosition(targetPos);
+	}
 }

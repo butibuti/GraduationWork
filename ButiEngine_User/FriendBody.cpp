@@ -17,6 +17,7 @@
 #include "CompleteFriend.h"
 #include "BombFriend.h"
 #include "BlowFriend.h"
+#include "Header/GameObjects/DefaultGameComponent/PositionAnimationComponent.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -540,6 +541,20 @@ void ButiEngine::FriendBody::SaveFriendData()
 
 	CheckTotalRank();
 
+	Value_weak_ptr<GameObject> chara = Value_weak_ptr<GameObject>();
+	if (m_vlp_friendData->totalRank == Rank::Good)
+	{
+		chara = GetManager().lock()->AddObjectFromCereal("Chara_Kami");
+		chara.lock()->transform->SetBaseTransform(m_vwp_head.lock()->transform, true);
+		if (helmet.lock())
+		{
+			auto anim = chara.lock()->GetGameComponent<PositionAnimation>();
+			auto targetPos = anim->GetTargetPosition();
+			targetPos.y += 0.3f;
+			anim->SetTargetPosition(targetPos);
+		}
+	}
+
 	GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->AddCompleteFriend(gameObject, m_vlp_friendData);
 
 	auto completeFriendComponent = gameObject.lock()->AddGameComponent<CompleteFriend>();
@@ -554,6 +569,11 @@ void ButiEngine::FriendBody::SaveFriendData()
 	{
 		completeFriendComponent->SetHelmet(helmet);
 	}
+	if (chara.lock())
+	{
+		completeFriendComponent->SetChara(chara);
+	}
+
 }
 
 ButiEngine::Vector3 ButiEngine::FriendBody::GetFrontXZ(const Vector3& arg_front)

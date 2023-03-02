@@ -6,6 +6,8 @@
 #include "Header/GameObjects/DefaultGameComponent/TriggerComponent.h"
 #include "Header/GameObjects/DefaultGameComponent/ScaleAnimationComponent.h"
 
+std::int32_t ButiEngine::Accessory::g_accessoryCount;
+
 void ButiEngine::Accessory::OnUpdate()
 {
 	if (m_isAppear)
@@ -26,7 +28,7 @@ void ButiEngine::Accessory::OnSet()
 				//ƒ^ƒO”»’è
 				if (arg_other.vwp_gameObject.lock()->HasGameObjectTag("HeadCenter"))
 				{
-					OnCollisionPartHitArea(arg_other.vwp_gameObject);
+					OnCollisionHeadCenter(arg_other.vwp_gameObject);
 				}
 			}
 		}
@@ -63,7 +65,7 @@ void ButiEngine::Accessory::Dead()
 	}
 }
 
-void ButiEngine::Accessory::OnCollisionPartHitArea(Value_weak_ptr<GameObject> arg_vwp_partHitArea)
+void ButiEngine::Accessory::OnCollisionHeadCenter(Value_weak_ptr<GameObject> arg_vwp_partHitArea)
 {
 	gameObject.lock()->GetGameComponent<SeparateDrawObject>()->ReturnDrawObject();
 	gameObject.lock()->GetGameComponent<MeshDrawComponent>()->GetTransform()->SetLocalPosition(Vector3Const::Zero);
@@ -72,6 +74,7 @@ void ButiEngine::Accessory::OnCollisionPartHitArea(Value_weak_ptr<GameObject> ar
 	gameObject.lock()->transform->SetLocalPosition(Vector3Const::Zero);
 	head.lock()->GetGameComponent<FriendHead>()->SetHelmet(gameObject);
 
+	Accessory::RemoveAccessoryCount();
 	gameObject.lock()->GetGameComponent<TriggerComponent>()->SetIsRemove(true);
 	SetIsRemove(true);
 }
@@ -84,8 +87,8 @@ void ButiEngine::Accessory::Appear()
 	auto anim = gameObject.lock()->AddGameComponent<ScaleAnimation>();
 	anim->SetInitScale(gameObject.lock()->transform->GetLocalScale());
 	anim->SetTargetScale(1.0f);
-	anim->SetSpeed(1.0f / 45);
-	anim->SetEaseType(Easing::EasingType::EaseOutBack);
+	anim->SetSpeed(1.0f / 60);
+	anim->SetEaseType(Easing::EasingType::EaseOutQuad);
 }
 
 void ButiEngine::Accessory::OnAppear()

@@ -33,6 +33,7 @@ namespace ButiEngine {
 		void SetNose(Value_weak_ptr<GameObject> arg_nose) { m_vwp_nose = arg_nose; }
 		void SetMouth(Value_weak_ptr<GameObject> arg_mouth) { m_vwp_mouth = arg_mouth; }
 		void SetHelmet(Value_weak_ptr<GameObject> arg_helmet) { m_vwp_helmet = arg_helmet; }
+		void SetChara(Value_weak_ptr<GameObject> arg_chara) { m_vwp_chara = arg_chara; }
 
 		Value_weak_ptr<GameObject> GetHead() { return m_vwp_head; }
 		Value_weak_ptr<GameObject> GetBody() { return m_vwp_body; }
@@ -50,6 +51,7 @@ namespace ButiEngine {
 		void CreateNose(Value_weak_ptr<Transform> arg_vwp_transform, const Rank arg_rank);
 		void CreateMouth(Value_weak_ptr<Transform> arg_vwp_transform, const Rank arg_rank);
 		void CreateHelmet();
+		void CreateChara();
 
 		Value_weak_ptr<GameObject> m_vwp_head;
 		Value_weak_ptr<GameObject> m_vwp_body;
@@ -58,6 +60,7 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> m_vwp_nose;
 		Value_weak_ptr<GameObject> m_vwp_mouth;
 		Value_weak_ptr<GameObject> m_vwp_helmet;
+		Value_weak_ptr<GameObject> m_vwp_chara;
 
 		Value_weak_ptr<FriendData> m_vwp_friendData;
 

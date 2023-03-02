@@ -3,6 +3,7 @@
 #include"FriendFacePart.h"
 #include"PartRespawnPoint.h"
 #include "FriendHead.h"
+#include "Accessory.h"
 
 void ButiEngine::FacePartSpawner::OnUpdate()
 {
@@ -100,6 +101,42 @@ void ButiEngine::FacePartSpawner::CreatePartArrangement()
 	
 }
 
+void ButiEngine::FacePartSpawner::SpawnAccessory()
+{
+	if (m_currentEditLevelIndex == 0)
+	{
+		return;
+	}
+	if (Accessory::GetAccessoryCount() != 0)
+	{
+		return;
+	}
+
+	std::int32_t probability = 20;
+	std::int32_t random = ButiRandom::GetInt(1, 100);
+	if (random > probability)
+	{
+		return;
+	}
+
+	std::string tagName = "AccessorySpawnArea";
+	auto spawnArea = GetManager().lock()->GetGameObject(GameObjectTag(tagName));
+
+	Vector3 pos = spawnArea.lock()->transform->GetLocalPosition();
+	Vector3 scale = spawnArea.lock()->transform->GetLocalScale();
+	Vector3 minPos = pos - scale * 0.5f;
+	Vector3 maxPos = pos + scale * 0.5f;
+
+	Vector3 spawnPos;
+	spawnPos.x = ButiRandom::GetRandom(minPos.x, maxPos.x, 10);
+	spawnPos.y = ButiRandom::GetRandom(minPos.y, maxPos.y, 10);
+	spawnPos.z = 0.0f;
+
+	auto accessory = GetManager().lock()->AddObjectFromCereal("Accessory_Helmet");
+	accessory.lock()->transform->SetLocalPosition(spawnPos);
+	Accessory::AddAccessoryCount();
+}
+
 void ButiEngine::FacePartSpawner::Clear()
 {
 	auto spawnpoints = GetManager().lock()->GetGameObjects(GameObjectTag("RespawnPoint"));
@@ -112,6 +149,8 @@ void ButiEngine::FacePartSpawner::Clear()
 void ButiEngine::FacePartSpawner::LevelIncrement()
 {
 	SetLevel(m_isRandomLevelSelect? ButiRandom::GetInt(m_randomSelectLevelMin, m_randomSelectLevelMax): m_currentEditLevelIndex + 1);
+
+	SpawnAccessory();
 }
 
 void ButiEngine::FacePartSpawner::SetLevel(const std::int32_t arg_level)

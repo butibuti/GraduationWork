@@ -11,8 +11,8 @@
 
 void ButiEngine::BlowFriend::OnUpdate()
 {
-	m_velocity.y += -m_gravity * GameDevice::GetWorldSpeed();
-	Vector3 pos = gameObject.lock()->transform->Translate(m_velocity * GameDevice::GetWorldSpeed());
+	m_velocity.y += -m_gravity * GameDevice::GetWorldSpeed() * m_speed;
+	Vector3 pos = gameObject.lock()->transform->Translate(m_velocity * GameDevice::GetWorldSpeed() * m_speed);
 
 	if (pos.y < -30.0f)
 	{
@@ -67,6 +67,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::BlowFriend::Clone()
 
 void ButiEngine::BlowFriend::SetBlowParam()
 {
+	m_speed = 0.3f;
 	m_velocity = Vector3(0.0f, 1.2f, 0.0f);
 	m_gravity = 0.16f;
 
