@@ -247,7 +247,7 @@ std::int32_t ButiEngine::FriendFacePart::GetCalcAngleScore()
 	}
 	else
 	{
-		float progress = 1.0f - (partAngle / 180.0f);
+		float progress = 1.0f - (partAngle / (g_goodAngleBorder.z * 3.0f));
 		progress = MathHelper::Clamp(progress, 0.0f, 1.0f);
 
 		std::int32_t maxScore = exactScore - 1;
@@ -281,13 +281,13 @@ std::int32_t ButiEngine::FriendFacePart::GetCalcPosScore()
 	}
 	else
 	{
-		float progressX = 1.0f - (partAngleX / 180.0f);
+		float progressX = 1.0f - (partAngleX / (g_goodAngleBorder.x * 3.0f));
 		progressX = MathHelper::Clamp(progressX, 0.0f, 1.0f);
 
 		std::int32_t maxScoreX = exactScoreX - 1;
 		posScore += MathHelper::Lerp(0, maxScoreX, progressX);
 
-		float progressY = 1.0f - (partAngleY / 180.0f);
+		float progressY = 1.0f - (partAngleY / (g_goodAngleBorder.y * 3.0f));
 		progressY = MathHelper::Clamp(progressY, 0.0f, 1.0f);
 
 		std::int32_t maxScoreY = exactScoreY - 1;

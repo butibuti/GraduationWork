@@ -18,24 +18,6 @@
 
 void ButiEngine::FriendHead::OnUpdate()
 {
-	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::G))
-	{
-		m_isShowGuide = !m_isShowGuide;
-		if (m_isShowGuide)
-		{
-			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(1.0f);
-			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(1.0f);
-			gameObject.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(1.0f);
-		}
-		else
-		{
-			gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
-			gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
-			gameObject.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(0.0f);
-		}
-	}
-
-
 	if (!CanUpdate())
 	{
 		return;
@@ -115,10 +97,6 @@ void ButiEngine::FriendHead::Start()
 	m_vlp_appearTimer->Start();
 
 	m_isPut = false;
-
-	gameObject.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
-	gameObject.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
-	gameObject.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(0.0f);
 
 	m_isDisappear = false;
 }

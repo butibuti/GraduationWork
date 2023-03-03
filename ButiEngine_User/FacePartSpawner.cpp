@@ -88,6 +88,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FacePartSpawner::Cl
 void ButiEngine::FacePartSpawner::CreatePartArrangement()
 {
 	if (m_currentEditLevelIndex < 0) { return; }
+	m_ExistDummyPart = false;
 	m_remainPart = 0; m_successPart = 0;
 	for (auto& data : m_currentData.list_data[m_currentEditLevelIndex].list_data) {
 
@@ -95,6 +96,10 @@ void ButiEngine::FacePartSpawner::CreatePartArrangement()
 		auto respawnPointComponent = respawnPoint.lock()->GetGameComponent<PartRespawnPoint>();
 		respawnPointComponent->SetSpawner(GetThis<FacePartSpawner>());
 		respawnPointComponent->SetParam(data.faceParam);
+		if (data.faceParam.type == PartType::Dummy)
+		{
+			m_ExistDummyPart = true;
+		}
 		respawnPointComponent->SetIsContinue(m_currentData.list_data[m_currentEditLevelIndex].isContinue);
 		m_remainPart++;
 	}
@@ -103,7 +108,11 @@ void ButiEngine::FacePartSpawner::CreatePartArrangement()
 
 void ButiEngine::FacePartSpawner::SpawnAccessory()
 {
-	if (m_currentEditLevelIndex <= 0)
+	if (!m_ExistDummyPart)
+	{
+		return;
+	}
+	if (m_currentEditLevelIndex <= 5)
 	{
 		return;
 	}

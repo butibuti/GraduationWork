@@ -292,7 +292,8 @@ void ButiEngine::GameSettings::SetOffset()
 
 void ButiEngine::GameSettings::SetHeightOffset()
 {
-	Vector3 trackerPos = GetTrackerPos(m_data.trackerIndex);
+	Matrix4x4 deviceMatrix;
+	Vector3 trackerPos = GetTrackerPos(m_data.trackerIndex) - m_offset;
 	m_offset.y = -trackerPos.y;
 }
 

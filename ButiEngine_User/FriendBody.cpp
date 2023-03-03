@@ -365,7 +365,7 @@ void ButiEngine::FriendBody::StopRotate()
 
 void ButiEngine::FriendBody::CheckTotalRank()
 {
-	std::int32_t score = 0;
+	float score = 0;
 	score += static_cast<std::int32_t>(m_vlp_friendData->eyeRank);
 	score += static_cast<std::int32_t>(m_vlp_friendData->noseRank);
 	score += static_cast<std::int32_t>(m_vlp_friendData->mouthRank);

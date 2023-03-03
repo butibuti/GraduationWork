@@ -97,7 +97,6 @@ namespace ButiEngine {
 
 		bool m_isPut;
 		bool m_isCompleteFace;
-		bool m_isShowGuide;
 		bool m_isDisappear;
 	};
 

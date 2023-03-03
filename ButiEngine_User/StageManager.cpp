@@ -11,12 +11,14 @@
 
 void ButiEngine::StageManager::OnUpdate()
 {
-	//if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::T))
-	//{
-	//	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_Tutorial");
-	//	GetManager().lock()->GetApplication().lock()->GetSoundManager()->DestroyBGM();
-	//	m_vwp_pauseManager.lock()->SetIsPause(true);
-	//}
+	if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::R))
+	{
+		ResetGame();
+	}
+	else if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_X))
+	{
+		ResetGame();
+	}
 	if (!m_isGameStart)
 	{
 		if (m_vwp_gameLevelManager.lock()->GetGameLevel() == 2)
@@ -43,14 +45,6 @@ void ButiEngine::StageManager::OnUpdate()
 
 	if (m_vwp_pauseManager.lock()->IsPause())
 	{
-		//if (GameDevice::GetInput().TriggerKey(ButiInput::Keys::R))
-		//{
-		//	ResetGame();
-		//}
-		//else if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_X))
-		//{
-		//	ResetGame();
-		//}
 		return;
 	}
 

@@ -109,19 +109,6 @@ void ButiEngine::FriendHead_PartHitArea::StickPart(Value_weak_ptr<GameObject> ar
 	m_vwp_part = arg_vwp_part;
 	m_canStickPart = false;
 
-	if (m_type == PartType::Eye)
-	{
-		m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(1)->GetTransform()->SetLocalScale(0.0f);
-	}
-	else if (m_type == PartType::Nose)
-	{
-		m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(2)->GetTransform()->SetLocalScale(0.0f);
-	}
-	else if (m_type == PartType::Mouth)
-	{
-		m_vwp_parent.lock()->GetGameComponent<MeshDrawComponent>(3)->GetTransform()->SetLocalScale(0.0f);
-	}
-
 	if (m_vwp_guideMarker.lock())
 	{
 		m_vwp_guideMarker.lock()->SetIsRemove(true);

@@ -103,6 +103,9 @@ void ButiEngine::Bomb::StartFall()
 
 void ButiEngine::Bomb::Explode()
 {
+	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Explosion.wav"));
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
+
 	auto explosion= AddObjectFromCereal("Explosion");
 	explosion.lock()->transform->SetLocalPosition(gameObject.lock()->transform->GetWorldPosition());
 	GetManager().lock()->GetGameObject("CameraParent").lock()->GetGameComponent<GameCamera>()->StartShake(20, 0.2f);
@@ -136,13 +139,13 @@ void ButiEngine::Bomb::BombAnimation()
 	m_theta += animSpeed;
 
 	float animProgress = sin(m_theta);
-	//ColorAnimation(animProgress);
+	ColorAnimation(progress);
 	//ScaleAnimation(animProgress);
 }
 
 void ButiEngine::Bomb::ColorAnimation(const float arg_progress)
 {
-	Vector3 newColor = MathHelper::LerpPosition(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.5f, 0.0f, 0.0f), arg_progress);
+	Vector3 newColor = MathHelper::LerpPosition(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.8f, 0.0f, 0.0f), arg_progress);
 	m_vwp_meshDraw.lock()->SetColor(Vector4(newColor, 1.0f));
 }
 

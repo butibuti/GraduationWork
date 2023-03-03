@@ -49,6 +49,8 @@ private:
 	std::int32_t m_currentEditLevelIndex = -1,m_remainPart=0,m_successPart=0;
 	bool m_isRandomLevelSelect=false;
 	std::int32_t m_randomSelectLevelMin=0, m_randomSelectLevelMax=0;
+
+	bool m_ExistDummyPart = false;
 };
 
 }
