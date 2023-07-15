@@ -42,6 +42,9 @@ namespace ButiEngine {
 		void SetRightVibrationPower(const float arg_power);
 		void SetLeftVibrationPower(const float arg_power);
 
+		static bool IsEnableTransitionSceneKey() { return g_isEnableTransitionSceneKey; }
+		static void SetIsEnableTransitionSceneKey(const bool arg_flag) { g_isEnableTransitionSceneKey = arg_flag; }
+
 		//ゲームプレイシーンのみ
 
 	private:
@@ -50,6 +53,8 @@ namespace ButiEngine {
 		Vector2 m_currentRightStick;
 		Vector2 m_previousLeftStick;
 		Vector2 m_currentLeftStick;
+
+		static bool g_isEnableTransitionSceneKey;
 	};
 
 }

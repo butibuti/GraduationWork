@@ -4,6 +4,7 @@
 #include "Result_BackHuman.h"
 #include "Result_FriendFallPoint.h"
 #include "Result_FriendSpawner.h"
+#include "InputManager.h"
 
 std::int32_t ButiEngine::ResultManager::g_successBorder = 20;
 
@@ -16,6 +17,20 @@ void ButiEngine::ResultManager::OnUpdate()
 	}
 	CheckStartZoomIn();
 	CheckStartZoomOut();
+
+	if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_UP))
+	{
+		InputManager::SetIsEnableTransitionSceneKey(true);
+	}
+	else if (GameDevice::GetInput().GetPadButtonTrigger(ButiInput::PadButtons::XBOX_DOWN))
+	{
+		InputManager::SetIsEnableTransitionSceneKey(false);
+	}
+
+	if (InputManager::IsEnableTransitionSceneKey() && GameDevice::GetInput().CheckKey(ButiInput::Keys::Space))
+	{
+		GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GameEnd");
+	}
 }
 
 void ButiEngine::ResultManager::OnSet()
@@ -117,7 +132,10 @@ void ButiEngine::ResultManager::StartSuccess()
 	m_vwp_backHuman.lock()->StartTurnSuccessAnimation();
 	GetManager().lock()->AddObjectFromCereal("Effect_ConcentratedLine_RedNYellow");
 	GetManager().lock()->AddObjectFromCereal("Text_Success");
-	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GameEnd");
+	if (!InputManager::IsEnableTransitionSceneKey())
+	{
+		GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GameEnd");
+	}
 
 	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Success.wav"));
 	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);
@@ -131,7 +149,10 @@ void ButiEngine::ResultManager::StartFailed()
 	m_vwp_backHuman.lock()->StartTurnFailedAnimation();
 	GetManager().lock()->AddObjectFromCereal("Background_Gray");
 	GetManager().lock()->AddObjectFromCereal("Text_Failed");
-	GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GameEnd");
+	if (!InputManager::IsEnableTransitionSceneKey())
+	{
+		GetManager().lock()->AddObjectFromCereal("SceneTransition_FadeIn_GameEnd");
+	}
 
 	auto sound = gameObject.lock()->GetResourceContainer()->GetSound(SoundTag("Sound/Failed.wav"));
 	GetManager().lock()->GetApplication().lock()->GetSoundManager()->PlaySE(sound, 0.5f);

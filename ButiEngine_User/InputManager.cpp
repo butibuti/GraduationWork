@@ -4,6 +4,8 @@
 
 constexpr float DEADZONE = 0.25f;
 
+bool ButiEngine::InputManager::g_isEnableTransitionSceneKey = true;
+
 void ButiEngine::InputManager::OnUpdate()
 {
 	m_previousRightStick = m_currentRightStick;
