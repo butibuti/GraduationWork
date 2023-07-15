@@ -62,7 +62,7 @@ void ButiEngine::CompleteFriend::SetBody(Value_weak_ptr<GameObject> arg_body)
 	m_vlp_animationController = ButiRendering::CreateAnimationController(modelDraw->GetBone());
 }
 
-void ButiEngine::CompleteFriend::Dead()
+void ButiEngine::CompleteFriend::Dead(bool arg_isRemoveCompleteFirnedList, bool arg_isAddTargetPosIndex)
 {
 	m_vwp_head.lock()->SetIsRemove(true);
 	m_vwp_body.lock()->SetIsRemove(true);
@@ -79,6 +79,16 @@ void ButiEngine::CompleteFriend::Dead()
 		m_vwp_chara.lock()->SetIsRemove(true);
 	}
 	gameObject.lock()->SetIsRemove(true);
+
+	if (arg_isRemoveCompleteFirnedList)
+	{
+		GetManager().lock()->GetGameObject("FriendManager").lock()->GetGameComponent<FriendManager>()->RemoveCompleteFriend(gameObject);
+	}
+
+	if (arg_isAddTargetPosIndex)
+	{
+		FriendManager::AddCompleteFriendTargetPositionIndex(m_targetPosIndex);
+	}
 }
 
 void ButiEngine::CompleteFriend::CreateParts(Value_weak_ptr<FriendData> arg_vwp_friendData)

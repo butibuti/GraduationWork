@@ -247,7 +247,7 @@ std::int32_t ButiEngine::FriendFacePart::GetCalcAngleScore()
 	}
 	else
 	{
-		float progress = 1.0f - (partAngle / (g_goodAngleBorder.z * 3.0f));
+		float progress = 1.0f - (partAngle / (g_goodAngleBorder.z * 6.0f));
 		progress = MathHelper::Clamp(progress, 0.0f, 1.0f);
 
 		std::int32_t maxScore = exactScore - 1;
@@ -281,13 +281,13 @@ std::int32_t ButiEngine::FriendFacePart::GetCalcPosScore()
 	}
 	else
 	{
-		float progressX = 1.0f - (partAngleX / (g_goodAngleBorder.x * 3.0f));
+		float progressX = 1.0f - (partAngleX / (g_goodAngleBorder.x * 4.0f));
 		progressX = MathHelper::Clamp(progressX, 0.0f, 1.0f);
 
 		std::int32_t maxScoreX = exactScoreX - 1;
 		posScore += MathHelper::Lerp(0, maxScoreX, progressX);
 
-		float progressY = 1.0f - (partAngleY / (g_goodAngleBorder.y * 3.0f));
+		float progressY = 1.0f - (partAngleY / (g_goodAngleBorder.y * 4.0f));
 		progressY = MathHelper::Clamp(progressY, 0.0f, 1.0f);
 
 		std::int32_t maxScoreY = exactScoreY - 1;
@@ -661,6 +661,13 @@ void ButiEngine::FriendFacePart::Appear()
 	m_isAppear = true;
 	gameObject.lock()->GetGameComponent<TriggerComponent>()->UnRegist();
 	AddScaleAnimation(1.0f, Easing::EasingType::EaseOutBack);
+
+	if (m_param.type != PartType::Dummy)
+	{
+		auto partSpawnFlash = GetManager().lock()->AddObjectFromCereal("Effect_PartSpawnFlash");
+		partSpawnFlash.lock()->transform->SetLocalPosition(gameObject.lock()->transform->GetWorldPosition());
+		partSpawnFlash.lock()->transform->SetBaseTransform(gameObject.lock()->transform);
+	}
 }
 
 void ButiEngine::FriendFacePart::Disappear()

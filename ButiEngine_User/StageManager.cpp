@@ -76,6 +76,7 @@ void ButiEngine::StageManager::Start()
 	m_vlp_waitPlayBGMTimer = ObjectFactory::Create<RelativeTimer>(30);
 
 	FriendManager::ClearFriendData();
+	FriendManager::ResetTargetPosIndexs();
 	FriendFacePart::ResetPartCount();
 	Accessory::ResetAccessoryCount();
 }
@@ -94,6 +95,7 @@ void ButiEngine::StageManager::StartGame()
 
 void ButiEngine::StageManager::ResetGame()
 {
+	GetManager().lock()->GetApplication().lock()->GetSoundManager()->DestroyBGM();
 	auto sceneManager = gameObject.lock()->GetApplication().lock()->GetSceneManager();
 	std::string sceneName = sceneManager->GetCurrentScene()->GetSceneInformation()->GetSceneName();
 	sceneManager->RemoveScene(sceneName);

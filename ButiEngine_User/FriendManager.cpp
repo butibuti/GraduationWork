@@ -5,6 +5,7 @@
 
 std::vector<ButiEngine::Value_weak_ptr<ButiEngine::GameObject>> ButiEngine::FriendManager::g_vec_completeFriends;
 std::vector<ButiEngine::Value_ptr<ButiEngine::FriendData>> ButiEngine::FriendManager::g_vec_friendDatas;
+std::vector<std::uint16_t> ButiEngine::FriendManager::g_vec_targetPosIndexs;
 
 void ButiEngine::FriendManager::OnUpdate()
 {
@@ -47,6 +48,16 @@ void ButiEngine::FriendManager::AddFriendCount()
 	m_vwp_gameLevelManager.lock()->CheckLevelUp(m_currentLevelFriendCount);
 }
 
+std::int32_t ButiEngine::FriendManager::GetCompleteFriendTargetPositionIndex()
+{
+	if (g_vec_targetPosIndexs.size() == 0) { return -1; }
+
+	std::int32_t rand = ButiRandom::GetInt(0, g_vec_targetPosIndexs.size() - 1);
+	std::uint16_t output = g_vec_targetPosIndexs[rand];
+	g_vec_targetPosIndexs.erase(g_vec_targetPosIndexs.begin() + rand);
+	return output;
+}
+
 void ButiEngine::FriendManager::AddCompleteFriend(Value_weak_ptr<GameObject> arg_friend, Value_ptr<FriendData> arg_data)
 {
 	g_vec_completeFriends.push_back(arg_friend);
@@ -61,4 +72,19 @@ void ButiEngine::FriendManager::RemoveCompleteFriend(const std::int32_t arg_inde
 	g_vec_friendDatas.erase(g_vec_friendDatas.begin() + arg_index);
 
 	GetManager().lock()->GetGameObject("UI_FriendCount").lock()->GetGameComponent<UI_FriendCount>()->RemoveCount();
+}
+
+void ButiEngine::FriendManager::RemoveCompleteFriend(Value_weak_ptr<GameObject> arg_friend)
+{
+	auto itr = g_vec_completeFriends.begin();
+	while (itr != g_vec_completeFriends.end())
+	{
+		if ((*itr).lock() == arg_friend.lock())
+		{
+			g_vec_completeFriends.erase(itr);
+			break;
+		}
+
+		++itr;
+	}
 }

@@ -18,6 +18,7 @@
 #include "BombFriend.h"
 #include "BlowFriend.h"
 #include "Header/GameObjects/DefaultGameComponent/PositionAnimationComponent.h"
+#include "FriendAligner.h"
 
 void ButiEngine::FriendBody::OnUpdate()
 {
@@ -133,6 +134,8 @@ void ButiEngine::FriendBody::Start()
 	m_vlp_friendData->totalRank = Rank::NoRank;
 
 	m_isBlow = false;
+
+	isRemoveAfterMoveBack = false;
 }
 
 ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::FriendBody::Clone()
@@ -291,6 +294,15 @@ void ButiEngine::FriendBody::MoveBack()
 		m_isStopRotate = true;
 
 		gameObject.lock()->transform->SetLocalPosition(m_moveBackTargetPos);
+
+		if (isRemoveAfterMoveBack)
+		{
+			auto completeFriendComponent = gameObject.lock()->GetGameComponent<CompleteFriend>();
+			if (completeFriendComponent)
+			{
+				completeFriendComponent->Dead(true);
+			}
+		}
 	}
 }
 
@@ -302,9 +314,26 @@ void ButiEngine::FriendBody::StartMoveBackRandom()
 
 	m_moveBackStartPos = pos;
 
-	m_moveBackTargetPos.x = ButiRandom::GetInt(-7, 7);
-	m_moveBackTargetPos.y = pos.y;
-	m_moveBackTargetPos.z = pos.z + (ButiRandom::GetInt(-60, -40));
+	std::int32_t targetPosIndex = FriendManager::GetCompleteFriendTargetPositionIndex();
+	if (targetPosIndex > 0)
+	{
+		auto friendAligner = GetManager().lock()->GetGameObject("FriendAligner").lock()->GetGameComponent<FriendAligner>();
+		if (friendAligner != nullptr)
+		{
+			gameObject.lock()->GetGameComponent<CompleteFriend>()->SetTargetPosIndex(targetPosIndex);
+			m_moveBackTargetPos = friendAligner->GetCalcFriendPos(targetPosIndex);
+		}
+	}
+	else
+	{
+		m_moveBackTargetPos = Vector3(0, 0, -60);
+		m_moveBackTargetPos.x = ButiRandom::GetInt(-8, 8);
+		isRemoveAfterMoveBack = true;
+	}
+
+	//m_moveBackTargetPos.x = ButiRandom::GetInt(-8, 8);
+	//m_moveBackTargetPos.y = pos.y;
+	//m_moveBackTargetPos.z = ButiRandom::GetInt(-45, -40);
 
 	m_isMoveBack = true;
 	m_vlp_moveBackTimer->Start();

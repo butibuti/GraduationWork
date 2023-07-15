@@ -46,13 +46,27 @@ namespace ButiEngine {
 
 		static std::vector<Value_weak_ptr<GameObject>>& GetCompleteFriends() { return g_vec_completeFriends; }
 		static std::vector<Value_ptr<FriendData>>& GetFriendDatas() { return g_vec_friendDatas; }
+		static std::int32_t GetCompleteFriendTargetPositionIndex();
+		static void AddCompleteFriendTargetPositionIndex(const std::uint16_t arg_index) { g_vec_targetPosIndexs.push_back(arg_index); }
+
 		static void ClearFriendData()
 		{
 			g_vec_completeFriends.clear();
 			g_vec_friendDatas.clear(); 
 		}
+
+		static void ResetTargetPosIndexs()
+		{
+			g_vec_targetPosIndexs.clear();
+			for (std::uint16_t i = 0; i < 30; i++)
+			{
+				g_vec_targetPosIndexs.push_back(i);
+			}
+		}
+
 		void AddCompleteFriend(Value_weak_ptr<GameObject> arg_friend, Value_ptr<FriendData> arg_data);
 		void RemoveCompleteFriend(const std::int32_t arg_index);
+		void RemoveCompleteFriend(Value_weak_ptr<GameObject> arg_friend);
 	private:
 		Value_weak_ptr<GameLevelManager> m_vwp_gameLevelManager;
 
@@ -61,6 +75,7 @@ namespace ButiEngine {
 
 		static std::vector<Value_weak_ptr<GameObject>> g_vec_completeFriends;
 		static std::vector<Value_ptr<FriendData>> g_vec_friendDatas;
+		static std::vector<std::uint16_t> g_vec_targetPosIndexs;
 	};
 
 }

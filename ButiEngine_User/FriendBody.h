@@ -117,6 +117,8 @@ namespace ButiEngine {
 
 		bool m_isBlow;
 		Value_ptr<ButiRendering::IAnimationController> m_vlp_animationController;
+
+		bool isRemoveAfterMoveBack;
 	};
 
 }

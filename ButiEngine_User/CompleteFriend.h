@@ -38,12 +38,14 @@ namespace ButiEngine {
 		Value_weak_ptr<GameObject> GetHead() { return m_vwp_head; }
 		Value_weak_ptr<GameObject> GetBody() { return m_vwp_body; }
 
-		void Dead();
+		void Dead(bool arg_isRemoveCompleteFirnedList = false, bool arg_isAddTargetPosIndex = false);
 
 		void CreateParts(Value_weak_ptr<FriendData> arg_vwp_friendData);
 		void StartDance();
 		void StopDance();
 		void StartBlowAnimation();
+
+		void SetTargetPosIndex(const std::int16_t arg_index) { m_targetPosIndex = arg_index; }
 	private:
 		void CreateHead(Value_weak_ptr<Transform> arg_vwp_transform);
 		void CreateBody(Value_weak_ptr<Transform> arg_vwp_transform);
@@ -69,6 +71,8 @@ namespace ButiEngine {
 		bool m_isBlow = false;
 
 		Value_weak_ptr<PauseManager> m_vwp_pauseManager;
+
+		std::uint16_t m_targetPosIndex = 0;
 	};
 
 }

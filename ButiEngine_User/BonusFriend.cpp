@@ -6,6 +6,7 @@
 #include "Header/GameObjects/DefaultGameComponent/RotationAnimationComponent.h"
 #include "PauseManager.h"
 #include "CompleteFriend.h"
+#include "FriendAligner.h"
 
 void ButiEngine::BonusFriend::OnUpdate()
 {
@@ -47,6 +48,8 @@ void ButiEngine::BonusFriend::Start()
 	m_isRotate = false;
 	m_isStopRotate = false;
 
+	isRemoveAfterMoveBack = false;
+
 	auto completeFriendComponent = gameObject.lock()->GetGameComponent<CompleteFriend>();
 	m_vwp_head = completeFriendComponent->GetHead();
 	m_vwp_body = completeFriendComponent->GetBody();
@@ -71,6 +74,15 @@ void ButiEngine::BonusFriend::MoveBack()
 		m_isStopRotate = true;
 
 		gameObject.lock()->transform->SetLocalPosition(m_moveBackTargetPos);
+
+		if (isRemoveAfterMoveBack)
+		{
+			auto completeFriendComponent = gameObject.lock()->GetGameComponent<CompleteFriend>();
+			if (completeFriendComponent)
+			{
+				completeFriendComponent->Dead(true);
+			}
+		}
 	}
 }
 
@@ -174,15 +186,33 @@ void ButiEngine::BonusFriend::Appear(const std::int32_t arg_friendNum)
 
 void ButiEngine::BonusFriend::StartMoveBack()
 {
-	gameObject.lock()->GetGameComponent<CompleteFriend>()->StartDance();
+	auto completeFriend = gameObject.lock()->GetGameComponent<CompleteFriend>();
+	completeFriend->StartDance();
 
 	Vector3 pos = gameObject.lock()->transform->GetLocalPosition();
 
 	m_moveBackStartPos = pos;
 
-	m_moveBackTargetPos.x = ButiRandom::GetInt(-7, 7);
-	m_moveBackTargetPos.y = 0.0f;
-	m_moveBackTargetPos.z = pos.z + (ButiRandom::GetInt(-70, -45));
+	std::int32_t targetPosIndex = FriendManager::GetCompleteFriendTargetPositionIndex();
+	if (targetPosIndex > 0)
+	{
+		auto friendAligner = GetManager().lock()->GetGameObject("FriendAligner").lock()->GetGameComponent<FriendAligner>();
+		if (friendAligner != nullptr)
+		{
+			completeFriend->SetTargetPosIndex(targetPosIndex);
+			m_moveBackTargetPos = friendAligner->GetCalcFriendPos(targetPosIndex);
+		}
+	}
+	else
+	{
+		m_moveBackTargetPos = Vector3(0, 0, -60);
+		m_moveBackTargetPos.x = ButiRandom::GetInt(-8, 8);
+		isRemoveAfterMoveBack = true;
+	}
+
+	//m_moveBackTargetPos.x = ButiRandom::GetInt(-8, 8);
+	//m_moveBackTargetPos.y = 0.0f;
+	//m_moveBackTargetPos.z = ButiRandom::GetInt(-45, -40);
 
 	m_isMoveBack = true;
 	m_isRotate = true;

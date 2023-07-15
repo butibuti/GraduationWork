@@ -50,6 +50,8 @@ namespace ButiEngine {
 		Vector3 m_moveBackStartPos;
 		Vector3 m_moveBackTargetPos;
 		Value_ptr<RelativeTimer> m_vlp_moveBackTimer;
+
+		bool isRemoveAfterMoveBack;
 	};
 
 }

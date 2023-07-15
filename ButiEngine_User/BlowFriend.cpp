@@ -24,7 +24,7 @@ void ButiEngine::BlowFriend::OnUpdate()
 		auto completeFriend = gameObject.lock()->GetGameComponent<CompleteFriend>();
 		if (completeFriend)
 		{
-			completeFriend->Dead();
+			completeFriend->Dead(false, true);
 		}
 
 		auto bomb = gameObject.lock()->GetGameComponent<BombFriend>();

@@ -125,6 +125,12 @@ void ButiEngine::GameCamera::GameFinishZoom()
 
 void ButiEngine::GameCamera::StartShake(const std::int32_t arg_shakeFrame, float arg_maxAmplitude)
 {
+	auto crntShakeComponent = m_vwp_cameraMan.lock()->GetGameComponent<ShakeComponent>();
+	if (crntShakeComponent != nullptr)
+	{
+		crntShakeComponent->Dead();
+	}
+
 	auto shake = m_vwp_cameraMan.lock()->AddGameComponent<ShakeComponent>();
 	shake->SetShakeFrame(arg_shakeFrame);
 	shake->SetShakeSpeed(90.0f);
