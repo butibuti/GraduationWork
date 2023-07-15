@@ -46,6 +46,9 @@ namespace ButiEngine {
 		void StartBlowAnimation();
 
 		void SetTargetPosIndex(const std::int16_t arg_index) { m_targetPosIndex = arg_index; }
+
+		void ResetStartColor();
+		void SetBrightness(const float arg_brightness);
 	private:
 		void CreateHead(Value_weak_ptr<Transform> arg_vwp_transform);
 		void CreateBody(Value_weak_ptr<Transform> arg_vwp_transform);

@@ -357,6 +357,7 @@
     <ClCompile Include="Bomb.cpp" />
     <ClCompile Include="BombFriend.cpp" />
     <ClCompile Include="BonusFriend.cpp" />
+    <ClCompile Include="BrightnessController.cpp" />
     <ClCompile Include="Effect_ExplosionNeedle.cpp" />
     <ClCompile Include="Effect_ExplosionSmoke.cpp" />
     <ClCompile Include="Effect_Explosion.cpp" />
@@ -447,6 +448,7 @@
     <ClInclude Include="Bomb.h" />
     <ClInclude Include="BombFriend.h" />
     <ClInclude Include="BonusFriend.h" />
+    <ClInclude Include="BrightnessController.h" />
     <ClInclude Include="CompleteFriend.h" />
     <ClInclude Include="Effect_ExplosionNeedle.h" />
     <ClInclude Include="Effect_ExplosionSmoke.h" />

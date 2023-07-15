@@ -54,6 +54,7 @@ ButiEngine::Value_ptr<ButiEngine::GameComponent> ButiEngine::UI_FriendCount::Clo
 void ButiEngine::UI_FriendCount::AddCount()
 {
 	m_targetCount++;
+	m_targetCount = min(m_targetCount, 99);
 }
 
 void ButiEngine::UI_FriendCount::RemoveCount()

@@ -287,6 +287,12 @@ void ButiEngine::FriendBody::MoveBack()
 
 	gameObject.lock()->transform->SetLocalPosition(newPos);
 
+	auto completeFriendComponent = gameObject.lock()->GetGameComponent<CompleteFriend>();
+	if (completeFriendComponent)
+	{
+		completeFriendComponent->SetBrightness(MathHelper::Lerp(1.0f, 0.6f, progress));
+	}
+
 	if (m_vlp_moveBackTimer->Update())
 	{
 		m_vlp_moveBackTimer->Stop();
@@ -295,9 +301,10 @@ void ButiEngine::FriendBody::MoveBack()
 
 		gameObject.lock()->transform->SetLocalPosition(m_moveBackTargetPos);
 
+		completeFriendComponent->SetBrightness(0.6f);
+
 		if (isRemoveAfterMoveBack)
 		{
-			auto completeFriendComponent = gameObject.lock()->GetGameComponent<CompleteFriend>();
 			if (completeFriendComponent)
 			{
 				completeFriendComponent->Dead(true);
@@ -331,9 +338,7 @@ void ButiEngine::FriendBody::StartMoveBackRandom()
 		isRemoveAfterMoveBack = true;
 	}
 
-	//m_moveBackTargetPos.x = ButiRandom::GetInt(-8, 8);
-	//m_moveBackTargetPos.y = pos.y;
-	//m_moveBackTargetPos.z = ButiRandom::GetInt(-45, -40);
+	gameObject.lock()->GetGameComponent<CompleteFriend>()->ResetStartColor();
 
 	m_isMoveBack = true;
 	m_vlp_moveBackTimer->Start();

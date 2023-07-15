@@ -17,7 +17,7 @@ void ButiEngine::BombFriend::OnUpdate()
 
 		auto friendBody = gameObject.lock()->GetGameComponent<FriendBody>();
 		friendBody->RemoveNeck();
-		friendBody->StartMoveBack(Vector3(0, 0, -40), 60);
+		friendBody->StartMoveBack(Vector3(0, 0, -35), 60);
 	}
 }
 

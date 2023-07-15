@@ -6,6 +6,8 @@
 #include "PauseManager.h"
 #include "BlowFriend.h"
 #include "Header/GameObjects/DefaultGameComponent/PositionAnimationComponent.h"
+#include "BrightnessController.h"
+#include "SeparateDrawObject.h"
 
 void ButiEngine::CompleteFriend::OnUpdate()
 {
@@ -132,6 +134,51 @@ void ButiEngine::CompleteFriend::StartDance()
 		GetModel(m_vwp_body.lock()->GetGameComponent<ModelDrawComponent>()->GetModelTag()).lock()->GetMotion()[animIndex]->GetAnimation());
 
 	m_vlp_animationController->GetCurrentModelAnimation()->SetIsLoop(true);
+}
+
+void ButiEngine::CompleteFriend::ResetStartColor()
+{
+	m_vwp_head.lock()->GetGameComponent<BrightnessController>()->ResetMeshDraw();
+	m_vwp_body.lock()->GetGameComponent<BrightnessController>()->ResetMeshDraw();
+	m_vwp_heart.lock()->GetGameComponent<BrightnessController>()->ResetMeshDraw();
+	m_vwp_eye.lock()->GetGameComponent<BrightnessController>()->ResetMeshDraw();
+	m_vwp_nose.lock()->GetGameComponent<BrightnessController>()->ResetMeshDraw();
+	m_vwp_mouth.lock()->GetGameComponent<BrightnessController>()->ResetMeshDraw();
+
+	m_vwp_head.lock()->GetGameComponent<BrightnessController>()->ResetStartColor();
+	m_vwp_body.lock()->GetGameComponent<BrightnessController>()->ResetStartColor();
+	m_vwp_heart.lock()->GetGameComponent<BrightnessController>()->ResetStartColor();
+	m_vwp_eye.lock()->GetGameComponent<BrightnessController>()->ResetStartColor();
+	m_vwp_nose.lock()->GetGameComponent<BrightnessController>()->ResetStartColor();
+	m_vwp_mouth.lock()->GetGameComponent<BrightnessController>()->ResetStartColor();
+	if (m_vwp_helmet.lock())
+	{
+		m_vwp_helmet.lock()->GetGameComponent<BrightnessController>()->ResetMeshDraw();
+		m_vwp_helmet.lock()->GetGameComponent<BrightnessController>()->ResetStartColor();
+	}
+	if (m_vwp_chara.lock())
+	{
+		m_vwp_chara.lock()->GetGameComponent<BrightnessController>()->ResetMeshDraw();
+		m_vwp_chara.lock()->GetGameComponent<BrightnessController>()->ResetStartColor();
+	}
+}
+
+void ButiEngine::CompleteFriend::SetBrightness(const float arg_brightness)
+{
+	m_vwp_head.lock()->GetGameComponent<BrightnessController>()->SetBrightness(arg_brightness);
+	m_vwp_body.lock()->GetGameComponent<BrightnessController>()->SetBrightness(arg_brightness);
+	m_vwp_heart.lock()->GetGameComponent<BrightnessController>()->SetBrightness(arg_brightness);
+	m_vwp_eye.lock()->GetGameComponent<BrightnessController>()->SetBrightness(arg_brightness);
+	m_vwp_nose.lock()->GetGameComponent<BrightnessController>()->SetBrightness(arg_brightness);
+	m_vwp_mouth.lock()->GetGameComponent<BrightnessController>()->SetBrightness(arg_brightness);
+	if (m_vwp_helmet.lock())
+	{
+		m_vwp_helmet.lock()->GetGameComponent<BrightnessController>()->SetBrightness(arg_brightness);
+	}
+	if (m_vwp_chara.lock())
+	{
+		m_vwp_chara.lock()->GetGameComponent<BrightnessController>()->SetBrightness(arg_brightness);
+	}
 }
 
 void ButiEngine::CompleteFriend::StopDance()
